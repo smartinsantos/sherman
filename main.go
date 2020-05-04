@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/smartinsantos/go-auth-api/config"
-	"github.com/smartinsantos/go-auth-api/interfaces/controllers"
+	"github.com/smartinsantos/go-auth-api/interfaces/controller"
 	"log"
 )
 
@@ -23,7 +23,7 @@ func main() {
 	})
 
 	// users
-	userController := controllers.NewUserController()
+	userController := controller.NewUserController()
 	router.GET("/user/auth", userController.VerifyAuth)
 	router.POST("/user/register", userController.Register)
 	router.POST("/user/login", userController.Login)
