@@ -4,7 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/smartinsantos/go-auth-api/config"
-	"github.com/smartinsantos/go-auth-api/interfaces/controller"
+	"github.com/smartinsantos/go-auth-api/infrastructure/datastore"
+	"github.com/smartinsantos/go-auth-api/interfaces/handler"
 	"log"
 )
 
@@ -17,17 +18,19 @@ func init() {
 func main() {
 	env := config.Get()
 
-	router := gin.Default()
-	router.GET("/", func(context *gin.Context) {
+	ads := datastore.New()
+	ah := handler.New(ads)
+
+	r := gin.Default()
+	r.GET("/", func(context *gin.Context) {
 		context.String(200, "Hello from /")
 	})
 
 	// users
-	userController := controller.NewUserController()
-	router.GET("/user/auth", userController.VerifyAuth)
-	router.POST("/user/register", userController.Register)
-	router.POST("/user/login", userController.Login)
-	router.POST("/user/refresh-token", userController.Login)
+	r.GET("/api/v1/user/auth", ah.User.VerifyAuth)
+	r.POST("/api/v1/user/register", ah.User.Register)
+	r.POST("/api/v1/user/login", ah.User.Login)
+	r.POST("/api/v1/user/refresh-token", ah.User.RefreshToken)
 
-	log.Fatal(router.Run(env.AppConfig.Addr))
+	log.Fatal(r.Run(env.AppConfig.Addr))
 }
