@@ -22,15 +22,20 @@ func main() {
 	ah := handler.New(ads)
 
 	r := gin.Default()
-	r.GET("/", func(context *gin.Context) {
-		context.String(200, "Hello from /")
-	})
+	{
+		r.GET("/", func(context *gin.Context) {
+			context.String(200, "Hello from /")
+		})
+	}
 
-	// users
-	r.GET("/api/v1/user/auth", ah.User.VerifyAuth)
-	r.POST("/api/v1/user/register", ah.User.Register)
-	r.POST("/api/v1/user/login", ah.User.Login)
-	r.POST("/api/v1/user/refresh-token", ah.User.RefreshToken)
+	v1 := r.Group("/api/v1")
+	{
+		// users
+		v1.GET("/user/auth", ah.User.VerifyAuth)
+		v1.POST("/user/register", ah.User.Register)
+		v1.POST("/user/login", ah.User.Login)
+		v1.POST("/user/refresh-token", ah.User.RefreshToken)
+	}
 
 	log.Fatal(r.Run(env.AppConfig.Addr))
 }
