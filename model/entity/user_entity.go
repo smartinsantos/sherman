@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"time"
 	"strings"
+	"time"
 )
 
 // User entity

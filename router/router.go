@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/smartinsantos/go-auth-api/config"
 	"github.com/smartinsantos/go-auth-api/controller"
+	"github.com/smartinsantos/go-auth-api/router/middleware"
 )
 
 // App router constructor
@@ -14,6 +15,8 @@ func New(appController *controller.AppController) *gin.Engine {
 	}
 
 	r := gin.Default()
+	r.Use(middleware.CORSMiddleware())
+
 	{
 		r.GET("/", func(context *gin.Context) {
 			context.String(200, "Hello from /")
