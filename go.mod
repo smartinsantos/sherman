@@ -15,5 +15,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pressly/goose v2.6.0+incompatible // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
+	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	google.golang.org/appengine v1.6.6 // indirect
 )

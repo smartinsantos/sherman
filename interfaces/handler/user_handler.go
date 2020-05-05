@@ -14,13 +14,13 @@ type UserHandler struct {
 
 // Registers the user
 func (uc * UserHandler) Register (context *gin.Context) {
-	// TODO: make automated response object generators
 	var user entity.User
 
 	if err := context.ShouldBindJSON(&user); err != nil {
 		context.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status": "fail",
 			"message": "Invalid json",
+			"error": err,
 		})
 		return
 	}
@@ -32,22 +32,15 @@ func (uc * UserHandler) Register (context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"status": "fail",
 			"message": "Unable to create user",
+			"error": err,
 		})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{
+	context.JSON(http.StatusCreated, gin.H{
 		"status": "ok",
 		"message": "User created",
-		"data": gin.H{
-			"id": newUser.ID,
-			"email_address": newUser.EmailAddress,
-			"first_name": newUser.FirstName,
-			"last_name": newUser.LastName,
-			"active": newUser.Active,
-			"created_at": newUser.CreatedAt,
-			"updated_at": newUser.UpdatedAt,
-		},
+		"data": newUser.Presenter(),
 	})
 }
 

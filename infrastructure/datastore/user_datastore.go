@@ -6,6 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/smartinsantos/go-auth-api/domain/entity"
 	"github.com/smartinsantos/go-auth-api/domain/repository"
+	"github.com/smartinsantos/go-auth-api/infrastructure/security"
 	"time"
 )
 
@@ -33,8 +34,13 @@ func (uds *UserDataStore) CreateUser(user *entity.User) (*entity.User, error) {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	err := uds.db.Create(&user).Error
+	hashPassword, err := security.Hash(user.Password)
+	if err != nil {
+		return nil, err
+	}
+	user.Password = string(hashPassword)
 
+	err = uds.db.Create(&user).Error
 	if err != nil {
 		return nil, err
 	}
