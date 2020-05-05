@@ -6,12 +6,14 @@ import (
 	"sync"
 )
 
+// App configuration
 type AppConfig struct {
     Env		string
     Debug	bool
     Addr	string
 }
 
+// Database configuration
 type DBConfig struct {
 	Driver 	string
 	Name	string
@@ -21,6 +23,7 @@ type DBConfig struct {
 	Port	string
 }
 
+// Config Wrapper for all configurations
 type Config struct {
     AppConfig AppConfig
     DBConfig DBConfig
@@ -51,7 +54,6 @@ func Get() *Config {
 	return instance
 }
 
-// helper function to read an environment or return a default value
 func getEnv(key string, defaultVal string) string {
     if value, exists := os.LookupEnv(key); exists {
 		return value
@@ -59,7 +61,6 @@ func getEnv(key string, defaultVal string) string {
     return defaultVal
 }
 
-// helper function to read an environment variable into integer or return a default value
 func getEnvAsInt(name string, defaultVal int) int {
     valueStr := getEnv(name, "")
     if value, err := strconv.Atoi(valueStr); err == nil {
@@ -68,7 +69,6 @@ func getEnvAsInt(name string, defaultVal int) int {
     return defaultVal
 }
 
-// Helper to read an environment variable into a bool or return default value
 func getEnvAsBool(name string, defaultVal bool) bool {
     valStr := getEnv(name, "")
     if val, err := strconv.ParseBool(valStr); err == nil {

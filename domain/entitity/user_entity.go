@@ -1,7 +1,10 @@
 package entitity
 
-import "time"
+import (
+	"time"
+)
 
+// User entity
 type User struct {
 	ID uint64
 	EmailAddress string

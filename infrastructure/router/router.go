@@ -6,6 +6,7 @@ import (
 	"github.com/smartinsantos/go-auth-api/interfaces/handler"
 )
 
+// App router constructor
 func New(appHandler *handler.AppHandler) *gin.Engine {
 	env := config.Get()
 	if !env.AppConfig.Debug {

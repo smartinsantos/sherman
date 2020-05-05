@@ -4,6 +4,7 @@ import (
 	"github.com/smartinsantos/go-auth-api/infrastructure/datastore"
 )
 
+// App handler wraps all applications handlers
 type AppHandler struct {
 	User UserHandler
 }

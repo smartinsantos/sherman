@@ -8,6 +8,7 @@ import (
 	"log"
 )
 
+// App Data Store wraps all applications stores
 type AppDataStore struct {
 	User 	UserDataStore
 	db		*gorm.DB
@@ -40,7 +41,7 @@ func New() (*AppDataStore, error) {
 	return &ads, nil
 }
 
-// Closes the  database connection
+// Closes the database connection
 func (ds *AppDataStore) Close() error {
 	return ds.db.Close()
 }

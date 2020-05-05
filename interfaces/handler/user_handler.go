@@ -8,11 +8,12 @@ import (
 	"time"
 )
 
-// userController struct defines the dependencies that will be used
+// UserHandler struct defines the dependencies that will be used
 type UserHandler struct {
 	ds *datastore.UserDataStore
 }
 
+// Registers the user
 func (uc * UserHandler) Register (context *gin.Context) {
 	mockUser := entitity.User{
 		ID:           1,
@@ -29,14 +30,17 @@ func (uc * UserHandler) Register (context *gin.Context) {
 	context.String(http.StatusOK, "Register")
 }
 
+// Logs the user
 func (uc * UserHandler) Login (context *gin.Context) {
 	context.String(http.StatusOK, "Login")
 }
 
+// Refreshes user token
 func (uc * UserHandler) RefreshToken (context *gin.Context) {
 	context.String(http.StatusOK, "RefreshToken")
 }
 
+// Verify that the user token is still valid
 func (uc * UserHandler) VerifyAuth (context *gin.Context) {
 	context.String(http.StatusOK, "VerifyAuth")
 }

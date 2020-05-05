@@ -14,18 +14,22 @@ type UserDataStore struct {
 // UserDataStore implements the repository.UserRepository interface
 var _ repository.UserRepository = &UserDataStore{}
 
+// Gets user by id
 func (uds *UserDataStore) GetUserById(id uint64) {
 	fmt.Println("GetUserById called with id =>", id)
 }
 
+// Gets user by email address
 func (uds *UserDataStore) GetUserByEmail(email string) {
 	fmt.Println("GetUserByEmail called with email =>", email)
 }
 
+// Creates a user
 func (uds *UserDataStore) CreateUser(user *entitity.User) {
 	fmt.Println("CreateUser called with =>", user)
 }
 
+// Deletes a user
 func (uds *UserDataStore) DeleteUser(user *entitity.User) {
 	fmt.Println("DeleteUser called with =>", user)
 }
