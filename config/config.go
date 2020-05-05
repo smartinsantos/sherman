@@ -13,11 +13,12 @@ type AppConfig struct {
 }
 
 type DBConfig struct {
+	Driver 	string
 	Name	string
 	User	string
 	Pass	string
 	Host	string
-	Port	int
+	Port	string
 }
 
 type Config struct {
@@ -38,11 +39,12 @@ func Get() *Config {
 				Addr: getEnv("APP_ADDR", ":8080"),
 			},
 			DBConfig: DBConfig{
+				Driver: getEnv("DB_DRIVER", "db-driver"),
 				Name: getEnv("DB_NAME", "db_name"),
 				User:	getEnv("DB_USER", "db_user"),
 				Pass: getEnv("DB_PASS", "db_password"),
 				Host:	getEnv("DB_HOST", "db_user"),
-				Port: getEnvAsInt("DB_PORT", 3307),
+				Port: getEnv("DB_PORT", "db_port"),
 			},
 		}
 	})

@@ -18,7 +18,13 @@ func init() {
 func main() {
 	env := config.Get()
 
-	ads := datastore.New()
+	ads, err := datastore.New()
+	if err != nil {
+		panic(err)
+	}
+
+	defer ads.Close()
+
 	ah := handler.New(ads)
 
 	r := gin.Default()

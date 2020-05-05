@@ -1,6 +1,8 @@
 package handler
 
-import "github.com/smartinsantos/go-auth-api/infrastructure/datastore"
+import (
+	"github.com/smartinsantos/go-auth-api/infrastructure/datastore"
+)
 
 type AppHandler struct {
 	User UserHandler

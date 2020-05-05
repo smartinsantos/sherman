@@ -2,11 +2,14 @@ package datastore
 
 import (
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"github.com/smartinsantos/go-auth-api/domain/entitity"
 	"github.com/smartinsantos/go-auth-api/domain/repository"
 )
 
-type UserDataStore struct {}
+type UserDataStore struct {
+	db *gorm.DB
+}
 
 // UserDataStore implements the repository.UserRepository interface
 var _ repository.UserRepository = &UserDataStore{}
