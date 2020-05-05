@@ -25,7 +25,16 @@ func (uc * UserHandler) Register (context *gin.Context) {
 		return
 	}
 
-	// TODO: validate inputs
+	validateErrors := user.Validate("register")
+	if len(validateErrors) > 0 {
+		context.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": "fail",
+			"message": "Validation error",
+			"errors": validateErrors,
+		})
+		return
+	}
+
 	newUser, err := uc.ds.CreateUser(&user)
 
 	if err != nil {
