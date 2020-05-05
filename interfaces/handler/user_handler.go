@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/smartinsantos/go-auth-api/domain/entitity"
+	"github.com/smartinsantos/go-auth-api/domain/entity"
 	"github.com/smartinsantos/go-auth-api/infrastructure/datastore"
 	"net/http"
 )
@@ -14,21 +14,41 @@ type UserHandler struct {
 
 // Registers the user
 func (uc * UserHandler) Register (context *gin.Context) {
-	mockUser := entitity.User{
-		EmailAddress: "mock1@mock.com",
-		FirstName: "mock",
-		LastName: "mock",
-		Password: "mockPassword",
-	}
+	// TODO: make automated response object generators
+	var user entity.User
 
-	_, err := uc.ds.CreateUser(&mockUser)
-
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{ "status": "fail", "message": "Unable to create user" })
+	if err := context.ShouldBindJSON(&user); err != nil {
+		context.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": "fail",
+			"message": "Invalid json",
+		})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{ "status": "ok", "message": "User created" })
+	// TODO: validate inputs
+	newUser, err := uc.ds.CreateUser(&user)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"status": "fail",
+			"message": "Unable to create user",
+		})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"message": "User created",
+		"data": gin.H{
+			"id": newUser.ID,
+			"email_address": newUser.EmailAddress,
+			"first_name": newUser.FirstName,
+			"last_name": newUser.LastName,
+			"active": newUser.Active,
+			"created_at": newUser.CreatedAt,
+			"updated_at": newUser.UpdatedAt,
+		},
+	})
 }
 
 // Logs the user

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
-	"github.com/smartinsantos/go-auth-api/domain/entitity"
+	"github.com/smartinsantos/go-auth-api/domain/entity"
 	"github.com/smartinsantos/go-auth-api/domain/repository"
 	"time"
 )
@@ -27,7 +27,7 @@ func (uds *UserDataStore) GetUserByEmail(email string) {
 }
 
 // Creates a user
-func (uds *UserDataStore) CreateUser(user *entitity.User) (*entitity.User, error) {
+func (uds *UserDataStore) CreateUser(user *entity.User) (*entity.User, error) {
 	user.ID = uuid.New().ID()
 	user.Active = 1
 	user.CreatedAt = time.Now()
@@ -43,6 +43,6 @@ func (uds *UserDataStore) CreateUser(user *entitity.User) (*entitity.User, error
 }
 
 // Deletes a user
-func (uds *UserDataStore) DeleteUser(user *entitity.User) {
+func (uds *UserDataStore) DeleteUser(user *entity.User) {
 	fmt.Println("DeleteUser called with =>", user)
 }

@@ -1,4 +1,4 @@
-package entitity
+package entity
 
 import (
 	"time"
