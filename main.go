@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/joho/godotenv"
 	"github.com/smartinsantos/go-auth-api/config"
+	"github.com/smartinsantos/go-auth-api/controller"
 	"github.com/smartinsantos/go-auth-api/infrastructure/datastore"
-	"github.com/smartinsantos/go-auth-api/infrastructure/router"
-	"github.com/smartinsantos/go-auth-api/interfaces/handler"
+	"github.com/smartinsantos/go-auth-api/router"
 	"log"
 )
 
@@ -24,8 +24,8 @@ func main() {
 	}
 	defer appDataStore.Close()
 	// Application RequestHandlers
-	appHandler := handler.New(appDataStore)
+	appController := controller.New(appDataStore)
 	// Application Router
-	appRouter := router.New(appHandler)
+	appRouter := router.New(appController)
 	log.Fatal(appRouter.Run(env.AppConfig.Addr))
 }

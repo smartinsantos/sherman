@@ -4,18 +4,14 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
-	"github.com/smartinsantos/go-auth-api/domain/entity"
-	"github.com/smartinsantos/go-auth-api/domain/repository"
-	"github.com/smartinsantos/go-auth-api/infrastructure/security"
+	"github.com/smartinsantos/go-auth-api/model/entity"
+	"github.com/smartinsantos/go-auth-api/utils/security"
 	"time"
 )
 
 type UserDataStore struct {
 	db *gorm.DB
 }
-
-// UserDataStore implements the repository.UserRepository interface
-var _ repository.UserRepository = &UserDataStore{}
 
 // Gets user by id
 func (uds *UserDataStore) GetUserById(id uint64) {

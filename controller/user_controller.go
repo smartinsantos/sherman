@@ -1,19 +1,19 @@
-package handler
+package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/smartinsantos/go-auth-api/domain/entity"
 	"github.com/smartinsantos/go-auth-api/infrastructure/datastore"
+	"github.com/smartinsantos/go-auth-api/model/entity"
 	"net/http"
 )
 
-// UserHandler struct defines the dependencies that will be used
-type UserHandler struct {
+// UserController struct defines the dependencies that will be used
+type UserController struct {
 	ds *datastore.UserDataStore
 }
 
 // Registers the user
-func (uc * UserHandler) Register (context *gin.Context) {
+func (uc * UserController) Register (context *gin.Context) {
 	var user entity.User
 
 	if err := context.ShouldBindJSON(&user); err != nil {
@@ -54,17 +54,17 @@ func (uc * UserHandler) Register (context *gin.Context) {
 }
 
 // Logs the user
-func (uc * UserHandler) Login (context *gin.Context) {
+func (uc * UserController) Login (context *gin.Context) {
 	context.String(http.StatusOK, "Login")
 }
 
 // Refreshes user token
-func (uc * UserHandler) RefreshToken (context *gin.Context) {
+func (uc * UserController) RefreshToken (context *gin.Context) {
 	context.String(http.StatusOK, "RefreshToken")
 }
 
 // Verify that the user token is still valid
-func (uc * UserHandler) VerifyAuth (context *gin.Context) {
+func (uc * UserController) VerifyAuth (context *gin.Context) {
 	context.String(http.StatusOK, "VerifyAuth")
 }
 

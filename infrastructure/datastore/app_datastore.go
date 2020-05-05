@@ -45,8 +45,3 @@ func New() (*AppDataStore, error) {
 func (ds *AppDataStore) Close() error {
 	return ds.db.Close()
 }
-
-// Migrates all tables
-//func (ds *AppDataStore) AutoMigrate() error {
-//	return ds.db.AutoMigrate(&entity.User{}).Error
-//}

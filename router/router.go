@@ -3,11 +3,11 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/smartinsantos/go-auth-api/config"
-	"github.com/smartinsantos/go-auth-api/interfaces/handler"
+	"github.com/smartinsantos/go-auth-api/controller"
 )
 
 // App router constructor
-func New(appHandler *handler.AppHandler) *gin.Engine {
+func New(appController *controller.AppController) *gin.Engine {
 	env := config.Get()
 	if !env.AppConfig.Debug {
 		gin.SetMode(gin.ReleaseMode)
@@ -23,10 +23,10 @@ func New(appHandler *handler.AppHandler) *gin.Engine {
 	v1g := r.Group("/api/v1")
 	{
 		// users
-		v1g.GET("/user/auth", appHandler.User.VerifyAuth)
-		v1g.POST("/user/register", appHandler.User.Register)
-		v1g.POST("/user/login", appHandler.User.Login)
-		v1g.POST("/user/refresh-token", appHandler.User.RefreshToken)
+		v1g.GET("/user/auth", appController.User.VerifyAuth)
+		v1g.POST("/user/register", appController.User.Register)
+		v1g.POST("/user/login", appController.User.Login)
+		v1g.POST("/user/refresh-token", appController.User.RefreshToken)
 	}
 
 	return r
