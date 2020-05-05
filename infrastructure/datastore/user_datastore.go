@@ -2,9 +2,11 @@ package datastore
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"github.com/smartinsantos/go-auth-api/domain/entitity"
 	"github.com/smartinsantos/go-auth-api/domain/repository"
+	"time"
 )
 
 type UserDataStore struct {
@@ -26,10 +28,14 @@ func (uds *UserDataStore) GetUserByEmail(email string) {
 
 // Creates a user
 func (uds *UserDataStore) CreateUser(user *entitity.User) (*entitity.User, error) {
-	fmt.Println("CreateUser called with =>", user)
+	user.ID = uuid.New().ID()
+	user.Active = 1
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
+
 	err := uds.db.Create(&user).Error
+
 	if err != nil {
-		fmt.Println("ERROR =>", err)
 		return nil, err
 	}
 
