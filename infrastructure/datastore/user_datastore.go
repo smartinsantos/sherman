@@ -25,8 +25,15 @@ func (uds *UserDataStore) GetUserByEmail(email string) {
 }
 
 // Creates a user
-func (uds *UserDataStore) CreateUser(user *entitity.User) {
+func (uds *UserDataStore) CreateUser(user *entitity.User) (*entitity.User, error) {
 	fmt.Println("CreateUser called with =>", user)
+	err := uds.db.Create(&user).Error
+	if err != nil {
+		fmt.Println("ERROR =>", err)
+		return nil, err
+	}
+
+	return user, nil
 }
 
 // Deletes a user

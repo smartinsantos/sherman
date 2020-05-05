@@ -8,6 +8,6 @@ import (
 type UserRepository interface {
 	GetUserById(id uint64)
 	GetUserByEmail(email string)
-	CreateUser(user *entitity.User)
+	CreateUser(user *entitity.User) (*entitity.User, error)
 	DeleteUser(user *entitity.User)
 }
