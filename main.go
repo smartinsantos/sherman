@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/smartinsantos/go-auth-api/config"
 	"github.com/smartinsantos/go-auth-api/infrastructure/datastore"
+	"github.com/smartinsantos/go-auth-api/infrastructure/router"
 	"github.com/smartinsantos/go-auth-api/interfaces/handler"
 	"log"
 )
@@ -17,31 +17,15 @@ func init() {
 
 func main() {
 	env := config.Get()
-
-	ads, err := datastore.New()
+	// Application DataStore
+	appDataStore, err := datastore.New()
 	if err != nil {
 		panic(err)
 	}
-
-	defer ads.Close()
-
-	ah := handler.New(ads)
-
-	r := gin.Default()
-	{
-		r.GET("/", func(context *gin.Context) {
-			context.String(200, "Hello from /")
-		})
-	}
-
-	v1 := r.Group("/api/v1")
-	{
-		// users
-		v1.GET("/user/auth", ah.User.VerifyAuth)
-		v1.POST("/user/register", ah.User.Register)
-		v1.POST("/user/login", ah.User.Login)
-		v1.POST("/user/refresh-token", ah.User.RefreshToken)
-	}
-
-	log.Fatal(r.Run(env.AppConfig.Addr))
+	defer appDataStore.Close()
+	// Application RequestHandlers
+	appHandler := handler.New(appDataStore)
+	// Application Router
+	appRouter := router.New(appHandler)
+	log.Fatal(appRouter.Run(env.AppConfig.Addr))
 }
