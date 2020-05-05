@@ -21,9 +21,14 @@ func (uc * UserHandler) Register (context *gin.Context) {
 		Password: "mockPassword",
 	}
 
-	uc.ds.CreateUser(&mockUser)
+	_, err := uc.ds.CreateUser(&mockUser)
 
-	context.String(http.StatusOK, "Register")
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{ "status": "fail", "message": "Unable to create user" })
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{ "status": "ok", "message": "User created" })
 }
 
 // Logs the user
