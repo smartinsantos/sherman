@@ -4,4 +4,4 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd $DIR/..
 
-goose --dir './database/migrations' create "$@"
+goose --dir "./database/migrations" create "$1" sql
