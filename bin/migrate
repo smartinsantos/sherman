@@ -1,1 +1,21 @@
 #!/usr/bin/env bash
+
+# change to the project root
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd $DIR/..
+
+
+read_var() {
+    VAR=$(grep $1 $2 | xargs)
+    IFS="=" read -ra VAR <<< "$VAR"
+    echo ${VAR[1]}
+}
+
+DB_DRIVER=$(read_var DB_DRIVER .env)
+DB_NAME=$(read_var DB_NAME .env)
+DB_USER=$(read_var DB_USER .env)
+DB_PASS=$(read_var DB_PASS .env)
+DB_HOST=$(read_var DB_HOST .env)
+DB_PORT=$(read_var DB_PORT .env)
+
+goose mysql "$DB_USER:$DB_PASS@tcp($DB_HOST:$DB_PORT)/$DB_NAME?parseTime=true" status
