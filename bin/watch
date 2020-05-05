@@ -1,2 +1,0 @@
-#!/bin/bash
-watchman-make -p '**/*.go' --run 'go run main.go'
