@@ -1,30 +1,38 @@
-package datastore
+package mysql
 
 import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
-	"github.com/smartinsantos/go-auth-api/model/entity"
+	"github.com/smartinsantos/go-auth-api/domain"
 	"github.com/smartinsantos/go-auth-api/utils/security"
 	"time"
 )
 
-type UserDataStore struct {
+type mysqlUserRepository struct {
 	db *gorm.DB
 }
 
+func NewMysqlArticleRepository(db *gorm.DB) domain.UserRepository {
+	return &mysqlUserRepository{ db: db }
+}
+
 // Gets user by id
-func (uds *UserDataStore) GetUserById(id uint64) {
+func (uds *mysqlUserRepository) GetUserById(id uint64) {
 	fmt.Println("GetUserById called with id =>", id)
 }
 
 // Gets user by email address
-func (uds *UserDataStore) GetUserByEmail(email string) {
+func (uds *mysqlUserRepository) GetUserByEmail(email string) {
 	fmt.Println("GetUserByEmail called with email =>", email)
 }
 
+func (uds *mysqlUserRepository) UpdateUser(user *domain.User) {
+	fmt.Println("GetUserById called with user =>", user)
+}
+
 // Creates a user
-func (uds *UserDataStore) CreateUser(user *entity.User) (*entity.User, error) {
+func (uds *mysqlUserRepository) CreateUser(user *domain.User) (*domain.User, error) {
 	user.ID = uuid.New().ID()
 	user.Active = 1
 	user.CreatedAt = time.Now()
@@ -45,6 +53,6 @@ func (uds *UserDataStore) CreateUser(user *entity.User) (*entity.User, error) {
 }
 
 // Deletes a user
-func (uds *UserDataStore) DeleteUser(user *entity.User) {
+func (uds *mysqlUserRepository) DeleteUser(user *domain.User) {
 	fmt.Println("DeleteUser called with =>", user)
 }

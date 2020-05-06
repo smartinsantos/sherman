@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/smartinsantos/go-auth-api/infrastructure/datastore"
-	"github.com/smartinsantos/go-auth-api/model/entity"
+	"github.com/smartinsantos/go-auth-api/domain/entity"
 	"net/http"
 )
 
