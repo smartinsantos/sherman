@@ -8,13 +8,13 @@ import (
 )
 
 type userUseCase struct {
-	mysqlUserRepository domain.UserRepository
+	dsUserRepository domain.UserRepository
 }
 
 // NewUserUseCase creates a new object representation of domain.UserUseCase interface
-func NewUserUseCase(mysqlUserRepository domain.UserRepository ) domain.UserUseCase {
+func NewUserUseCase(dsUserRepository domain.UserRepository ) domain.UserUseCase {
 	return &userUseCase{
-		mysqlUserRepository: mysqlUserRepository,
+		dsUserRepository: dsUserRepository,
 	}
 }
 
@@ -33,5 +33,5 @@ func (uuc *userUseCase) CreateUser(user *domain.User) (*domain.User, error) {
 
 	user.Password = string(hashPassword)
 
-	return uuc.mysqlUserRepository.CreateUser(user)
+	return uuc.dsUserRepository.CreateUser(user)
 }

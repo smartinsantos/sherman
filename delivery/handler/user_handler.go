@@ -8,9 +8,15 @@ import (
 	"net/http"
 )
 
-// UserHandler struct defines the dependencies that will be used
+
 type UserHandler struct {
 	userUseCase domain.UserUseCase
+}
+
+func NewUserHandler(userUseCase domain.UserUseCase) UserHandler {
+	return UserHandler {
+		userUseCase: userUseCase,
+	}
 }
 
 // Registers the user

@@ -7,6 +7,9 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
 	"github.com/smartinsantos/go-auth-api/config"
+	"github.com/smartinsantos/go-auth-api/delivery/handler"
+	"github.com/smartinsantos/go-auth-api/repository/datastore"
+	"github.com/smartinsantos/go-auth-api/usecase"
 	"github.com/smartinsantos/go-auth-api/utils/middleware"
 	"log"
 )
@@ -18,6 +21,7 @@ func init() {
 }
 
 func main() {
+	// TODO: move all of this code to a di container
 	env := config.Get()
 
 	// init db
@@ -40,6 +44,15 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
+	// init repositories
+	dsUserRepository := datastore.NewDsUserRepository(db)
+
+	// init use cases
+	userUseCase := usecase.NewUserUseCase(dsUserRepository)
+
+	// init handlers
+	userHandler := handler.NewUserHandler(userUseCase)
+
 	// init router
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
@@ -49,14 +62,11 @@ func main() {
 		})
 	}
 
-	//v1g := r.Group("/api/v1")
-	//{
-	//	// users
-	//	v1g.GET("/user/auth", appController.User.VerifyAuth)
-	//	v1g.POST("/user/register", appController.User.Register)
-	//	v1g.POST("/user/login", appController.User.Login)
-	//	v1g.POST("/user/refresh-token", appController.User.RefreshToken)
-	//}
+	v1g := r.Group("/api/v1")
+	{
+		// users
+		v1g.POST("/user/register", userHandler.Register)
+	}
 
 	log.Fatal(r.Run(env.AppConfig.Addr))
 }
