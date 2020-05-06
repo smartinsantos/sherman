@@ -16,12 +16,22 @@ type User struct {
 	UpdatedAt 		time.Time	`gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
-type UserRepository interface {
-	GetUserById(id uint64)
-	GetUserByEmail(email string)
-	UpdateUser(user *User)
+// User use case interface
+type UserUseCase interface {
+	//GetUserById(id uint64) (*User, error)
+	//GetUserByEmail(email string) (*User, error)
+	//UpdateUser(user *User) (*User, error)
 	CreateUser(user *User) (*User, error)
-	DeleteUser(user *User)
+	//DeleteUser(user *User) error
+}
+
+// User repository interface
+type UserRepository interface {
+	//GetUserById(id uint64) (*User, error)
+	//GetUserByEmail(email string) (*User, error)
+	//UpdateUser(user *User) (*User, error)
+	CreateUser(user *User) (*User, error)
+	//DeleteUser(user *User) error
 }
 
 //type Users []User

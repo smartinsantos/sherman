@@ -43,7 +43,6 @@ func main() {
 	// init router
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
-
 	{
 		r.GET("/", func(context *gin.Context) {
 			context.String(200, "Hello from /")
