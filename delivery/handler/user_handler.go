@@ -2,6 +2,8 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/smartinsantos/go-auth-api/delivery/handler/presenter"
+	"github.com/smartinsantos/go-auth-api/delivery/handler/validator"
 	"github.com/smartinsantos/go-auth-api/domain"
 	"net/http"
 )
@@ -24,12 +26,12 @@ func (uh *UserHandler) Register (context *gin.Context) {
 		return
 	}
 
-	validateErrors := user.Validate("register")
-	if len(validateErrors) > 0 {
+	errors := validator.ValidateUserParams(&user, "register")
+	if len(errors) > 0 {
 		context.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status": "fail",
 			"message": "Validation error",
-			"errors": validateErrors,
+			"errors": errors,
 		})
 		return
 	}
@@ -48,7 +50,7 @@ func (uh *UserHandler) Register (context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{
 		"status": "ok",
 		"message": "User created",
-		"data": newUser.Presenter(),
+		"data": presenter.PresentUser(newUser),
 	})
 }
 
