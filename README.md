@@ -7,6 +7,9 @@ Identity service written in go
 - Migrations: https://github.com/pressly/goose
 - ORM: https://jinzhu.me/gorm/
 
+# Setting Up
+- Run ```bin/setup``` to install binaries in your $GOPATH/bin
+
 ## Bin
 - ```bin/lint```                        : Finds lint errors in the application
 - ```bin/watch```                       : Runs the server on watch mode
