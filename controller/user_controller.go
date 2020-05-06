@@ -13,7 +13,7 @@ type UserController struct {
 }
 
 // Registers the user
-func (uc * UserController) Register (context *gin.Context) {
+func (uc *UserController) Register (context *gin.Context) {
 	var user entity.User
 
 	if err := context.ShouldBindJSON(&user); err != nil {
@@ -54,17 +54,17 @@ func (uc * UserController) Register (context *gin.Context) {
 }
 
 // Logs the user
-func (uc * UserController) Login (context *gin.Context) {
+func (uc *UserController) Login (context *gin.Context) {
 	context.String(http.StatusOK, "Login")
 }
 
 // Refreshes user token
-func (uc * UserController) RefreshToken (context *gin.Context) {
+func (uc *UserController) RefreshToken (context *gin.Context) {
 	context.String(http.StatusOK, "RefreshToken")
 }
 
 // Verify that the user token is still valid
-func (uc * UserController) VerifyAuth (context *gin.Context) {
+func (uc *UserController) VerifyAuth (context *gin.Context) {
 	context.String(http.StatusOK, "VerifyAuth")
 }
 

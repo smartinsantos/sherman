@@ -32,13 +32,13 @@ type PresentedUser  struct {
 // Exposes Public User keys
 func (u *User) Presenter() *PresentedUser {
 	return &PresentedUser {
-		ID:        u.ID,
-		FirstName: u.FirstName,
-		LastName:  u.LastName,
-		EmailAddress: u.EmailAddress,
-		Active: u.Active,
-		CreatedAt: u.CreatedAt,
-		UpdatedAt: u.UpdatedAt,
+		ID:        		u.ID,
+		FirstName: 		u.FirstName,
+		LastName:  		u.LastName,
+		EmailAddress: 	u.EmailAddress,
+		Active: 		u.Active,
+		CreatedAt: 		u.CreatedAt,
+		UpdatedAt: 		u.UpdatedAt,
 	}
 }
 
