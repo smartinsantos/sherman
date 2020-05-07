@@ -25,7 +25,7 @@ func main() {
 	env := config.Get()
 
 	// init db
-	DBURL := fmt.Sprintf(
+	connectionUrl := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		env.DBConfig.User,
 		env.DBConfig.Pass,
@@ -34,14 +34,9 @@ func main() {
 		env.DBConfig.Name,
 	)
 
-	db, err := gorm.Open(env.DBConfig.Driver, DBURL)
+	db, err := gorm.Open(env.DBConfig.Driver, connectionUrl)
 	if err != nil {
 		log.Fatal(err)
-	}
-	fmt.Println(db)
-
-		if !env.AppConfig.Debug {
-		gin.SetMode(gin.ReleaseMode)
 	}
 
 	// init repositories
@@ -54,6 +49,9 @@ func main() {
 	userHandler := handler.NewUserHandler(userUseCase)
 
 	// init router
+	if !env.AppConfig.Debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
 	{
