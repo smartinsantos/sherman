@@ -9,7 +9,7 @@ func ValidateUserParams(user *domain.User, action string) map[string]string {
 	var errorMessages = make(map[string]string)
 
 	switch strings.ToLower(action) {
-		default:
+		case "register":
 			if user.FirstName == "" {
 				errorMessages["first_name_required"] = "First name is required"
 			}
@@ -22,6 +22,7 @@ func ValidateUserParams(user *domain.User, action string) map[string]string {
 			if user.EmailAddress == "" {
 				errorMessages["email_address_required"] = "Email Address is required"
 			}
+		default: // do nothing
 	}
 	return errorMessages
 }
