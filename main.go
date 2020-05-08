@@ -83,5 +83,6 @@ func main() {
 		v1g.POST("/user/register", userHandler.Register)
 	}
 
+	log.Println("Server Running on port", cfg.AppConfig.Addr)
 	log.Fatal(r.Run(cfg.AppConfig.Addr))
 }

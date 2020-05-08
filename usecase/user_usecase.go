@@ -12,7 +12,7 @@ type userUseCase struct {
 }
 
 // NewUserUseCase creates a new object representation of domain.UserUseCase interface
-func NewUserUseCase(dsUserRepository domain.UserRepository ) domain.UserUseCase {
+func NewUserUseCase(dsUserRepository domain.UserRepository) domain.UserUseCase {
 	return &userUseCase{
 		dsUserRepository: dsUserRepository,
 	}

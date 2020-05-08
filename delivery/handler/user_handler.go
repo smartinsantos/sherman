@@ -13,8 +13,8 @@ type UserHandler struct {
 	userUseCase domain.UserUseCase
 }
 
-func NewUserHandler(userUseCase domain.UserUseCase) UserHandler {
-	return UserHandler {
+func NewUserHandler(userUseCase domain.UserUseCase) *UserHandler {
+	return &UserHandler {
 		userUseCase: userUseCase,
 	}
 }
