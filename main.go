@@ -16,28 +16,45 @@ import (
 
 func init() {
 	if err := godotenv.Load(); err != nil {
-		log.Print("Error: No .env file found")
+		log.Println("Error: No .env file found")
+		panic(err)
+	}
+
+	cfg := config.Get()
+	if cfg.AppConfig.Debug {
+		log.Println("Service RUN on DEBUG mode")
 	}
 }
 
 func main() {
 	// TODO: move all of this code to a di container
-	env := config.Get()
+	cfg := config.Get()
 
 	// init db
 	connectionUrl := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		env.DBConfig.User,
-		env.DBConfig.Pass,
-		env.DBConfig.Host,
-		env.DBConfig.Port,
-		env.DBConfig.Name,
+		cfg.DBConfig.User,
+		cfg.DBConfig.Pass,
+		cfg.DBConfig.Host,
+		cfg.DBConfig.Port,
+		cfg.DBConfig.Name,
 	)
 
-	db, err := gorm.Open(env.DBConfig.Driver, connectionUrl)
+	db, err := gorm.Open(cfg.DBConfig.Driver, connectionUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
+	err = db.DB().Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer func() {
+		err := db.DB().Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	// init repositories
 	dsUserRepository := datastore.NewDsUserRepository(db)
@@ -49,7 +66,7 @@ func main() {
 	userHandler := handler.NewUserHandler(userUseCase)
 
 	// init router
-	if !env.AppConfig.Debug {
+	if !cfg.AppConfig.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.Default()
@@ -66,5 +83,5 @@ func main() {
 		v1g.POST("/user/register", userHandler.Register)
 	}
 
-	log.Fatal(r.Run(env.AppConfig.Addr))
+	log.Fatal(r.Run(cfg.AppConfig.Addr))
 }
