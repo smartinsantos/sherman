@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"github.com/google/uuid"
-	"github.com/smartinsantos/go-auth-api/domain"
-	"github.com/smartinsantos/go-auth-api/utils/security"
+	"root/domain"
+	"root/utils/security"
 	"time"
 )
 

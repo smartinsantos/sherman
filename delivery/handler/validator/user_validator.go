@@ -1,7 +1,7 @@
 package validator
 
 import (
-	"github.com/smartinsantos/go-auth-api/domain"
+	"root/domain"
 	"strings"
 )
 

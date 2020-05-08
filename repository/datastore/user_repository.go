@@ -2,7 +2,7 @@ package datastore
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/smartinsantos/go-auth-api/domain"
+	"root/domain"
 )
 
 type dsUserRepository struct {

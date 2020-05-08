@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/smartinsantos/go-auth-api/delivery/handler/presenter"
-	"github.com/smartinsantos/go-auth-api/delivery/handler/validator"
-	"github.com/smartinsantos/go-auth-api/domain"
+	"root/delivery/handler/presenter"
+	"root/delivery/handler/validator"
+	"root/domain"
 	"net/http"
 )
 

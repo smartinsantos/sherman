@@ -3,10 +3,10 @@ package app
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"github.com/smartinsantos/go-auth-api/config"
-	"github.com/smartinsantos/go-auth-api/delivery/handler"
-	"github.com/smartinsantos/go-auth-api/repository/datastore"
-	"github.com/smartinsantos/go-auth-api/usecase"
+	"root/config"
+	"root/delivery/handler"
+	"root/repository/datastore"
+	"root/usecase"
 )
 
 type handlers struct {

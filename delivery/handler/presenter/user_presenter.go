@@ -1,7 +1,7 @@
 package presenter
 
 import (
-	"github.com/smartinsantos/go-auth-api/domain"
+	"root/domain"
 	"time"
 )
 

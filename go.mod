@@ -1,4 +1,4 @@
-module github.com/smartinsantos/go-auth-api
+module root
 
 go 1.14
 

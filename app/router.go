@@ -2,8 +2,8 @@ package app
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/smartinsantos/go-auth-api/config"
-	"github.com/smartinsantos/go-auth-api/utils/middleware"
+	"root/config"
+	"root/utils/middleware"
 	"log"
 )
 
