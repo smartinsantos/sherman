@@ -2,10 +2,10 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"root/delivery/handler/presenter"
 	"root/delivery/handler/validator"
 	"root/domain"
-	"net/http"
 )
 
 

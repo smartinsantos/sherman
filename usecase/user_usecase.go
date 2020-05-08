@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"github.com/google/uuid"
+	"root/app/security"
 	"root/domain"
-	"root/utils/security"
 	"time"
 )
 

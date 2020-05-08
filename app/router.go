@@ -2,9 +2,9 @@ package app
 
 import (
 	"github.com/gin-gonic/gin"
-	"root/config"
-	"root/utils/middleware"
 	"log"
+	"root/app/middleware"
+	"root/config"
 )
 
 func Mount() {
