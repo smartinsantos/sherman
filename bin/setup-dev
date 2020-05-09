@@ -8,3 +8,4 @@ curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/insta
 go get -u github.com/cosmtrek/air
 go get -u github.com/pressly/goose/cmd/goose
 go get -u github.com/gobuffalo/packr/packr
+go mod tidy
