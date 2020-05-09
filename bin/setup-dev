@@ -7,5 +7,5 @@ cd $DIR/..
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
 go get -u github.com/cosmtrek/air
 go get -u github.com/pressly/goose/cmd/goose
-go get -u github.com/gobuffalo/packr/packr
+go get -u github.com/gobuffalo/packr/v2/...
 go mod tidy

@@ -5,8 +5,8 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd $DIR/..
 
 echo "Building ..."
-packr build
-packr clean
+packr2 build
+packr2 clean
 mkdir -p ./build
 mv ./root ./build/app-build
 

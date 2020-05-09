@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/joho/godotenv"
 )
 
@@ -54,7 +54,7 @@ var once sync.Once
 // Get returns Config instance
 func Get() *Config {
 	once.Do(func() {
-		rootBox := packr.NewBox("../")
+		rootBox := packr.New("root","../")
 		envStr, err := rootBox.FindString(".env")
 		if err != nil {
 			log.Fatalln("Error: No .env file found")
