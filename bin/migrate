@@ -2,7 +2,7 @@
 
 # change to the project root
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd $DIR/..
+cd "$DIR"/.. || exit
 
 read_var() {
     VAR=$(grep $1 $2 | xargs)
@@ -16,7 +16,7 @@ DB_USER=$(read_var DB_USER .env)
 DB_PASS=$(read_var DB_PASS .env)
 DB_HOST=$(read_var DB_HOST .env)
 DB_PORT=$(read_var DB_PORT .env)
-
 DB_URI="$DB_USER:$DB_PASS@tcp($DB_HOST:$DB_PORT)/$DB_NAME?parseTime=true"
 
+echo "Running migrations..."
 goose --dir "./database/migrations" mysql $DB_URI $1 $2

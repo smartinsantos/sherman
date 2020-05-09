@@ -2,6 +2,7 @@
 
 # change to the project root
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd $DIR/..
+cd "$DIR"/.. || exit
 
+echo "Creating Migration ..."
 goose --dir "./database/migrations" create "$1" sql

@@ -2,10 +2,13 @@
 
 # change to the project root
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd $DIR/..
+cd "$DIR"/.. || exit
 
+echo "Setting up dev environment..."
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
 go get -u github.com/cosmtrek/air
 go get -u github.com/pressly/goose/cmd/goose
 go get -u github.com/gobuffalo/packr/v2/...
+echo "Cleaning up mod file dependencies..."
 go mod tidy
+echo "Setup Complete!"
