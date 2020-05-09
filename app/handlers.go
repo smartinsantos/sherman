@@ -40,13 +40,13 @@ func newDbConnection() (*gorm.DB, error) {
 	cfg := config.Get()
 	connectionUrl := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		cfg.DBConfig.User,
-		cfg.DBConfig.Pass,
-		cfg.DBConfig.Host,
-		cfg.DBConfig.Port,
-		cfg.DBConfig.Name,
+		cfg.Db.User,
+		cfg.Db.Pass,
+		cfg.Db.Host,
+		cfg.Db.Port,
+		cfg.Db.Name,
 	)
-	db, err := gorm.Open(cfg.DBConfig.Driver, connectionUrl)
+	db, err := gorm.Open(cfg.Db.Driver, connectionUrl)
 	if err != nil {
 		return nil, err
 	}

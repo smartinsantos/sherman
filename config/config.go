@@ -28,17 +28,17 @@ type DBConfig struct {
 
 // Config Wrapper for all configurations
 type Config struct {
-	AppConfig AppConfig
-	DBConfig  DBConfig
+	App AppConfig
+	Db  DBConfig
 }
 
 var defaultConfig = &Config{
-	AppConfig: AppConfig{
+	App: AppConfig{
 		Env:   "local",
 		Debug: true,
 		Addr:  ":8080",
 	},
-	DBConfig: DBConfig{
+	Db: DBConfig{
 		Driver: "mysql",
 		Name:   "db_name",
 		User:   "db_user",
@@ -66,18 +66,18 @@ func Get() *Config {
 		}
 
 		config = &Config{
-			AppConfig: AppConfig{
-				Env:   getKey(envMap, "APP_ENV", defaultConfig.AppConfig.Env),
-				Debug: getKeyAsBool(envMap, "APP_DEBUG", defaultConfig.AppConfig.Debug),
-				Addr:  getKey(envMap, "APP_ADDR", defaultConfig.AppConfig.Addr),
+			App: AppConfig{
+				Env:   getKey(envMap, "APP_ENV", defaultConfig.App.Env),
+				Debug: getKeyAsBool(envMap, "APP_DEBUG", defaultConfig.App.Debug),
+				Addr:  getKey(envMap, "APP_ADDR", defaultConfig.App.Addr),
 			},
-			DBConfig: DBConfig{
-				Driver: getKey(envMap, "DB_DRIVER", defaultConfig.DBConfig.Driver),
-				Name:   getKey(envMap, "DB_NAME", defaultConfig.DBConfig.Name),
-				User:   getKey(envMap, "DB_USER", defaultConfig.DBConfig.User),
-				Pass:   getKey(envMap, "DB_PASS", defaultConfig.DBConfig.Pass),
-				Host:   getKey(envMap, "DB_HOST", defaultConfig.DBConfig.Host),
-				Port:   getKey(envMap, "DB_PORT", defaultConfig.DBConfig.Port),
+			Db: DBConfig{
+				Driver: getKey(envMap, "DB_DRIVER", defaultConfig.Db.Driver),
+				Name:   getKey(envMap, "DB_NAME", defaultConfig.Db.Name),
+				User:   getKey(envMap, "DB_USER", defaultConfig.Db.User),
+				Pass:   getKey(envMap, "DB_PASS", defaultConfig.Db.Pass),
+				Host:   getKey(envMap, "DB_HOST", defaultConfig.Db.Host),
+				Port:   getKey(envMap, "DB_PORT", defaultConfig.Db.Port),
 			},
 		}
 	})

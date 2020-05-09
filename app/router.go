@@ -9,7 +9,7 @@ import (
 
 func Mount() {
 	cfg := config.Get()
-	if cfg.AppConfig.Debug {
+	if cfg.App.Debug {
 		log.Println("Server Running on DEBUG mode")
 	} else {
 		gin.SetMode(gin.ReleaseMode)
@@ -37,6 +37,6 @@ func Mount() {
 		v1g.POST("/user/register", handler.userHandler.Register)
 	}
 
-	log.Println("Server Running on PORT", cfg.AppConfig.Addr)
-	log.Fatal(r.Run(cfg.AppConfig.Addr))
+	log.Println("Server Running on PORT", cfg.App.Addr)
+	log.Fatal(r.Run(cfg.App.Addr))
 }
