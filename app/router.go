@@ -37,6 +37,6 @@ func Mount() {
 		v1g.POST("/user/register", handler.userHandler.Register)
 	}
 
-	log.Println("Server Running on port", cfg.AppConfig.Addr)
+	log.Println("Server Running on PORT", cfg.AppConfig.Addr)
 	log.Fatal(r.Run(cfg.AppConfig.Addr))
 }

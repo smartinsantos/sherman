@@ -31,7 +31,7 @@ type Config struct {
     DBConfig DBConfig
 }
 
-var instance = &Config {
+var defaultConfig = &Config {
 	AppConfig: AppConfig {
 		Env: "local",
 		Debug: true,
@@ -46,6 +46,8 @@ var instance = &Config {
 		Port: "db_port",
 	},
 }
+
+var config *Config
 var once sync.Once
 
 // Get returns Config instance
@@ -62,23 +64,23 @@ func Get() *Config {
 			log.Println("Error: Cannot read contents of .env file")
 		}
 
-		instance = &Config{
-			AppConfig: AppConfig{
-				Env: getKey(envMap,"APP_ENV", instance.AppConfig.Env),
-				Debug: getKeyAsBool(envMap,"APP_DEBUG", instance.AppConfig.Debug),
-				Addr: getKey(envMap,"APP_ADDR", instance.AppConfig.Addr),
+		config = &Config {
+			AppConfig: AppConfig {
+				Env: getKey(envMap,"APP_ENV", defaultConfig.AppConfig.Env),
+				Debug: getKeyAsBool(envMap,"APP_DEBUG", defaultConfig.AppConfig.Debug),
+				Addr: getKey(envMap,"APP_ADDR", defaultConfig.AppConfig.Addr),
 			},
-			DBConfig: DBConfig{
-				Driver: getKey(envMap,"DB_DRIVER", instance.DBConfig.Driver),
-				Name: getKey(envMap,"DB_NAME", instance.DBConfig.Name),
-				User:	getKey(envMap,"DB_USER", instance.DBConfig.User),
-				Pass: getKey(envMap,"DB_PASS", instance.DBConfig.Pass),
-				Host:	getKey(envMap,"DB_HOST", instance.DBConfig.Host),
-				Port: getKey(envMap,"DB_PORT", instance.DBConfig.Port),
+			DBConfig: DBConfig {
+				Driver: getKey(envMap,"DB_DRIVER", defaultConfig.DBConfig.Driver),
+				Name: getKey(envMap,"DB_NAME", defaultConfig.DBConfig.Name),
+				User: getKey(envMap,"DB_USER", defaultConfig.DBConfig.User),
+				Pass: getKey(envMap,"DB_PASS", defaultConfig.DBConfig.Pass),
+				Host: getKey(envMap,"DB_HOST", defaultConfig.DBConfig.Host),
+				Port: getKey(envMap,"DB_PORT", defaultConfig.DBConfig.Port),
 			},
 		}
 	})
-	return instance
+	return config
 }
 
 func getKey(env map[string]string, key string, defaultValue string) string {
