@@ -15,6 +15,7 @@ Identity service written in go
 - ```bin/lint```                        : Finds lint errors in the application
 - ```bin/watch```                       : Runs the server on watch mode
 - ```bin/run```                         : Runs the server
+- ```bin/build```                       : Build server binary
 - ```bin/migration [migration-name]```  : Creates a migration
 - ```bin/migrate [command]```           : Migrate the DB see cmd list
 - List of commands
