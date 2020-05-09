@@ -6,9 +6,10 @@ Identity service written in go
 - Watcher: https://github.com/cosmtrek/air
 - Migrations: https://github.com/pressly/goose
 - ORM: https://jinzhu.me/gorm/
+- Pack binaries with assets : https://github.com/gobuffalo/packr
 
 # Setting Up
-- Run ```bin/setup``` to install binaries in your $GOPATH/bin
+- Run ```bin/setup-dev``` to install all project dependencies for dev
 
 ## Bin
 - ```bin/lint```                        : Finds lint errors in the application
