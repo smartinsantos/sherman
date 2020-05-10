@@ -3,7 +3,7 @@ package validator
 import (
 	"strings"
 
-	"root/domain"
+	"root/src/domain"
 )
 
 func ValidateUserParams(user *domain.User, action string) map[string]string {

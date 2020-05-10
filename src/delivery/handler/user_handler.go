@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"root/delivery/handler/presenter"
-	"root/delivery/handler/validator"
-	"root/domain"
+	"root/src/delivery/handler/presenter"
+	"root/src/delivery/handler/validator"
+	"root/src/domain"
 )
 
 

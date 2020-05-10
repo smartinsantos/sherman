@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"root/app/middleware"
 	"root/config"
+	"root/src/app/middleware"
 )
 
 func Mount() {

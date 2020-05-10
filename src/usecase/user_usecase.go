@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"root/app/security"
-	"root/domain"
+	"root/src/app/security"
+	"root/src/domain"
 )
 
 type userUseCase struct {

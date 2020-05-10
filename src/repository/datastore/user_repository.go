@@ -6,7 +6,7 @@ import (
 
 	"github.com/gchaincl/dotsql"
 
-	"root/domain"
+	"root/src/domain"
 )
 
 type dsUserRepository struct {

@@ -3,7 +3,7 @@ package presenter
 import (
 	"time"
 
-	"root/domain"
+	"root/src/domain"
 )
 
 type presentedUser struct {

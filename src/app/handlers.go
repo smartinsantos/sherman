@@ -3,9 +3,9 @@ package app
 import (
 	_ "github.com/go-sql-driver/mysql"
 
-	"root/delivery/handler"
-	"root/repository/datastore"
-	"root/usecase"
+	"root/src/delivery/handler"
+	"root/src/repository/datastore"
+	"root/src/usecase"
 )
 
 
