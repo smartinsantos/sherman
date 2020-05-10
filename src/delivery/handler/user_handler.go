@@ -10,7 +10,6 @@ import (
 	"root/src/domain"
 )
 
-
 type UserHandler struct {
 	userUseCase domain.UserUseCase
 }
@@ -23,9 +22,9 @@ func NewUserHandler(userUseCase domain.UserUseCase) *UserHandler {
 
 // Registers the user
 func (uh *UserHandler) Register (context *gin.Context) {
-	var user domain.User
+	var userParams domain.User
 
-	if err := context.ShouldBindJSON(&user); err != nil {
+	if err := context.ShouldBindJSON(&userParams); err != nil {
 		context.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status": "fail",
 			"message": "Invalid json",
@@ -34,7 +33,7 @@ func (uh *UserHandler) Register (context *gin.Context) {
 		return
 	}
 
-	errors := validator.ValidateUserParams(&user, "register")
+	errors := validator.ValidateUserParams(&userParams, "register")
 	if len(errors) > 0 {
 		context.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status": "fail",
@@ -44,7 +43,7 @@ func (uh *UserHandler) Register (context *gin.Context) {
 		return
 	}
 
-	newUser, err := uh.userUseCase.CreateUser(&user)
+	user, err := uh.userUseCase.CreateUser(&userParams)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
@@ -58,13 +57,49 @@ func (uh *UserHandler) Register (context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{
 		"status": "ok",
 		"message": "User created",
-		"data": presenter.PresentUser(newUser),
+		"data": presenter.PresentUser(user),
 	})
 }
 
 // Logs the user
 func (uh *UserHandler) Login (context *gin.Context) {
-	context.String(http.StatusOK, "Login")
+	var userParams domain.User
+
+	if err := context.ShouldBindJSON(&userParams); err != nil {
+		context.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": "fail",
+			"message": "Invalid json",
+			"error": err,
+		})
+		return
+	}
+
+	errors := validator.ValidateUserParams(&userParams, "login")
+	if len(errors) > 0 {
+		context.JSON(http.StatusUnprocessableEntity, gin.H{
+			"status": "fail",
+			"message": "Validation error",
+			"errors": errors,
+		})
+		return
+	}
+
+	user, err := uh.userUseCase.Login(&userParams)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"status": "fail",
+			"message": "Unable to login user",
+			"error": err,
+		})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{
+		"status": "ok",
+		"message": "User logged in",
+		"data": presenter.PresentUser(user),
+	})
 }
 
 // Refreshes user token

@@ -37,6 +37,7 @@ func Mount() {
 	v1g := r.Group("/api/v1")
 	{
 		v1g.POST("/user/register", handler.userHandler.Register)
+		v1g.POST("/user/login", handler.userHandler.Login)
 	}
 
 	log.Println("Server Running on PORT", cfg.App.Addr)

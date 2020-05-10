@@ -9,4 +9,7 @@ INSERT INTO users (
     created_at,
     updated_at
 )
-VALUES(?, ?, ?, ?, ?, ?, ?, ?)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?);
+
+-- name: find-user-by-email
+SELECT * FROM users WHERE (email_address) = ? LIMIT 1;

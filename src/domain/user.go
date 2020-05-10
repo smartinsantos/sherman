@@ -11,7 +11,7 @@ type User struct {
 	LastName 		string		`json:"last_name"`
 	EmailAddress 	string		`json:"email_address"`
 	Password 		string		`json:"password"`
-	Active			int			`json:"active"`
+	Active			bool		`json:"active"`
 	CreatedAt 		time.Time	`json:"created_at"`
 	UpdatedAt 		time.Time	`json:"updated_at"`
 }
@@ -19,7 +19,7 @@ type User struct {
 // User use case interface
 type UserUseCase interface {
 	//GetUserById(id uint64) (*User, error)
-	//GetUserByEmail(email string) (*User, error)
+	Login(user *User) (*User, error)
 	//UpdateUser(user *User) (*User, error)
 	CreateUser(user *User) (*User, error)
 	//DeleteUser(user *User) error
@@ -28,7 +28,7 @@ type UserUseCase interface {
 // User repository interface
 type UserRepository interface {
 	//GetUserById(id uint64) (*User, error)
-	//GetUserByEmail(email string) (*User, error)
+	GetUserByEmail(email string) (*User, error)
 	//UpdateUser(user *User) (*User, error)
 	CreateUser(user *User) (*User, error)
 	//DeleteUser(user *User) error

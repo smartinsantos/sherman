@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,9 +23,8 @@ func NewUserUseCase(dsUserRepository domain.UserRepository) domain.UserUseCase {
 
 // Creates a user
 func (uuc *userUseCase) CreateUser(user *domain.User) (*domain.User, error) {
-	// check if the user has been created if not then ...
 	user.ID = uuid.New().ID()
-	user.Active = 1
+	user.Active = true
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
@@ -36,4 +36,17 @@ func (uuc *userUseCase) CreateUser(user *domain.User) (*domain.User, error) {
 	user.Password = string(hashPassword)
 
 	return uuc.dsUserRepository.CreateUser(user)
+}
+
+// Logs a user in
+func (uuc *userUseCase) Login(user *domain.User) (*domain.User, error) {
+	record, err := uuc.dsUserRepository.GetUserByEmail(user.EmailAddress)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("record => ", record)
+
+	return record, nil
 }

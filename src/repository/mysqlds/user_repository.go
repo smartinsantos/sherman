@@ -2,6 +2,7 @@ package mysqlds
 
 import (
 	"database/sql"
+
 	"github.com/gchaincl/dotsql"
 
 	"root/src/domain"
@@ -46,4 +47,31 @@ func (ur *dsUserRepository) CreateUser(user *domain.User) (*domain.User, error) 
 	}
 
 	return user, nil
+}
+
+// Find user by email
+func (ur *dsUserRepository) GetUserByEmail(email string) (*domain.User, error) {
+	var err error
+
+	row, err := ur.dot.QueryRow(ur.db, "find-user-by-email", email)
+	if err != nil {
+		return nil, err
+	}
+
+	var user domain.User
+	err = row.Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.EmailAddress,
+		&user.Password,
+		&user.Active,
+		&user.CreatedAt,
+		&user.UpdatedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
