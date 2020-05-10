@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"os"
 	"strconv"
 	"sync"
 
@@ -11,9 +12,9 @@ import (
 
 // App configuration
 type AppConfig struct {
-	Env   string
-	Debug bool
-	Addr  string
+	Env		string
+	Debug	bool
+	Addr	string
 }
 
 // Database configuration
@@ -32,13 +33,13 @@ type Config struct {
 	Db  DBConfig
 }
 
-var defaultConfig = &Config{
-	App: AppConfig{
-		Env:   "local",
-		Debug: true,
-		Addr:  ":8080",
+var defaultConfig = &Config {
+	App: AppConfig {
+		Env:   	"local",
+		Debug: 	true,
+		Addr:  	":8080",
 	},
-	Db: DBConfig{
+	Db: DBConfig {
 		Driver: "mysql",
 		Name:   "db_name",
 		User:   "db_user",
@@ -54,15 +55,22 @@ var once sync.Once
 // Get returns Config instance
 func Get() *Config {
 	once.Do(func() {
-		rootBox := packr.New("root","../")
+		var err error
+
+		appDir, err := os.Getwd()
+		if err != nil {
+			log.Fatalln("Error: Could't read root directory")
+		}
+
+		rootBox := packr.New("root", appDir)
 		envStr, err := rootBox.FindString(".env")
 		if err != nil {
 			log.Fatalln("Error: No .env file found")
 		}
 
-		envMap, readErr := godotenv.Unmarshal(envStr)
-		if readErr != nil {
-			log.Fatalln("Error: Cannot read contents of .env file")
+		envMap, err := godotenv.Unmarshal(envStr)
+		if err != nil {
+			log.Fatalln("Error: Couldn't read contents of .env file")
 		}
 
 		config = &Config{
@@ -99,10 +107,10 @@ func getKeyAsBool(env map[string]string, key string, defaultValue bool) bool {
 	return defaultValue
 }
 
-func getKeyAsInt(env map[string]string, key string, defaultValue int) int {
-	valueStr := getKey(env, key, "")
-	if value, err := strconv.Atoi(valueStr); err == nil {
-		return value
-	}
-	return defaultValue
-}
+//func getKeyAsInt(env map[string]string, key string, defaultValue int) int {
+//	valueStr := getKey(env, key, "")
+//	if value, err := strconv.Atoi(valueStr); err == nil {
+//		return value
+//	}
+//	return defaultValue
+//}

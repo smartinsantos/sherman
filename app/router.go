@@ -1,8 +1,10 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
 	"log"
+
+	"github.com/gin-gonic/gin"
+
 	"root/app/middleware"
 	"root/config"
 )
@@ -20,7 +22,7 @@ func Mount() {
 	r.Use(middleware.CORSMiddleware())
 
 	// init handlers
-	handler, err := NewHandlers()
+	handler, err := newHandlers()
 	if err != nil {
 		log.Fatalln(err)
 	}

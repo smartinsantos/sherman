@@ -1,10 +1,12 @@
 package usecase
 
 import (
+	"time"
+
 	"github.com/google/uuid"
+
 	"root/app/security"
 	"root/domain"
-	"time"
 )
 
 type userUseCase struct {

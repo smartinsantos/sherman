@@ -1,8 +1,9 @@
 package presenter
 
 import (
-	"root/domain"
 	"time"
+
+	"root/domain"
 )
 
 type presentedUser struct {

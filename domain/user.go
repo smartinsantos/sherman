@@ -6,14 +6,14 @@ import (
 
 // User entity
 type User struct {
-	ID 				uint32		`gorm:"primary_key; size:36; not null" json:"id"`
-	FirstName 		string		`gorm:"size:100;not null;" json:"first_name"`
-	LastName 		string		`gorm:"size:100;not null;" json:"last_name"`
-	EmailAddress 	string		`gorm:"size:100;not null;unique" json:"email_address"`
-	Password 		string		`gorm:"size:100;not null" json:"password"`
-	Active			int			`gorm:"not null" json:"active"`
-	CreatedAt 		time.Time	`gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt 		time.Time	`gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	ID 				uint32		`json:"id"`
+	FirstName 		string		`json:"first_name"`
+	LastName 		string		`json:"last_name"`
+	EmailAddress 	string		`json:"email_address"`
+	Password 		string		`json:"password"`
+	Active			int			`json:"active"`
+	CreatedAt 		time.Time	`json:"created_at"`
+	UpdatedAt 		time.Time	`json:"updated_at"`
 }
 
 // User use case interface
