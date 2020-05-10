@@ -1,4 +1,4 @@
-package datastore
+package mysqlds
 
 import (
 	"database/sql"
@@ -14,7 +14,7 @@ type dsUserRepository struct {
 
 // NewDsUserRepository creates a new object representation of domain.UserRepository interface
 func NewDsUserRepository(db *sql.DB) (domain.UserRepository, error) {
-	dot, err := sqlLoader("user_repository")
+	dot, err := loadSqlDot("user_repository.sql")
 	if err != nil {
 		return nil, err
 	}

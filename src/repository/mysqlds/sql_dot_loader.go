@@ -1,16 +1,16 @@
-package datastore
+package mysqlds
 
 import (
 	"github.com/gchaincl/dotsql"
 	"github.com/gobuffalo/packr/v2"
 )
 
-func sqlLoader(fileName string) (*dotsql.DotSql, error) {
+func loadSqlDot(fileName string) (*dotsql.DotSql, error) {
 	var err error
 
 	dsBox := packr.New("datastore", "./")
 
-	repositorySqlStr, err := dsBox.FindString(fileName + ".sql")
+	repositorySqlStr, err := dsBox.FindString(fileName)
 	if err != nil {
 		return nil, err
 	}

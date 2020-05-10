@@ -1,4 +1,4 @@
-package app
+package database
 
 import (
 	"database/sql"
@@ -8,8 +8,8 @@ import (
 	"root/config"
 )
 
-// Creates a sql db connection
-func newDbConnection() (*sql.DB, error) {
+// Creates a db connection
+func NewConnection() (*sql.DB, error) {
 	cfg := config.Get()
 
 	var connectionUrl string

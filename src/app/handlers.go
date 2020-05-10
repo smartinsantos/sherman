@@ -2,9 +2,10 @@ package app
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"root/src/app/database"
 
 	"root/src/delivery/handler"
-	"root/src/repository/datastore"
+	"root/src/repository/mysqlds"
 	"root/src/usecase"
 )
 
@@ -18,14 +19,14 @@ type handlers struct {
 func newHandlers() (*handlers, error) {
 	var err error
 
-	db, err := newDbConnection()
+	db, err := database.NewConnection()
 	if err != nil {
 		return nil, err
 	}
 
 	// repositories
 	// user
-	dsUserRepository, err := datastore.NewDsUserRepository(db)
+	dsUserRepository, err := mysqlds.NewDsUserRepository(db)
 	if err != nil {
 		return nil, err
 	}
