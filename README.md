@@ -5,8 +5,8 @@ Identity service written in go
 - Linter: https://github.com/golangci/golangci-lint
 - Watcher: https://github.com/cosmtrek/air
 - Migrations: https://github.com/pressly/goose
-- ORM: https://jinzhu.me/gorm/
 - Pack binaries with assets : https://github.com/gobuffalo/packr
+- Sql file loader: https://github.com/gchaincl/dotsql
 
 # Setting Up
 - Run ```bin/setup-dev``` to install all project dependencies for dev
