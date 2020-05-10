@@ -19,4 +19,4 @@ DB_PORT=$(read_var DB_PORT .env)
 DB_URI="$DB_USER:$DB_PASS@tcp($DB_HOST:$DB_PORT)/$DB_NAME?parseTime=true"
 
 echo "Running migrations..."
-goose --dir "./database/migrations" mysql $DB_URI $1 $2
+goose --dir "./src/app/database/migrations" mysql $DB_URI $1 $2
