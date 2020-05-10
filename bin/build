@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# change to the project root
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$DIR"/.. || exit
+
+echo "Building ..."
+packr2 build
+packr2 clean
+mkdir -p ./build
+mv ./root ./build/app-build
+
+echo "Build Complete!"
+echo "Application binaries are located in $(pwd)/build"
