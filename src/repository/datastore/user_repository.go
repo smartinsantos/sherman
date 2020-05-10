@@ -2,8 +2,6 @@ package datastore
 
 import (
 	"database/sql"
-	"fmt"
-
 	"github.com/gchaincl/dotsql"
 
 	"root/src/domain"
@@ -31,12 +29,21 @@ func NewDsUserRepository(db *sql.DB) (domain.UserRepository, error) {
 
 // Creates a user
 func (ur *dsUserRepository) CreateUser(user *domain.User) (*domain.User, error) {
-	res, err := ur.dot.Exec(ur.db, "create-user")
+	_, err := ur.dot.Exec(
+		ur.db,
+		"create-user",
+		user.ID,
+		user.FirstName,
+		user.LastName,
+		user.EmailAddress,
+		user.Password,
+		user.Active,
+		user.CreatedAt,
+		user.UpdatedAt,
+	)
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("res =>", res)
 
 	return user, nil
 }
