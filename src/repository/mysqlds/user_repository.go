@@ -3,36 +3,38 @@ package mysqlds
 import (
 	"database/sql"
 
-	"github.com/gchaincl/dotsql"
-
 	"root/src/domain"
 )
 
 type dsUserRepository struct {
 	db *sql.DB
-	dot *dotsql.DotSql
 }
 
 // NewDsUserRepository creates a new object representation of domain.UserRepository interface
 func NewDsUserRepository(db *sql.DB) (domain.UserRepository, error) {
-	dot, err := loadSqlDot("user_repository.sql")
-	if err != nil {
-		return nil, err
-	}
-
-	repository := dsUserRepository {
-		db: db,
-		dot: dot,
-	}
+	repository := dsUserRepository { db: db }
 
 	return &repository, nil
 }
 
 // Creates a user
 func (ur *dsUserRepository) CreateUser(user *domain.User) (*domain.User, error) {
-	_, err := ur.dot.Exec(
-		ur.db,
-		"create-user",
+	var err error
+
+	query := `
+		INSERT users
+		SET
+			id=?,
+		    first_name=?,
+			last_name=?,
+			email_address=?,
+			password=?,
+			active=?,
+			created_at=?,
+			updated_at=?
+	`
+
+	_, err = ur.db.Exec(query,
 		user.ID,
 		user.FirstName,
 		user.LastName,
@@ -42,6 +44,7 @@ func (ur *dsUserRepository) CreateUser(user *domain.User) (*domain.User, error) 
 		user.CreatedAt,
 		user.UpdatedAt,
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +55,10 @@ func (ur *dsUserRepository) CreateUser(user *domain.User) (*domain.User, error) 
 // Find user by email
 func (ur *dsUserRepository) GetUserByEmail(email string) (*domain.User, error) {
 	var err error
-
-	row, err := ur.dot.QueryRow(ur.db, "find-user-by-email", email)
-	if err != nil {
-		return nil, err
-	}
-
 	var user domain.User
+
+	query := `SELECT * FROM users WHERE email_address = ? LIMIT 1`
+	row := ur.db.QueryRow(query, email)
 	err = row.Scan(
 		&user.ID,
 		&user.FirstName,
