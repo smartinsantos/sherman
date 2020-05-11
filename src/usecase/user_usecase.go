@@ -22,32 +22,33 @@ func NewUserUseCase(dsUserRepository domain.UserRepository) domain.UserUseCase {
 }
 
 // Creates a user
-func (uuc *userUseCase) CreateUser(user *domain.User) (*domain.User, error) {
+func (uuc *userUseCase) CreateUser(user *domain.User) error {
+	var err error
+
 	user.ID = uuid.New().ID()
 	user.Active = true
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
-
-	hashPassword, err := security.Hash(user.Password)
-	if err != nil {
-		return nil, err
+	if hashPassword, err := security.Hash(user.Password); err != nil {
+		return err
+	} else {
+		user.Password = string(hashPassword)
 	}
 
-	user.Password = string(hashPassword)
-
-	return uuc.dsUserRepository.CreateUser(user)
+	err = uuc.dsUserRepository.CreateUser(user)
+	return err
 }
 
 // Logs a user in
-func (uuc *userUseCase) Login(user *domain.User) (*domain.User, error) {
+func (uuc *userUseCase) Login(user *domain.User) (domain.User, error) {
 	record, err := uuc.dsUserRepository.GetUserByEmail(user.EmailAddress)
 	if err != nil {
-		return nil, err
+		return domain.User{}, err
 	}
 
 	err = security.VerifyPassword(record.Password, user.Password)
 	if err != nil {
-		return nil, errors.New("password doesn't match")
+		return record, errors.New("password doesn't match")
 	}
 
 	return record, nil

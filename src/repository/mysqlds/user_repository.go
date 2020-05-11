@@ -18,9 +18,7 @@ func NewDsUserRepository(db *sql.DB) (domain.UserRepository, error) {
 }
 
 // Creates a user
-func (ur *dsUserRepository) CreateUser(user *domain.User) (*domain.User, error) {
-	var err error
-
+func (ur *dsUserRepository) CreateUser(user *domain.User) error {
 	query := `
 		INSERT users
 		SET
@@ -34,7 +32,7 @@ func (ur *dsUserRepository) CreateUser(user *domain.User) (*domain.User, error) 
 			updated_at=?
 	`
 
-	_, err = ur.db.Exec(query,
+	_, err := ur.db.Exec(query,
 		user.ID,
 		user.FirstName,
 		user.LastName,
@@ -46,14 +44,14 @@ func (ur *dsUserRepository) CreateUser(user *domain.User) (*domain.User, error) 
 	)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return user, nil
+	return nil
 }
 
 // Find user by email
-func (ur *dsUserRepository) GetUserByEmail(email string) (*domain.User, error) {
+func (ur *dsUserRepository) GetUserByEmail(email string) (domain.User, error) {
 	var err error
 	var user domain.User
 
@@ -70,8 +68,8 @@ func (ur *dsUserRepository) GetUserByEmail(email string) (*domain.User, error) {
 		&user.UpdatedAt)
 
 	if err != nil {
-		return nil, err
+		return domain.User{}, err
 	}
 
-	return &user, nil
+	return user, nil
 }

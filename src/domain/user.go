@@ -18,18 +18,12 @@ type User struct {
 
 // User use case interface
 type UserUseCase interface {
-	//GetUserById(id uint64) (*User, error)
-	Login(user *User) (*User, error)
-	//UpdateUser(user *User) (*User, error)
-	CreateUser(user *User) (*User, error)
-	//DeleteUser(user *User) error
+	CreateUser(user *User) error
+	Login(user *User) (User, error)
 }
 
 // User repository interface
 type UserRepository interface {
-	//GetUserById(id uint64) (*User, error)
-	GetUserByEmail(email string) (*User, error)
-	//UpdateUser(user *User) (*User, error)
-	CreateUser(user *User) (*User, error)
-	//DeleteUser(user *User) error
+	CreateUser(user *User) error
+	GetUserByEmail(email string) (User, error)
 }

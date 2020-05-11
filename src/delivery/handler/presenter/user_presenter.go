@@ -6,7 +6,7 @@ import (
 	"root/src/domain"
 )
 
-type presentedUser struct {
+type PresentedUser struct {
 	ID 				uint32		`json:"id"`
 	FirstName 		string		`json:"first_name"`
 	LastName 		string		`json:"last_name"`
@@ -17,8 +17,8 @@ type presentedUser struct {
 }
 
 // Returns a struct with public domain.User keys
-func PresentUser(user *domain.User) *presentedUser {
-	return &presentedUser {
+func PresentUser(user *domain.User) PresentedUser {
+	return PresentedUser {
 		ID:        		user.ID,
 		FirstName: 		user.FirstName,
 		LastName:  		user.LastName,
