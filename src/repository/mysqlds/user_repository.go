@@ -18,7 +18,7 @@ func NewDsUserRepository(db *sql.DB) (domain.UserRepository, error) {
 }
 
 // Creates a user
-func (ur *dsUserRepository) CreateUser(user *domain.User) error {
+func (r *dsUserRepository) CreateUser(user *domain.User) error {
 	query := `
 		INSERT users
 		SET
@@ -32,7 +32,7 @@ func (ur *dsUserRepository) CreateUser(user *domain.User) error {
 			updated_at=?
 	`
 
-	_, err := ur.db.Exec(query,
+	_, err := r.db.Exec(query,
 		user.ID,
 		user.FirstName,
 		user.LastName,
@@ -51,12 +51,12 @@ func (ur *dsUserRepository) CreateUser(user *domain.User) error {
 }
 
 // Find user by email
-func (ur *dsUserRepository) GetUserByEmail(email string) (domain.User, error) {
+func (r *dsUserRepository) GetUserByEmail(email string) (domain.User, error) {
 	var err error
 	var user domain.User
 
 	query := `SELECT * FROM users WHERE email_address = ? LIMIT 1`
-	row := ur.db.QueryRow(query, email)
+	row := r.db.QueryRow(query, email)
 	err = row.Scan(
 		&user.ID,
 		&user.FirstName,

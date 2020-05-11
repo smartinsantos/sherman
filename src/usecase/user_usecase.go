@@ -22,7 +22,7 @@ func NewUserUseCase(dsUserRepository domain.UserRepository) domain.UserUseCase {
 }
 
 // Creates a user
-func (uuc *userUseCase) CreateUser(user *domain.User) error {
+func (uc *userUseCase) CreateUser(user *domain.User) error {
 	var err error
 
 	user.ID = uuid.New().ID()
@@ -35,13 +35,13 @@ func (uuc *userUseCase) CreateUser(user *domain.User) error {
 		user.Password = string(hashPassword)
 	}
 
-	err = uuc.dsUserRepository.CreateUser(user)
+	err = uc.dsUserRepository.CreateUser(user)
 	return err
 }
 
 // Logs a user in
-func (uuc *userUseCase) Login(user *domain.User) (domain.User, error) {
-	record, err := uuc.dsUserRepository.GetUserByEmail(user.EmailAddress)
+func (uc *userUseCase) Login(user *domain.User) (domain.User, error) {
+	record, err := uc.dsUserRepository.GetUserByEmail(user.EmailAddress)
 	if err != nil {
 		return domain.User{}, err
 	}
