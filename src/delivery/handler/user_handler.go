@@ -24,11 +24,10 @@ func NewUserHandler(userUseCase domain.UserUseCase) *UserHandler {
 func (uh *UserHandler) Register (context *gin.Context) {
 	var user domain.User
 
-	if err := context.ShouldBindJSON(&user); err != nil {
+	if err := context.BindJSON(&user); err != nil {
 		context.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status": "fail",
-			"message": "Invalid json",
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -37,7 +36,6 @@ func (uh *UserHandler) Register (context *gin.Context) {
 	if len(errors) > 0 {
 		context.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status": "fail",
-			"message": "Validation error",
 			"errors": errors,
 		})
 		return
@@ -46,15 +44,13 @@ func (uh *UserHandler) Register (context *gin.Context) {
 	if err := uh.userUseCase.CreateUser(&user); err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"status": "fail",
-			"message": "Unable to create user",
 			"error": err,
 		})
 
 	}
 
 	context.JSON(http.StatusCreated, gin.H{
-		"status": "ok",
-		"message": "User created",
+		"status": "success",
 		"data": presenter.PresentUser(&user),
 	})
 }
@@ -63,11 +59,10 @@ func (uh *UserHandler) Register (context *gin.Context) {
 func (uh *UserHandler) Login (context *gin.Context) {
 	var user domain.User
 
-	if err := context.ShouldBindJSON(&user); err != nil {
+	if err := context.BindJSON(&user); err != nil {
 		context.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status": "fail",
-			"message": "Invalid json",
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -75,7 +70,6 @@ func (uh *UserHandler) Login (context *gin.Context) {
 	if errors := validator.ValidateUserParams(&user, "login"); len(errors) > 0 {
 		context.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status": "fail",
-			"message": "Validation error",
 			"errors": errors,
 		})
 		return
@@ -85,7 +79,6 @@ func (uh *UserHandler) Login (context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"status": "fail",
-			"message": "Unable to login user",
 			"error": err.Error(),
 		})
 		return
@@ -93,9 +86,8 @@ func (uh *UserHandler) Login (context *gin.Context) {
 
 	context.JSON(http.StatusCreated, gin.H{
 		"status": "ok",
-		"message": "User logged in",
 		"data": gin.H{
-			"token": "todo",
+			"token": "",
 			"user": presenter.PresentUser(&userRecord),
 		},
 	})
