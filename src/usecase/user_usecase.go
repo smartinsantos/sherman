@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -41,12 +41,14 @@ func (uuc *userUseCase) CreateUser(user *domain.User) (*domain.User, error) {
 // Logs a user in
 func (uuc *userUseCase) Login(user *domain.User) (*domain.User, error) {
 	record, err := uuc.dsUserRepository.GetUserByEmail(user.EmailAddress)
-
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("record => ", record)
+	err = security.VerifyPassword(record.Password, user.Password)
+	if err != nil {
+		return nil, errors.New("password doesn't match")
+	}
 
 	return record, nil
 }

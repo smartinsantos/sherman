@@ -85,12 +85,11 @@ func (uh *UserHandler) Login (context *gin.Context) {
 	}
 
 	user, err := uh.userUseCase.Login(&userParams)
-
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"status": "fail",
 			"message": "Unable to login user",
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -98,7 +97,10 @@ func (uh *UserHandler) Login (context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{
 		"status": "ok",
 		"message": "User logged in",
-		"data": presenter.PresentUser(user),
+		"data": gin.H{
+			"token": "todo",
+			"user": presenter.PresentUser(user),
+		},
 	})
 }
 
