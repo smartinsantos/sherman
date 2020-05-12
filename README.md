@@ -9,12 +9,12 @@ Identity service written in go
 - Dependency injection container: https://github.com/sarulabs/di
 
 ## Bin
-- ```bin/setup```                       : Install all project dependencies
-- ```bin/lint```                        : Finds lint errors in the application
-- ```bin/watch```                       : Runs the server on watch mode
-- ```bin/run```                         : Runs the server
-- ```bin/migration [migration-name]```  : Creates a migration
-- ```bin/migrate [command]```           : Migrate the DB see cmd list
+- ```bin/setup```                           : Install all project dependencies
+- ```bin/lint```                            : Finds lint errors in the application
+- ```bin/watch```                           : Runs the server on watch mode
+- ```bin/run```                             : Runs the server
+- ```bin/new-migration [migration-name]```  : Creates a migration
+- ```bin/migrate [command]```               : Migrate the DB see cmd list
 - List of commands
     - up                   Migrate the DB to the most recent version available
     - up-by-one            Migrate the DB up by 1
