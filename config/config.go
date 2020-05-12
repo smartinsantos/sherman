@@ -1,10 +1,8 @@
 package config
 
 import (
-	"github.com/gobuffalo/packr/v2"
 	"github.com/joho/godotenv"
 	"log"
-	"os"
 	"strconv"
 	"sync"
 )
@@ -54,20 +52,8 @@ var once sync.Once
 // Get returns Config instance
 func Get() *Config {
 	once.Do(func() {
-		var err error
+		envMap, err := godotenv.Read(".env")
 
-		appDir, err := os.Getwd()
-		if err != nil {
-			log.Fatalln("could't read root directory")
-		}
-
-		rootBox := packr.New("root", appDir)
-		envStr, err := rootBox.FindString(".env")
-		if err != nil {
-			log.Fatalln("no .env file found")
-		}
-
-		envMap, err := godotenv.Unmarshal(envStr)
 		if err != nil {
 			log.Fatalln("couldn't read contents of .env file")
 		}

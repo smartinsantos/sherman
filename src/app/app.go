@@ -10,7 +10,7 @@ import (
 )
 
 // Mounts the base application router
-func Mount() {
+func Serve() {
 	cfg := config.Get()
 	if cfg.App.Debug {
 		log.Println("Server Running on DEBUG mode")

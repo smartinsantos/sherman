@@ -9,7 +9,6 @@ go mod download
 curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
 go get -u github.com/cosmtrek/air@v1.12.1
 go get -u github.com/pressly/goose/cmd/goose@v2.6.0
-go get -u github.com/gobuffalo/packr/v2/packr2@v2.8.0
 echo "Cleaning up mod file dependencies..."
 go mod tidy
 echo "Setup Complete!"
