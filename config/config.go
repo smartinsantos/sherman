@@ -1,13 +1,12 @@
 package config
 
 import (
+	"github.com/gobuffalo/packr/v2"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
 	"sync"
-
-	"github.com/gobuffalo/packr/v2"
-	"github.com/joho/godotenv"
 )
 
 // App configuration
