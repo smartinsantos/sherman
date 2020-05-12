@@ -10,19 +10,13 @@ import (
 	"root/src/domain"
 )
 
-type userUseCase struct {
-	dsUserRepository domain.UserRepository
-}
-
-// NewUserUseCase creates a new object representation of domain.UserUseCase interface
-func NewUserUseCase(dsUserRepository domain.UserRepository) domain.UserUseCase {
-	return &userUseCase{
-		dsUserRepository: dsUserRepository,
-	}
+// Implementation of domain.UserUseCase
+type UserUseCase struct {
+	Repo domain.UserRepository
 }
 
 // Creates a user
-func (uc *userUseCase) CreateUser(user *domain.User) error {
+func (uc *UserUseCase) CreateUser(user *domain.User) error {
 	var err error
 
 	user.ID = uuid.New().ID()
@@ -35,13 +29,13 @@ func (uc *userUseCase) CreateUser(user *domain.User) error {
 		user.Password = string(hashPassword)
 	}
 
-	err = uc.dsUserRepository.CreateUser(user)
+	err = uc.Repo.CreateUser(user)
 	return err
 }
 
 // Logs a user in
-func (uc *userUseCase) Login(user *domain.User) (domain.User, error) {
-	record, err := uc.dsUserRepository.GetUserByEmail(user.EmailAddress)
+func (uc *UserUseCase) Login(user *domain.User) (domain.User, error) {
+	record, err := uc.Repo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
 		return domain.User{}, err
 	}

@@ -2,23 +2,16 @@ package mysqlds
 
 import (
 	"database/sql"
-
 	"root/src/domain"
 )
 
-type dsUserRepository struct {
-	db *sql.DB
-}
-
-// NewDsUserRepository creates a new object representation of domain.UserRepository interface
-func NewDsUserRepository(db *sql.DB) (domain.UserRepository, error) {
-	repository := dsUserRepository { db: db }
-
-	return &repository, nil
+// Mysql implementation of domain.UserRepository
+type UserRepository struct {
+	DB *sql.DB
 }
 
 // Creates a user
-func (r *dsUserRepository) CreateUser(user *domain.User) error {
+func (r *UserRepository) CreateUser(user *domain.User) error {
 	query := `
 		INSERT users
 		SET
@@ -32,7 +25,7 @@ func (r *dsUserRepository) CreateUser(user *domain.User) error {
 			updated_at=?
 	`
 
-	_, err := r.db.Exec(query,
+	_, err := r.DB.Exec(query,
 		user.ID,
 		user.FirstName,
 		user.LastName,
@@ -51,12 +44,12 @@ func (r *dsUserRepository) CreateUser(user *domain.User) error {
 }
 
 // Find user by email
-func (r *dsUserRepository) GetUserByEmail(email string) (domain.User, error) {
+func (r *UserRepository) GetUserByEmail(email string) (domain.User, error) {
 	var err error
 	var user domain.User
 
 	query := `SELECT * FROM users WHERE email_address = ? LIMIT 1`
-	row := r.db.QueryRow(query, email)
+	row := r.DB.QueryRow(query, email)
 	err = row.Scan(
 		&user.ID,
 		&user.FirstName,

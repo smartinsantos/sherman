@@ -1,23 +1,16 @@
 package handler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
-
+	"net/http"
 	"root/src/delivery/handler/presenter"
 	"root/src/delivery/handler/validator"
 	"root/src/domain"
 )
 
+// Handler for /user/[routes]
 type UserHandler struct {
-	userUseCase domain.UserUseCase
-}
-
-func NewUserHandler(userUseCase domain.UserUseCase) *UserHandler {
-	return &UserHandler {
-		userUseCase: userUseCase,
-	}
+	UserUseCase domain.UserUseCase
 }
 
 // Registers the user
@@ -41,7 +34,7 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 		return
 	}
 
-	if err := h.userUseCase.CreateUser(&user); err != nil {
+	if err := h.UserUseCase.CreateUser(&user); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status": "fail",
 			"error": err,
@@ -75,7 +68,7 @@ func (h *UserHandler) Login (ctx *gin.Context) {
 		return
 	}
 
-	userRecord, err := h.userUseCase.Login(&user)
+	userRecord, err := h.UserUseCase.Login(&user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status": "fail",

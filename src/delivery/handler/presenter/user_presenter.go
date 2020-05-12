@@ -1,11 +1,11 @@
 package presenter
 
 import (
-	"time"
-
 	"root/src/domain"
+	"time"
 )
 
+// Defines the struct with public domain.User keys
 type PresentedUser struct {
 	ID 				uint32		`json:"id"`
 	FirstName 		string		`json:"first_name"`
