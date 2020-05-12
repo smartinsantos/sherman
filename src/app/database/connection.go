@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"root/config"
 )
 
@@ -25,7 +26,7 @@ func NewConnection() (*sql.DB, error) {
 			)
 		}
 		default: {
-			errorMessage := fmt.Sprintf("Error: DB_DRIVER: %s, not supported.", cfg.Db.Driver)
+			errorMessage := fmt.Sprintf("DB_DRIVER: %s, not supported", cfg.Db.Driver)
 			return nil, errors.New(errorMessage)
 		}
 	}

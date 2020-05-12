@@ -59,18 +59,18 @@ func Get() *Config {
 
 		appDir, err := os.Getwd()
 		if err != nil {
-			log.Fatalln("Error: Could't read root directory")
+			log.Fatalln("could't read root directory")
 		}
 
 		rootBox := packr.New("root", appDir)
 		envStr, err := rootBox.FindString(".env")
 		if err != nil {
-			log.Fatalln("Error: No .env file found")
+			log.Fatalln("no .env file found")
 		}
 
 		envMap, err := godotenv.Unmarshal(envStr)
 		if err != nil {
-			log.Fatalln("Error: Couldn't read contents of .env file")
+			log.Fatalln("couldn't read contents of .env file")
 		}
 
 		config = &Config{
