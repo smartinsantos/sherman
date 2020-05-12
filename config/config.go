@@ -58,13 +58,13 @@ func Get() *Config {
 			log.Fatalln("couldn't read contents of .env file")
 		}
 
-		config = &Config{
-			App: AppConfig{
+		config = &Config {
+			App: AppConfig {
 				Env:   getKey(envMap, "APP_ENV", defaultConfig.App.Env),
 				Debug: getKeyAsBool(envMap, "APP_DEBUG", defaultConfig.App.Debug),
 				Addr:  getKey(envMap, "APP_ADDR", defaultConfig.App.Addr),
 			},
-			Db: DBConfig{
+			Db: DBConfig {
 				Driver: getKey(envMap, "DB_DRIVER", defaultConfig.Db.Driver),
 				Name:   getKey(envMap, "DB_NAME", defaultConfig.Db.Name),
 				User:   getKey(envMap, "DB_USER", defaultConfig.Db.User),
