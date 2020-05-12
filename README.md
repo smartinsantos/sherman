@@ -5,13 +5,11 @@ Identity service written in go
 - Linter: https://github.com/golangci/golangci-lint
 - Watcher: https://github.com/cosmtrek/air
 - Migrations: https://github.com/pressly/goose
-- Pack binaries with assets: https://github.com/gobuffalo/packr
+- Pack binaries with assets: https://github.com/gobuffalo/packr/tree/master/v2
 - Dependency injection container: https://github.com/sarulabs/di
 
-# Setting Up
-- Run ```bin/setup-dev``` to install all project dependencies for dev
-
 ## Bin
+- ```bin/setup```                       : Install all project dependencies
 - ```bin/lint```                        : Finds lint errors in the application
 - ```bin/watch```                       : Runs the server on watch mode
 - ```bin/run```                         : Runs the server
