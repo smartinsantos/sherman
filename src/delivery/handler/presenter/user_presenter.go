@@ -1,24 +1,24 @@
 package presenter
 
 import (
-	"time"
-
 	"root/src/domain"
+	"time"
 )
 
-type presentedUser struct {
+// Defines the struct with public domain.User keys
+type PresentedUser struct {
 	ID 				uint32		`json:"id"`
 	FirstName 		string		`json:"first_name"`
 	LastName 		string		`json:"last_name"`
 	EmailAddress 	string		`json:"email_address"`
-	Active			int			`json:"active"`
+	Active			bool		`json:"active"`
 	CreatedAt 		time.Time	`json:"created_at"`
 	UpdatedAt 		time.Time	`json:"updated_at"`
 }
 
 // Returns a struct with public domain.User keys
-func PresentUser(user *domain.User) *presentedUser {
-	return &presentedUser {
+func PresentUser(user *domain.User) PresentedUser {
+	return PresentedUser {
 		ID:        		user.ID,
 		FirstName: 		user.FirstName,
 		LastName:  		user.LastName,

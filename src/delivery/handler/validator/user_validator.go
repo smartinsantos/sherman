@@ -1,11 +1,11 @@
 package validator
 
 import (
-	"strings"
-
 	"root/src/domain"
+	"strings"
 )
 
+// Validates /user/[route] route params, retrieves error messages for no compliant fields
 func ValidateUserParams(user *domain.User, action string) map[string]string {
 	var errorMessages = make(map[string]string)
 
@@ -22,6 +22,13 @@ func ValidateUserParams(user *domain.User, action string) map[string]string {
 			}
 			if user.EmailAddress == "" {
 				errorMessages["email_address_required"] = "Email Address is required"
+			}
+		case "login":
+			if user.EmailAddress == "" {
+				errorMessages["email_address_required"] = "Email Address is required"
+			}
+			if user.Password == "" {
+				errorMessages["password_required"] = "Password is required"
 			}
 		default: // do nothing
 	}
