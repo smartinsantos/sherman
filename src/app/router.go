@@ -3,7 +3,6 @@ package app
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sarulabs/di"
-	"github.com/sarulabs/di-example/config/logging"
 	"log"
 	"root/config"
 	"root/src/app/middleware"
@@ -26,7 +25,7 @@ func Mount() {
 
 	err = builder.Add(DIContainer...)
 	if err != nil {
-		logging.Logger.Fatal(err.Error())
+		log.Fatalln(err.Error())
 	}
 
 	ctn := builder.Build()
@@ -50,5 +49,5 @@ func Mount() {
 	}
 
 	log.Println("Server Running on PORT", cfg.App.Addr)
-	log.Fatal(r.Run(cfg.App.Addr))
+	log.Fatalln(r.Run(cfg.App.Addr))
 }
