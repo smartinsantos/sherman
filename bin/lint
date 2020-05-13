@@ -4,5 +4,6 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/.. || exit
 
-echo "Running golangci-lint..."
-golangci-lint run
+echo "Running lint..."
+golint ./...
+golangci-lint run ./...
