@@ -5,19 +5,16 @@ Identity service written in go
 - Linter: https://github.com/golangci/golangci-lint
 - Watcher: https://github.com/cosmtrek/air
 - Migrations: https://github.com/pressly/goose
-- Pack binaries with assets: https://github.com/gobuffalo/packr
+- Pack binaries with assets: https://github.com/gobuffalo/packr/tree/master/v2
 - Dependency injection container: https://github.com/sarulabs/di
 
-# Setting Up
-- Run ```bin/setup-dev``` to install all project dependencies for dev
-
 ## Bin
-- ```bin/lint```                        : Finds lint errors in the application
-- ```bin/watch```                       : Runs the server on watch mode
-- ```bin/run```                         : Runs the server
-- ```bin/build```                       : Build server binary
-- ```bin/migration [migration-name]```  : Creates a migration
-- ```bin/migrate [command]```           : Migrate the DB see cmd list
+- ```bin/setup```                           : Install all project dependencies
+- ```bin/lint```                            : Finds lint errors in the application
+- ```bin/watch```                           : Runs the server on watch mode
+- ```bin/run```                             : Runs the server
+- ```bin/new-migration [migration-name]```  : Creates a migration
+- ```bin/migrate [command]```               : Migrate the DB see cmd list
 - List of commands
     - up                   Migrate the DB to the most recent version available
     - up-by-one            Migrate the DB up by 1

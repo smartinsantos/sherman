@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "github.com/go-sql-driver/mysql"
-	"root/src/app"
+	_ "root/config"
+	"root/src/app/router"
 )
 
 func main() {
-	app.Mount()
+	router.Serve()
 }

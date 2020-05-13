@@ -1,13 +1,10 @@
 package config
 
 import (
+	"github.com/joho/godotenv"
 	"log"
-	"os"
 	"strconv"
 	"sync"
-
-	"github.com/gobuffalo/packr/v2"
-	"github.com/joho/godotenv"
 )
 
 // App configuration
@@ -55,31 +52,19 @@ var once sync.Once
 // Get returns Config instance
 func Get() *Config {
 	once.Do(func() {
-		var err error
+		envMap, err := godotenv.Read(".env")
 
-		appDir, err := os.Getwd()
 		if err != nil {
-			log.Fatalln("Error: Could't read root directory")
+			log.Fatalln("couldn't read contents of .env file")
 		}
 
-		rootBox := packr.New("root", appDir)
-		envStr, err := rootBox.FindString(".env")
-		if err != nil {
-			log.Fatalln("Error: No .env file found")
-		}
-
-		envMap, err := godotenv.Unmarshal(envStr)
-		if err != nil {
-			log.Fatalln("Error: Couldn't read contents of .env file")
-		}
-
-		config = &Config{
-			App: AppConfig{
+		config = &Config {
+			App: AppConfig {
 				Env:   getKey(envMap, "APP_ENV", defaultConfig.App.Env),
 				Debug: getKeyAsBool(envMap, "APP_DEBUG", defaultConfig.App.Debug),
 				Addr:  getKey(envMap, "APP_ADDR", defaultConfig.App.Addr),
 			},
-			Db: DBConfig{
+			Db: DBConfig {
 				Driver: getKey(envMap, "DB_DRIVER", defaultConfig.Db.Driver),
 				Name:   getKey(envMap, "DB_NAME", defaultConfig.Db.Name),
 				User:   getKey(envMap, "DB_USER", defaultConfig.Db.User),
