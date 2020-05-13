@@ -2,15 +2,17 @@ package mysqlds
 
 import (
 	"database/sql"
+	"root/src/app/exception"
 	"root/src/domain"
+	"strings"
 )
 
-// Mysql implementation of domain.UserRepository
+// UserRepository sql implementation of domain.UserRepository
 type UserRepository struct {
 	DB *sql.DB
 }
 
-// Creates a user
+// CreateUser persist a domain.user in the db
 func (r *UserRepository) CreateUser(user *domain.User) error {
 	query := `
 		INSERT users
@@ -37,13 +39,16 @@ func (r *UserRepository) CreateUser(user *domain.User) error {
 	)
 
 	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
+			err = exception.NewDuplicateEntryError("user already exist")
+		}
 		return err
 	}
 
 	return nil
 }
 
-// Find user by email
+// GetUserByEmail find a domain.user by email in the db
 func (r *UserRepository) GetUserByEmail(email string) (domain.User, error) {
 	var err error
 	var user domain.User
@@ -61,6 +66,9 @@ func (r *UserRepository) GetUserByEmail(email string) (domain.User, error) {
 		&user.UpdatedAt)
 
 	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
+			err = exception.NewNotFoundError("user not found")
+		}
 		return domain.User{}, err
 	}
 

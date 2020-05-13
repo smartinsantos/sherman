@@ -7,15 +7,13 @@ import (
 	"sync"
 )
 
-// App configuration
-type AppConfig struct {
+type appConfig struct {
 	Env		string
 	Debug	bool
 	Addr	string
 }
 
-// Database configuration
-type DBConfig struct {
+type dbConfig struct {
 	Driver string
 	Name   string
 	User   string
@@ -26,17 +24,17 @@ type DBConfig struct {
 
 // Config Wrapper for all configurations
 type Config struct {
-	App AppConfig
-	Db  DBConfig
+	App appConfig
+	Db  dbConfig
 }
 
 var defaultConfig = &Config {
-	App: AppConfig {
+	App: appConfig {
 		Env:   	"local",
 		Debug: 	true,
 		Addr:  	":8080",
 	},
-	Db: DBConfig {
+	Db: dbConfig {
 		Driver: "mysql",
 		Name:   "db_name",
 		User:   "db_user",
@@ -59,12 +57,12 @@ func Get() *Config {
 		}
 
 		config = &Config {
-			App: AppConfig {
+			App: appConfig {
 				Env:   getKey(envMap, "APP_ENV", defaultConfig.App.Env),
 				Debug: getKeyAsBool(envMap, "APP_DEBUG", defaultConfig.App.Debug),
 				Addr:  getKey(envMap, "APP_ADDR", defaultConfig.App.Addr),
 			},
-			Db: DBConfig {
+			Db: dbConfig {
 				Driver: getKey(envMap, "DB_DRIVER", defaultConfig.Db.Driver),
 				Name:   getKey(envMap, "DB_NAME", defaultConfig.Db.Name),
 				User:   getKey(envMap, "DB_USER", defaultConfig.Db.User),

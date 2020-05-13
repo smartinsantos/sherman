@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Validates /user/[route] route params, retrieves error messages for no compliant fields
+// ValidateUserParams validates /user/[route] route params, retrieves error messages for no compliant fields
 func ValidateUserParams(user *domain.User, action string) map[string]string {
 	var errorMessages = make(map[string]string)
 
