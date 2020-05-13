@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// User entity
+// User user entity struct
 type User struct {
 	ID 				uint32		`json:"id"`
 	FirstName 		string		`json:"first_name"`
@@ -16,13 +16,13 @@ type User struct {
 	UpdatedAt 		time.Time	`json:"updated_at"`
 }
 
-// User repository interface
+// UserRepository interface
 type UserRepository interface {
 	CreateUser(user *User) error
 	GetUserByEmail(email string) (User, error)
 }
 
-// User use case interface
+// UserUseCase interface
 type UserUseCase interface {
 	CreateUser(user *User) error
 	Login(user *User) (User, error)

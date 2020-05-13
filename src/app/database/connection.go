@@ -4,19 +4,18 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"root/config"
 )
 
-// Creates a db connection
+// NewConnection creates a db connection
 func NewConnection() (*sql.DB, error) {
 	cfg := config.Get()
 
-	var connectionUrl string
+	var connectionURL string
 
 	switch cfg.Db.Driver {
 		case "mysql": {
-			connectionUrl = fmt.Sprintf(
+			connectionURL = fmt.Sprintf(
 				"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 				cfg.Db.User,
 				cfg.Db.Pass,
@@ -31,7 +30,7 @@ func NewConnection() (*sql.DB, error) {
 		}
 	}
 
-	db, err := sql.Open(cfg.Db.Driver, connectionUrl)
+	db, err := sql.Open(cfg.Db.Driver, connectionURL)
 	if err != nil {
 		return nil, err
 	}

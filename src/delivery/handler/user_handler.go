@@ -8,12 +8,12 @@ import (
 	"root/src/domain"
 )
 
-// Handler for /user/[routes]
+// UserHandler handler for /user/[routes]
 type UserHandler struct {
 	UserUseCase domain.UserUseCase
 }
 
-// Registers the user
+// Register registers the user
 func (h *UserHandler) Register (ctx *gin.Context) {
 	var user domain.User
 
@@ -47,7 +47,7 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 	})
 }
 
-// Logs the user
+// Login logs the user in
 func (h *UserHandler) Login (ctx *gin.Context) {
 	var user domain.User
 

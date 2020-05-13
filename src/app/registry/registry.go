@@ -26,8 +26,7 @@ var Registry = []di.Def {
 		Name:  "mysql-user-repository",
 		Scope: di.App,
 		Build: func(ctn di.Container) (interface{}, error) {
-			var userRepository domain.UserRepository
-			userRepository = &mysqlds.UserRepository {
+			var userRepository domain.UserRepository = &mysqlds.UserRepository {
 				DB: ctn.Get("mysql-db").(*sql.DB),
 			}
 			return userRepository, nil
@@ -37,8 +36,7 @@ var Registry = []di.Def {
 		Name:  "user-usecase",
 		Scope: di.App,
 		Build: func(ctn di.Container) (interface{}, error) {
-			var userUseCase domain.UserUseCase
-			userUseCase = &usecase.UserUseCase {
+			var userUseCase domain.UserUseCase = &usecase.UserUseCase {
 				UserRepo: ctn.Get("mysql-user-repository").(*mysqlds.UserRepository),
 			}
 			return userUseCase, nil

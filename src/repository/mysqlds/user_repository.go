@@ -5,12 +5,12 @@ import (
 	"root/src/domain"
 )
 
-// Mysql implementation of domain.UserRepository
+// UserRepository sql implementation of domain.UserRepository
 type UserRepository struct {
 	DB *sql.DB
 }
 
-// Creates a user
+// CreateUser persist a domain.user in the db
 func (r *UserRepository) CreateUser(user *domain.User) error {
 	query := `
 		INSERT users
@@ -43,7 +43,7 @@ func (r *UserRepository) CreateUser(user *domain.User) error {
 	return nil
 }
 
-// Find user by email
+// GetUserByEmail find a domain.user by email in the db
 func (r *UserRepository) GetUserByEmail(email string) (domain.User, error) {
 	var err error
 	var user domain.User

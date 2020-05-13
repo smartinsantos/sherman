@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// Defines the struct with public domain.User keys
+// PresentedUser defines struct with public domain.User keys
 type PresentedUser struct {
 	ID 				uint32		`json:"id"`
 	FirstName 		string		`json:"first_name"`
@@ -16,7 +16,7 @@ type PresentedUser struct {
 	UpdatedAt 		time.Time	`json:"updated_at"`
 }
 
-// Returns a struct with public domain.User keys
+// PresentUser returns a map of public domain.User keys, values
 func PresentUser(user *domain.User) PresentedUser {
 	return PresentedUser {
 		ID:        		user.ID,

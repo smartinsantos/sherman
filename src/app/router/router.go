@@ -10,7 +10,7 @@ import (
 	"root/src/delivery/handler"
 )
 
-// Mounts the base application router
+// Serve mounts the base application router
 func Serve() {
 	cfg := config.Get()
 	if cfg.App.Debug {
