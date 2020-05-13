@@ -2,7 +2,9 @@ package mysqlds
 
 import (
 	"database/sql"
+	"root/src/app/exception"
 	"root/src/domain"
+	"strings"
 )
 
 // UserRepository sql implementation of domain.UserRepository
@@ -37,6 +39,9 @@ func (r *UserRepository) CreateUser(user *domain.User) error {
 	)
 
 	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
+			err = exception.NewDuplicateEntryError("user already exist")
+		}
 		return err
 	}
 
@@ -61,6 +66,9 @@ func (r *UserRepository) GetUserByEmail(email string) (domain.User, error) {
 		&user.UpdatedAt)
 
 	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
+			err = exception.NewNotFoundError("user not found")
+		}
 		return domain.User{}, err
 	}
 

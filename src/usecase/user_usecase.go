@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"errors"
 	"github.com/google/uuid"
+	"root/src/app/exception"
 	"root/src/app/utils/security"
 	"root/src/domain"
 	"time"
@@ -39,7 +39,7 @@ func (uc *UserUseCase) Login(user *domain.User) (domain.User, error) {
 
 	err = security.VerifyPassword(record.Password, user.Password)
 	if err != nil {
-		return record, errors.New("password doesn't match")
+		return record, exception.NewUnAuthorizedError("password doesn't match")
 	}
 
 	return record, nil

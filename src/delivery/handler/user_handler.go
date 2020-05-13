@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"root/src/app/exception"
 	"root/src/delivery/handler/presenter"
 	"root/src/delivery/handler/validator"
 	"root/src/domain"
@@ -35,10 +36,18 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 	}
 
 	if err := h.UserUseCase.CreateUser(&user); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H {
-			"error": err,
-			"data": nil,
-		})
+		switch err.(type) {
+		case *exception.DuplicateEntryError:
+			ctx.JSON(http.StatusForbidden, gin.H {
+				"error": err.Error(),
+				"data": nil,
+			})
+		default:
+			ctx.JSON(http.StatusInternalServerError, gin.H {
+				"error": "internal server error",
+				"data": nil,
+			})
+		}
 		return
 	}
 
@@ -69,14 +78,27 @@ func (h *UserHandler) Login (ctx *gin.Context) {
 
 	userRecord, err := h.UserUseCase.Login(&user)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H {
-			"error": err.Error(),
-			"data": nil,
-		})
+		switch err.(type) {
+		case *exception.NotFoundError:
+			ctx.JSON(http.StatusNotFound, gin.H {
+				"error": err.Error(),
+				"data": nil,
+			})
+		case *exception.UnAuthorizedError:
+			ctx.JSON(http.StatusUnauthorized, gin.H {
+				"error": err.Error(),
+				"data": nil,
+			})
+		default:
+			ctx.JSON(http.StatusInternalServerError, gin.H {
+				"error": "internal server error",
+				"data": nil,
+			})
+		}
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H {
+	ctx.JSON(http.StatusOK, gin.H {
 		"data": gin.H {
 			"token": "",
 			"user": presenter.PresentUser(&userRecord),
