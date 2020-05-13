@@ -29,7 +29,7 @@ func Serve() {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	ctn := builder.Build()
+	container := builder.Build()
 
 	// root router
 	r := gin.Default()
@@ -45,7 +45,7 @@ func Serve() {
 	// v1 group
 	v1g := r.Group("/api/v1")
 	{
-		userHandler := ctn.Get("user-handler").(*handler.UserHandler)
+		userHandler := container.Get("user-handler").(*handler.UserHandler)
 		v1g.POST("/user/register", userHandler.Register)
 		v1g.POST("/user/login", userHandler.Login)
 	}
