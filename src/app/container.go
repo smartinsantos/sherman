@@ -5,6 +5,7 @@ import (
 	"github.com/sarulabs/di"
 	"root/src/app/database"
 	"root/src/delivery/handler"
+	"root/src/domain"
 	"root/src/repository/mysqlds"
 	"root/src/usecase"
 )
@@ -25,18 +26,22 @@ var DIContainer = []di.Def {
 		Name:  "mysql-user-repository",
 		Scope: di.App,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return &mysqlds.UserRepository {
+			var userRepository domain.UserRepository
+			userRepository = &mysqlds.UserRepository {
 				DB: ctn.Get("mysql-db").(*sql.DB),
-			}, nil
+			}
+			return userRepository, nil
 		},
 	},
 	{
 		Name:  "user-usecase",
 		Scope: di.App,
 		Build: func(ctn di.Container) (interface{}, error) {
-			return &usecase.UserUseCase {
+			var userUseCase domain.UserUseCase
+			userUseCase = &usecase.UserUseCase {
 				UserRepo: ctn.Get("mysql-user-repository").(*mysqlds.UserRepository),
-			}, nil
+			}
+			return userUseCase, nil
 		},
 	},
 	{
