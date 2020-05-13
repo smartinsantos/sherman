@@ -20,3 +20,4 @@ DB_URI="$DB_USER:$DB_PASS@tcp($DB_HOST:$DB_PORT)/$DB_NAME?parseTime=true"
 
 echo "Running migrations..."
 goose --dir "./src/app/database/migrations" "$DB_DRIVER" "$DB_URI" "$@"
+echo "Done!"

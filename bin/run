@@ -4,5 +4,6 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/.. || exit
 
-echo "Running ..."
+echo "Running..."
 go run main.go
+echo "Done!"

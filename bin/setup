@@ -12,4 +12,4 @@ go get -u github.com/cosmtrek/air@v1.12.1
 go get -u github.com/pressly/goose/cmd/goose@v2.6.0
 echo "Cleaning up mod file dependencies..."
 go mod tidy
-echo "Setup Complete!"
+echo "Done!"
