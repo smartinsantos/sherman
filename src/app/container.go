@@ -35,7 +35,7 @@ var DIContainer = []di.Def {
 		Scope: di.App,
 		Build: func(ctn di.Container) (interface{}, error) {
 			return &usecase.UserUseCase {
-				Repo: ctn.Get("mysql-user-repository").(*mysqlds.UserRepository),
+				UserRepo: ctn.Get("mysql-user-repository").(*mysqlds.UserRepository),
 			}, nil
 		},
 	},

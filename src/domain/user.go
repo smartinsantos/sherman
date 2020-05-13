@@ -16,14 +16,14 @@ type User struct {
 	UpdatedAt 		time.Time	`json:"updated_at"`
 }
 
-// User use case interface
-type UserUseCase interface {
-	CreateUser(user *User) error
-	Login(user *User) (User, error)
-}
-
 // User repository interface
 type UserRepository interface {
 	CreateUser(user *User) error
 	GetUserByEmail(email string) (User, error)
+}
+
+// User use case interface
+type UserUseCase interface {
+	CreateUser(user *User) error
+	Login(user *User) (User, error)
 }

@@ -2,17 +2,15 @@ package usecase
 
 import (
 	"errors"
-	"time"
-
 	"github.com/google/uuid"
-
 	"root/src/app/utils/security"
 	"root/src/domain"
+	"time"
 )
 
 // Implementation of domain.UserUseCase
 type UserUseCase struct {
-	Repo domain.UserRepository
+	UserRepo domain.UserRepository
 }
 
 // Creates a user
@@ -29,13 +27,13 @@ func (uc *UserUseCase) CreateUser(user *domain.User) error {
 		user.Password = string(hashPassword)
 	}
 
-	err = uc.Repo.CreateUser(user)
+	err = uc.UserRepo.CreateUser(user)
 	return err
 }
 
 // Logs a user in
 func (uc *UserUseCase) Login(user *domain.User) (domain.User, error) {
-	record, err := uc.Repo.GetUserByEmail(user.EmailAddress)
+	record, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
 		return domain.User{}, err
 	}
