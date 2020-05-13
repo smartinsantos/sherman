@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"root/src/app/security"
+	"root/src/app/utils/security"
 	"root/src/domain"
 )
 

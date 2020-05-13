@@ -5,7 +5,7 @@ import (
 	"github.com/sarulabs/di"
 	"log"
 	"root/config"
-	"root/src/app/middleware"
+	"root/src/app/utils/middleware"
 	"root/src/delivery/handler"
 )
 
