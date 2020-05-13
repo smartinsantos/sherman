@@ -1,4 +1,4 @@
-package app
+package registry
 
 import (
 	"database/sql"
@@ -10,8 +10,8 @@ import (
 	"root/src/usecase"
 )
 
-// DIContainer - definitions of the application services.
-var DIContainer = []di.Def {
+// Registry - definitions of the application services.
+var Registry = []di.Def {
 	{
 		Name:  "mysql-db",
 		Scope: di.App,

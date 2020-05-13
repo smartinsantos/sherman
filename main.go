@@ -2,9 +2,9 @@ package main
 
 import (
 	_ "root/config"
-	"root/src/app"
+	"root/src/app/router"
 )
 
 func main() {
-	app.Serve()
+	router.Serve()
 }
