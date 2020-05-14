@@ -2,8 +2,8 @@ package mysqlds
 
 import (
 	"database/sql"
-	"root/src/app/exception"
 	"root/src/domain"
+	"root/src/utils/exception"
 	"strings"
 )
 
