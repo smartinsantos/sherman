@@ -2,6 +2,8 @@ package response
 
 import "net/http"
 
+var internalServerError = "internal server error"
+
 // Response struct for response shape
 type Response struct {
 	Status int
@@ -10,18 +12,20 @@ type Response struct {
 	Data map[string]interface{}
 }
 
+// NewResponse Response constructor defaults to { Status: 500, error: "internal server error" }
 func NewResponse() Response {
 	return Response{
 		Status: http.StatusInternalServerError,
+		Error: internalServerError,
 	}
 }
 
-// GetStatus gets the status of the response struct instance defaults to 500
+// GetStatus returns the status of the response
 func (res *Response) GetStatus() int {
 	return res.Status
 }
 
-// GetBody gets the body of a response struct
+// GetBody returns the body of the response contains status key, and one of the following keys: error, errors, data
 func (res *Response) GetBody() map[string]interface{} {
 	response := make(map[string]interface{})
 
@@ -36,13 +40,15 @@ func (res *Response) GetBody() map[string]interface{} {
 	return response
 }
 
+// SetInternalServerError sets the response to internal server error { Status: 500, error: "internal server error" }
 func (res *Response) SetInternalServerError() {
 	res.Status = http.StatusInternalServerError
-	res.Error = "internal server error"
+	res.Error = internalServerError
 	res.Errors = nil
 	res.Data = nil
 }
 
+// SetError sets with an error { Status: [status], Error: [error], Errors: nil, Data: nil }
 func (res *Response) SetError(status int, error string) {
 	res.Status = status
 	res.Error = error
@@ -50,6 +56,7 @@ func (res *Response) SetError(status int, error string) {
 	res.Data = nil
 }
 
+// SetErrors sets a response with multiple errors { Status: [status], Errors: [errors], Error: "", Data: nil }
 func (res *Response) SetErrors(status int, errors map[string]string) {
 	res.Status = status
 	res.Errors = errors
@@ -57,6 +64,7 @@ func (res *Response) SetErrors(status int, errors map[string]string) {
 	res.Data = nil
 }
 
+// SetData sets a response with data { Status: [status], Data: [data], Errors: nil, Error: "" }
 func (res *Response) SetData(status int, data map[string]interface{}) {
 	res.Status = status
 	res.Data = data

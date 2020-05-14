@@ -53,7 +53,7 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 // Login logs the user in
 func (h *UserHandler) Login (ctx *gin.Context) {
 	var user domain.User
-	var res response.Response
+	res := response.NewResponse()
 
 	if err := ctx.BindJSON(&user); err != nil {
 		res.SetError(http.StatusUnprocessableEntity, err.Error())
