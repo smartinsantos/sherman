@@ -6,8 +6,8 @@ import (
 	"log"
 	"root/config"
 	"root/src/app/registry"
-	"root/src/app/utils/middleware"
 	"root/src/delivery/handler"
+	"root/src/utils/middleware"
 )
 
 // Serve mounts the base application router

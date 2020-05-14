@@ -3,11 +3,11 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"root/src/app/exception"
 	"root/src/delivery/handler/presenter"
-	"root/src/delivery/handler/response"
 	"root/src/delivery/handler/validator"
 	"root/src/domain"
+	"root/src/utils/exception"
+	"root/src/utils/response"
 )
 
 // UserHandler handler for /user/[routes]
@@ -18,23 +18,17 @@ type UserHandler struct {
 // Register registers the user
 func (h *UserHandler) Register (ctx *gin.Context) {
 	var user domain.User
-	var res response.Response
+	res := response.NewResponse()
 
 	if err := ctx.BindJSON(&user); err != nil {
-		res = response.Response {
-			Status: http.StatusUnprocessableEntity,
-			Error: err.Error(),
-		}
+		res.SetError(http.StatusUnprocessableEntity, err.Error())
 		ctx.JSON(res.GetStatus(), res.GetBody())
 		return
 	}
 
 	errors := validator.ValidateUserParams(&user, "register")
 	if len(errors) > 0 {
-		res = response.Response {
-			Status: http.StatusUnprocessableEntity,
-			Errors: errors,
-		}
+		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		ctx.JSON(res.GetStatus(), res.GetBody())
 		return
 	}
@@ -42,26 +36,17 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 	if err := h.UserUseCase.CreateUser(&user); err != nil {
 		switch err.(type) {
 		case *exception.DuplicateEntryError:
-			res = response.Response {
-				Status: http.StatusForbidden,
-				Error: err.Error(),
-			}
+			res.SetError(http.StatusForbidden, err.Error())
 		default:
-			res = response.Response {
-				Status: http.StatusForbidden,
-				Error: "internal server error",
-			}
+			res.SetInternalServerError()
 		}
 		ctx.JSON(res.GetStatus(), res.GetBody())
 		return
 	}
 
-	res = response.Response {
-		Status: http.StatusCreated,
-		Data: gin.H {
-			"user": presenter.PresentUser(&user),
-		},
-	}
+	res.SetData(http.StatusCreated, gin.H {
+		"user": presenter.PresentUser(&user),
+	})
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
@@ -71,19 +56,13 @@ func (h *UserHandler) Login (ctx *gin.Context) {
 	var res response.Response
 
 	if err := ctx.BindJSON(&user); err != nil {
-		res = response.Response {
-			Status: http.StatusUnprocessableEntity,
-			Error: err.Error(),
-		}
+		res.SetError(http.StatusUnprocessableEntity, err.Error())
 		ctx.JSON(res.GetStatus(), res.GetBody())
 		return
 	}
 
 	if errors := validator.ValidateUserParams(&user, "login"); len(errors) > 0 {
-		res = response.Response {
-			Status: http.StatusUnprocessableEntity,
-			Errors: errors,
-		}
+		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		ctx.JSON(res.GetStatus(), res.GetBody())
 		return
 	}
@@ -92,31 +71,19 @@ func (h *UserHandler) Login (ctx *gin.Context) {
 	if err != nil {
 		switch err.(type) {
 		case *exception.NotFoundError:
-			res = response.Response {
-				Status: http.StatusNotFound,
-				Error: err.Error(),
-			}
+			res.SetError(http.StatusNotFound, err.Error())
 		case *exception.UnAuthorizedError:
-			res = response.Response {
-				Status: http.StatusUnauthorized,
-				Error: err.Error(),
-			}
+			res.SetError(http.StatusUnauthorized, err.Error())
 		default:
-			res = response.Response {
-				Status: http.StatusInternalServerError,
-				Error: "internal server error",
-			}
+			res.SetInternalServerError()
 		}
 		ctx.JSON(res.GetStatus(), res.GetBody())
 		return
 	}
 
-	res = response.Response {
-		Status: http.StatusOK,
-		Data: gin.H {
-			"token": "",
-			"user": presenter.PresentUser(&userRecord),
-		},
-	}
+	res.SetData(http.StatusOK, gin.H {
+		"token": "",
+		"user": presenter.PresentUser(&userRecord),
+	})
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
