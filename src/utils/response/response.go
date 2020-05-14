@@ -1,6 +1,8 @@
 package response
 
-import "net/http"
+import (
+	"net/http"
+)
 
 var internalServerError = "internal server error"
 
