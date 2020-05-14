@@ -15,6 +15,7 @@ Identity service written in go
 - ```bin/run```                             : Runs the server
 - ```bin/new-migration [migration-name]```  : Creates a migration
 - ```bin/migrate [command]```               : Migrate the DB see cmd list
+- ```bin/prod```                            : Setup/Build/Run application for production
 - List of commands
     - up                   Migrate the DB to the most recent version available
     - up-by-one            Migrate the DB up by 1
