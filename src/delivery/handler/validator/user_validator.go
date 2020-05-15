@@ -1,12 +1,12 @@
 package validator
 
 import (
-	"root/src/domain"
+	"root/src/domain/auth"
 	"strings"
 )
 
 // ValidateUserParams validates /user/[route] route params, retrieves error messages for no compliant fields
-func ValidateUserParams(user *domain.User, action string) map[string]string {
+func ValidateUserParams(user *auth.User, action string) map[string]string {
 	var errorMessages = make(map[string]string)
 
 	switch strings.ToLower(action) {

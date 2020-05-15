@@ -1,11 +1,11 @@
 package presenter
 
 import (
-	"root/src/domain"
+	"root/src/domain/auth"
 	"time"
 )
 
-// PresentedUser defines struct with public domain.User keys
+// PresentedUser defines struct with public auth.User keys
 type PresentedUser struct {
 	ID 				uint32		`json:"id"`
 	FirstName 		string		`json:"first_name"`
@@ -16,8 +16,8 @@ type PresentedUser struct {
 	UpdatedAt 		time.Time	`json:"updated_at"`
 }
 
-// PresentUser returns a map of public domain.User keys, values
-func PresentUser(user *domain.User) PresentedUser {
+// PresentUser returns a map of public auth.User keys, values
+func PresentUser(user *auth.User) PresentedUser {
 	return PresentedUser {
 		ID:        		user.ID,
 		FirstName: 		user.FirstName,

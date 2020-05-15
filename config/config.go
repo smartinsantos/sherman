@@ -22,10 +22,15 @@ type dbConfig struct {
 	Port   string
 }
 
+type jwtConfig struct {
+	Secret string
+}
+
 // Config Wrapper for all configurations
 type Config struct {
 	App appConfig
 	Db  dbConfig
+	Jwt jwtConfig
 }
 
 var defaultConfig = &Config {
@@ -41,6 +46,9 @@ var defaultConfig = &Config {
 		Pass:   "db_password",
 		Host:   "db_host",
 		Port:   "db_port",
+	},
+	Jwt: jwtConfig {
+		Secret: "jwt_secret",
 	},
 }
 
@@ -70,6 +78,7 @@ func Get() *Config {
 				Host:   getKey(envMap, "DB_HOST", defaultConfig.Db.Host),
 				Port:   getKey(envMap, "DB_PORT", defaultConfig.Db.Port),
 			},
+			Jwt: jwtConfig { Secret: getKey(envMap, "JWT_SECRET", defaultConfig.Jwt.Secret) },
 		}
 	})
 	return config

@@ -2,19 +2,19 @@ package usecase
 
 import (
 	"github.com/google/uuid"
-	"root/src/domain"
+	"root/src/domain/auth"
 	"root/src/utils/exception"
 	"root/src/utils/security"
 	"time"
 )
 
-// UserUseCase implementation of domain.UserUseCase
+// UserUseCase implementation of auth.UserUseCase
 type UserUseCase struct {
-	UserRepo domain.UserRepository
+	UserRepo auth.UserRepository
 }
 
 // CreateUser creates a user
-func (uc *UserUseCase) CreateUser(user *domain.User) error {
+func (uc *UserUseCase) CreateUser(user *auth.User) error {
 	user.ID = uuid.New().ID()
 	user.Active = true
 	user.CreatedAt = time.Now()
@@ -31,10 +31,10 @@ func (uc *UserUseCase) CreateUser(user *domain.User) error {
 }
 
 // Login logs a user in, returns user record and user token[TODO]
-func (uc *UserUseCase) Login(user *domain.User) (domain.User, error) {
+func (uc *UserUseCase) Login(user *auth.User) (auth.User, error) {
 	record, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
-		return domain.User{}, err
+		return auth.User{}, err
 	}
 
 	err = security.VerifyPassword(record.Password, user.Password)

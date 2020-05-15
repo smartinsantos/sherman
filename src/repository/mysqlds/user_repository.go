@@ -2,18 +2,18 @@ package mysqlds
 
 import (
 	"database/sql"
-	"root/src/domain"
+	"root/src/domain/auth"
 	"root/src/utils/exception"
 	"strings"
 )
 
-// UserRepository sql implementation of domain.UserRepository
+// UserRepository sql implementation of auth.UserRepository
 type UserRepository struct {
 	DB *sql.DB
 }
 
-// CreateUser persist a domain.user in the db
-func (r *UserRepository) CreateUser(user *domain.User) error {
+// CreateUser persist a auth.user in the db
+func (r *UserRepository) CreateUser(user *auth.User) error {
 	query := `
 		INSERT users
 		SET
@@ -48,10 +48,10 @@ func (r *UserRepository) CreateUser(user *domain.User) error {
 	return nil
 }
 
-// GetUserByEmail find a domain.user by email in the db
-func (r *UserRepository) GetUserByEmail(email string) (domain.User, error) {
+// GetUserByEmail find a auth.user by email in the db
+func (r *UserRepository) GetUserByEmail(email string) (auth.User, error) {
 	var err error
-	var user domain.User
+	var user auth.User
 
 	query := `SELECT * FROM users WHERE email_address = ? LIMIT 1`
 	row := r.DB.QueryRow(query, email)
@@ -69,7 +69,7 @@ func (r *UserRepository) GetUserByEmail(email string) (domain.User, error) {
 		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
 			err = exception.NewNotFoundError("user not found")
 		}
-		return domain.User{}, err
+		return auth.User{}, err
 	}
 
 	return user, nil

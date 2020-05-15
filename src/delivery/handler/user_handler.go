@@ -5,19 +5,19 @@ import (
 	"net/http"
 	"root/src/delivery/handler/presenter"
 	"root/src/delivery/handler/validator"
-	"root/src/domain"
+	"root/src/domain/auth"
 	"root/src/utils/exception"
 	"root/src/utils/response"
 )
 
 // UserHandler handler for /user/[routes]
 type UserHandler struct {
-	UserUseCase domain.UserUseCase
+	UserUseCase auth.UserUseCase
 }
 
 // Register registers the user
 func (h *UserHandler) Register (ctx *gin.Context) {
-	var user domain.User
+	var user auth.User
 	res := response.NewResponse()
 
 	if err := ctx.BindJSON(&user); err != nil {
@@ -52,7 +52,7 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 
 // Login logs the user in
 func (h *UserHandler) Login (ctx *gin.Context) {
-	var user domain.User
+	var user auth.User
 	res := response.NewResponse()
 
 	if err := ctx.BindJSON(&user); err != nil {
