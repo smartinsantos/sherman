@@ -32,16 +32,15 @@ func (uc *UserUseCase) Register(user *auth.User) error {
 }
 
 // Login logs a user in, returns user record and user token[TODO]
-func (uc *UserUseCase) Login(user *auth.User) (auth.User, error) {
-	record, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
+func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, error) {
+	userRecord, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
-		return auth.User{}, err
+		return auth.User{}, auth.SecurityToken{}.Token, err
 	}
 
-	err = security.VerifyPassword(record.Password, user.Password)
-	if err != nil {
-		return record, exception.NewUnAuthorizedError("password doesn't match")
+	if err := security.VerifyPassword(userRecord.Password, user.Password); err != nil {
+		return userRecord, auth.SecurityToken{}.Token, exception.NewUnAuthorizedError("password doesn't match")
 	}
 
-	return record, nil
+	return userRecord, auth.SecurityToken{}.Token, nil
 }

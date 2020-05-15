@@ -25,5 +25,5 @@ type UserRepository interface {
 // UserUseCase interface
 type UserUseCase interface {
 	Register(user *User) error
-	Login(user *User) (User, error)
+	Login(user *User) (User, string, error)
 }
