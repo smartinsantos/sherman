@@ -33,11 +33,22 @@ var Registry = []di.Def {
 		},
 	},
 	{
+		Name:  "mysql-security-token-repository",
+		Scope: di.App,
+		Build: func(ctn di.Container) (interface{}, error) {
+			var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository {
+				DB: ctn.Get("mysql-db").(*sql.DB),
+			}
+			return securityTokenRepository, nil
+		},
+	},
+	{
 		Name:  "user-usecase",
 		Scope: di.App,
 		Build: func(ctn di.Container) (interface{}, error) {
 			var userUseCase auth.UserUseCase = &usecase.UserUseCase {
 				UserRepo: ctn.Get("mysql-user-repository").(*mysqlds.UserRepository),
+				SecurityTokenRepo: ctn.Get("mysql-security-token-repository").(*mysqlds.SecurityTokenRepository),
 			}
 			return userUseCase, nil
 		},
