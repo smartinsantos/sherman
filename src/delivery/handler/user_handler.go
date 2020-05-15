@@ -33,7 +33,7 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 		return
 	}
 
-	if err := h.UserUseCase.CreateUser(&user); err != nil {
+	if err := h.UserUseCase.Register(&user); err != nil {
 		switch err.(type) {
 		case *exception.DuplicateEntryError:
 			res.SetError(http.StatusForbidden, err.Error())

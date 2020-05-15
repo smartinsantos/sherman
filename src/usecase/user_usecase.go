@@ -13,8 +13,8 @@ type UserUseCase struct {
 	UserRepo auth.UserRepository
 }
 
-// CreateUser creates a user
-func (uc *UserUseCase) CreateUser(user *auth.User) error {
+// Register creates a user
+func (uc *UserUseCase) Register(user *auth.User) error {
 	user.ID = uuid.New().ID()
 	user.Active = true
 	user.CreatedAt = time.Now()

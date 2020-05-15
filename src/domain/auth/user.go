@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// User user entity struct
+// User entity struct
 type User struct {
 	ID 				uint32		`json:"id"`
 	FirstName 		string		`json:"first_name"`
@@ -24,6 +24,6 @@ type UserRepository interface {
 
 // UserUseCase interface
 type UserUseCase interface {
-	CreateUser(user *User) error
+	Register(user *User) error
 	Login(user *User) (User, error)
 }
