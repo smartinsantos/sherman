@@ -3,7 +3,7 @@
 CREATE TABLE security_tokens (
    id               char(36)        NOT NULL,
    user_id          char(36)        NOT NULL UNIQUE,
-   token            char(64)        NOT NULL,
+   token            char(255)       NOT NULL,
    created_at       datetime        NOT NULL,
    updated_at       datetime        NOT NULL,
    PRIMARY KEY(id),

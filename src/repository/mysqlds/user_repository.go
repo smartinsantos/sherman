@@ -50,12 +50,11 @@ func (r *UserRepository) CreateUser(user *auth.User) error {
 
 // GetUserByEmail gets a auth.User by email in the db
 func (r *UserRepository) GetUserByEmail(email string) (auth.User, error) {
-	var err error
 	var user auth.User
 
 	query := `SELECT * FROM users WHERE email_address = ? LIMIT 1`
 	row := r.DB.QueryRow(query, email)
-	err = row.Scan(
+	err := row.Scan(
 		&user.ID,
 		&user.FirstName,
 		&user.LastName,

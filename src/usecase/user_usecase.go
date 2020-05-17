@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"root/src/domain/auth"
 	"root/src/utils/exception"
@@ -39,8 +41,25 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, error) {
 	}
 
 	if err := security.VerifyPassword(userRecord.Password, user.Password); err != nil {
-		return userRecord, auth.SecurityToken{}.Token, exception.NewUnAuthorizedError("password doesn't match")
+		return auth.User{}, auth.SecurityToken{}.Token, exception.NewUnAuthorizedError("password doesn't match")
 	}
 
-	return userRecord, auth.SecurityToken{}.Token, nil
+	gToken, err := security.GenToken(userRecord.ID)
+	if err != nil {
+		return auth.User{}, auth.SecurityToken{}.Token, errors.New("could not generate token")
+	}
+
+	securityToken := auth.SecurityToken{
+		ID: uuid.New().ID(),
+		UserID: userRecord.ID,
+		Token: gToken,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&securityToken); err != nil {
+		fmt.Println("SecurityTokenRepo.CreateOrUpdateToken error =>", err)
+		return auth.User{}, auth.SecurityToken{}.Token, errors.New("could not create token")
+	}
+
+	return userRecord, gToken, nil
 }
