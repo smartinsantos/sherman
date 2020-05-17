@@ -48,16 +48,16 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, error) {
 		return auth.User{}, auth.SecurityToken{}.Token, errors.New("could not generate token")
 	}
 
-	securityToken := auth.SecurityToken{
+	accessToken := auth.SecurityToken{
 		ID: uuid.New().ID(),
 		UserID: userRecord.ID,
 		Token: gToken,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&securityToken); err != nil {
+	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&accessToken); err != nil {
 		return auth.User{}, auth.SecurityToken{}.Token, errors.New("could not create or update token")
 	}
 
-	return userRecord, gToken, nil
+	return userRecord, accessToken.Token, nil
 }
