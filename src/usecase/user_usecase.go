@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"root/src/domain/auth"
 	"root/src/utils/exception"
@@ -57,8 +56,7 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, error) {
 		UpdatedAt: time.Now(),
 	}
 	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&securityToken); err != nil {
-		fmt.Println("SecurityTokenRepo.CreateOrUpdateToken error =>", err)
-		return auth.User{}, auth.SecurityToken{}.Token, errors.New("could not create token")
+		return auth.User{}, auth.SecurityToken{}.Token, errors.New("could not create or update token")
 	}
 
 	return userRecord, gToken, nil

@@ -14,15 +14,16 @@ type SecurityTokenRepository struct {
 func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken) error {
 	var err error
 	var query string
-	var exitingTokenId string
+	var existingToken auth.SecurityToken
 
 	// find token id if it exist
 	query = `SELECT id FROM security_tokens WHERE user_id = ? LIMIT 1`
 	row := r.DB.QueryRow(query, token.UserID)
-	_ = row.Scan(&exitingTokenId)
+	_ = row.Scan(&existingToken.ID)
 
+	switch existingToken.ID {
+	case 0:
 	// no existing token -> insert
-	if len(exitingTokenId) == 0 {
 		query = `
 			INSERT security_tokens
 			SET
@@ -40,26 +41,21 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 			token.CreatedAt,
 			token.UpdatedAt,
 		)
-
-		return err
+	default:
+		// existing token -> update
+		query = `
+			UPDATE security_tokens
+			SET
+				token=?,
+				updated_at=?
+			WHERE id = ?
+		`
+		_, err = r.DB.Exec(query,
+			token.Token,
+			token.UpdatedAt,
+			existingToken.ID,
+		)
 	}
 
-	// existing token -> update
-	query = `
-		UPDATE security_tokens
-		SET
-			user_id=?,
-			token=?,
-			created_at=?,
-			updated_at=?
-		WHERE id = ?
-	`
-	_, err = r.DB.Exec(query,
-		token.UserID,
-		token.Token,
-		token.CreatedAt,
-		token.UpdatedAt,
-		token.ID,
-	)
 	return err
 }
