@@ -82,9 +82,11 @@ func (h *UserHandler) Login (ctx *gin.Context) {
 	}
 
 	res.SetData(http.StatusOK, gin.H {
-		"refresh_token": refreshToken,
 		"access_token": accessToken,
 		"user": presenter.PresentUser(&userRecord),
 	})
+
+	//@TODO: add secure to cookie when tls is ready
+	ctx.SetCookie("REFRESH_TOKEN", refreshToken, 3600, "/", ctx.Request.Host, false, true)
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
