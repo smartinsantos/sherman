@@ -4,11 +4,6 @@ import (
 	"time"
 )
 
-// RefreshTokenType security token type for refresh tokens
-const RefreshTokenType = "REFRESH"
-// AccessTokenType security token type for access tokens
-const AccessTokenType = "ACCESS"
-
 // SecurityToken entity struct
 type SecurityToken struct {
 	ID 				string		`json:"id"`
@@ -17,6 +12,16 @@ type SecurityToken struct {
 	Type			string		`json:"type"`
 	CreatedAt 		time.Time	`json:"created_at"`
 	UpdatedAt 		time.Time	`json:"updated_at"`
+}
+
+// RefreshTokenType security token type for refresh tokens
+const RefreshTokenType = "REFRESH"
+// AccessTokenType security token type for access tokens
+const AccessTokenType = "ACCESS"
+// AccessTokenMetadata struct definition
+type AccessTokenMetadata struct {
+	UserID 	string
+	Type 	string
 }
 
 // SecurityTokenRepository interface

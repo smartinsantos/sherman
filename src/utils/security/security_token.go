@@ -16,30 +16,24 @@ func GenTokenAccessToken(userID string) (string, error) {
 	return genToken(userID, time.Now().Add(time.Minute * 15).Unix())
 }
 
-// AccessTokenMetadata struct definition
-type AccessTokenMetadata struct {
-	UserID 	string
-	Type 	string
-}
-
 // ExtractAccessTokenMetadata extracts metadata of access token from *http.Request
-func ExtractAccessTokenMetadata(r *http.Request) (AccessTokenMetadata, error) {
+func ExtractAccessTokenMetadata(r *http.Request) (auth.AccessTokenMetadata, error) {
 	token, err := getAccessTokenFromRequest(r)
 	if err != nil {
-		return AccessTokenMetadata{}, err
+		return auth.AccessTokenMetadata{}, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return AccessTokenMetadata{}, err
+		return auth.AccessTokenMetadata{}, err
 	}
 
 	 userID, ok := claims["user_id"].(string)
      if !ok {
-        return AccessTokenMetadata{}, err
+        return auth.AccessTokenMetadata{}, err
      }
 
-	 return AccessTokenMetadata{
+	 return auth.AccessTokenMetadata{
 		UserID: userID,
 		Type: auth.AccessTokenType,
 	 }, nil
