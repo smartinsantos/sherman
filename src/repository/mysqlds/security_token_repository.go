@@ -2,6 +2,7 @@ package mysqlds
 
 import (
 	"database/sql"
+	"errors"
 	"root/src/domain/auth"
 )
 
@@ -60,4 +61,10 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 	}
 
 	return err
+}
+
+// IsTokenValid returns an error if token can not be found or is not valid
+func (r *SecurityTokenRepository) IsTokenValid(tokenMetadata *auth.TokenMetadata) error {
+	//@TODO implement
+	return errors.New("not implemented")
 }

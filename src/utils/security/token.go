@@ -17,26 +17,26 @@ func GenTokenAccessToken(userID string) (string, error) {
 }
 
 // ExtractAccessTokenMetadata extracts metadata of access token from *http.Request
-func ExtractAccessTokenMetadata(r *http.Request) (auth.AccessTokenMetadata, error) {
+func ExtractAccessTokenMetadata(r *http.Request) (auth.TokenMetadata, error) {
 	token, err := getAccessTokenFromRequest(r)
 	if err != nil {
-		return auth.AccessTokenMetadata{}, err
+		return auth.TokenMetadata{}, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return auth.AccessTokenMetadata{}, err
+		return auth.TokenMetadata{}, err
 	}
 
-	 userID, ok := claims["user_id"].(string)
-     if !ok {
-        return auth.AccessTokenMetadata{}, err
-     }
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		return auth.TokenMetadata{}, err
+	}
 
-	 return auth.AccessTokenMetadata{
+	return auth.TokenMetadata{
 		UserID: userID,
 		Type: auth.AccessTokenType,
-	 }, nil
+	}, nil
 }
 
 // GenRefreshToken generates a signed token string

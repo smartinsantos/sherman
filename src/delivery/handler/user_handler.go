@@ -17,7 +17,7 @@ type UserHandler struct {
 }
 
 // Register registers the user
-func (h *UserHandler) Register (ctx *gin.Context) {
+func (h *UserHandler) Register(ctx *gin.Context) {
 	var user auth.User
 	res := response.NewResponse()
 
@@ -55,7 +55,7 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 }
 
 // Login logs the user in
-func (h *UserHandler) Login (ctx *gin.Context) {
+func (h *UserHandler) Login(ctx *gin.Context) {
 	var user auth.User
 	res := response.NewResponse()
 

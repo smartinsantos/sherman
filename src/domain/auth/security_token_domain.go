@@ -19,7 +19,7 @@ const RefreshTokenType = "REFRESH"
 // AccessTokenType security token type for access tokens
 const AccessTokenType = "ACCESS"
 // AccessTokenMetadata struct definition
-type AccessTokenMetadata struct {
+type TokenMetadata struct {
 	UserID 	string
 	Type 	string
 }
@@ -27,6 +27,7 @@ type AccessTokenMetadata struct {
 // SecurityTokenRepository interface
 type SecurityTokenRepository interface {
 	CreateOrUpdateToken(token *SecurityToken) error
+	IsTokenValid(tokenMetadata *TokenMetadata) error
 	//UpdateToken(token *SecurityToken) error
 	//GetTokenByUserId(userId string) (SecurityToken, error)
 }
