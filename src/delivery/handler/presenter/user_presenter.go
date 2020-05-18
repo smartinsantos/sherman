@@ -7,7 +7,7 @@ import (
 
 // PresentedUser defines struct with public auth.User keys
 type PresentedUser struct {
-	ID 				uint32		`json:"id"`
+	ID 				string		`json:"id"`
 	FirstName 		string		`json:"first_name"`
 	LastName 		string		`json:"last_name"`
 	EmailAddress 	string		`json:"email_address"`

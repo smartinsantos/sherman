@@ -22,7 +22,7 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 	_ = row.Scan(&existingToken.ID)
 
 	switch existingToken.ID {
-	case 0:
+	case "":
 	// no existing token -> insert
 		query = `
 			INSERT security_tokens

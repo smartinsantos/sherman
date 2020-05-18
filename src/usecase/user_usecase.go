@@ -17,7 +17,7 @@ type UserUseCase struct {
 
 // Register creates a user
 func (uc *UserUseCase) Register(user *auth.User) error {
-	user.ID = uuid.New().ID()
+	user.ID = uuid.New().String()
 	user.Active = true
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
@@ -49,7 +49,7 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, string, error)
 		return auth.User{}, "", "", errors.New("could not generate token")
 	}
 	refreshToken := auth.SecurityToken{
-		ID: uuid.New().ID(),
+		ID: uuid.New().String(),
 		UserID: userRecord.ID,
 		Token: grToken,
 		Type: auth.RefreshTokenType,
@@ -66,7 +66,7 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, string, error)
 		return auth.User{}, "", "", errors.New("could not generate token")
 	}
 	accessToken := auth.SecurityToken{
-		ID: uuid.New().ID(),
+		ID: uuid.New().String(),
 		UserID: userRecord.ID,
 		Token: gaToken,
 		Type: auth.AccessTokenType,
