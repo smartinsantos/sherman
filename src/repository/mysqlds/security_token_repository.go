@@ -3,6 +3,7 @@ package mysqlds
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"root/src/domain/auth"
 )
 
@@ -11,7 +12,7 @@ type SecurityTokenRepository struct {
 	DB *sql.DB
 }
 
-// CreateOrUpdateToken persist a auth.SecurityToken in the db
+// CreateOrUpdateToken persist a auth.SecurityToken in the datastore
 func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken) error {
 	var err error
 	var query string
@@ -63,8 +64,9 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 	return err
 }
 
-// IsTokenValid returns an error if token can not be found or is not valid
-func (r *SecurityTokenRepository) IsTokenValid(tokenMetadata *auth.TokenMetadata) error {
+// GetTokenByMetadata finds a auth.SecurityToken in the datastore
+func (r *SecurityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMetadata) (*auth.SecurityToken, error) {
 	//@TODO implement
-	return errors.New("not implemented")
+	fmt.Println("tokenMetadata =>", tokenMetadata)
+	return nil, errors.New("not implemented")
 }

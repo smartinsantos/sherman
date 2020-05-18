@@ -43,6 +43,7 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, string, error)
 		return auth.User{}, "", "", exception.NewUnAuthorizedError("password doesn't match")
 	}
 
+	//@TODO: move this logic to security_token_usecase
 	// refresh token
 	grToken, err := security.GenRefreshToken(userRecord.ID)
 	if err != nil {
@@ -59,7 +60,7 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, string, error)
 	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&refreshToken); err != nil {
 		return auth.User{}, "", "", errors.New("could not create or update refresh token")
 	}
-
+	//@TODO: move this logic to security_token_usecase
 	// access token
 	gaToken, err := security.GenTokenAccessToken(userRecord.ID)
 	if err != nil {

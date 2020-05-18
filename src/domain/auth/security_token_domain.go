@@ -27,7 +27,5 @@ type TokenMetadata struct {
 // SecurityTokenRepository interface
 type SecurityTokenRepository interface {
 	CreateOrUpdateToken(token *SecurityToken) error
-	IsTokenValid(tokenMetadata *TokenMetadata) error
-	//UpdateToken(token *SecurityToken) error
-	//GetTokenByUserId(userId string) (SecurityToken, error)
+	GetTokenByMetadata(tokenMetadata *TokenMetadata) (*SecurityToken, error)
 }
