@@ -32,32 +32,50 @@ func (uc *UserUseCase) Register(user *auth.User) error {
 	return err
 }
 
-// Login logs a user in, returns user record and user token[TODO]
-func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, error) {
+// Login logs a user in, returns user record and user refresh, access tokens
+func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, string, error) {
 	userRecord, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
-		return auth.User{}, auth.SecurityToken{}.Token, err
+		return auth.User{}, "", "", err
 	}
 
 	if err := security.VerifyPassword(userRecord.Password, user.Password); err != nil {
-		return auth.User{}, auth.SecurityToken{}.Token, exception.NewUnAuthorizedError("password doesn't match")
+		return auth.User{}, "", "", exception.NewUnAuthorizedError("password doesn't match")
 	}
 
-	gToken, err := security.GenToken(userRecord.ID)
+	// refresh token
+	grToken, err := security.GenRefreshToken(userRecord.ID)
 	if err != nil {
-		return auth.User{}, auth.SecurityToken{}.Token, errors.New("could not generate token")
+		return auth.User{}, "", "", errors.New("could not generate token")
+	}
+	refreshToken := auth.SecurityToken{
+		ID: uuid.New().ID(),
+		UserID: userRecord.ID,
+		Token: grToken,
+		Type: auth.RefreshTokenType,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&refreshToken); err != nil {
+		return auth.User{}, "", "", errors.New("could not create or update token")
 	}
 
+	// access token
+	gaToken, err := security.GenTokenAccessToken(userRecord.ID)
+	if err != nil {
+		return auth.User{}, "", "", errors.New("could not generate token")
+	}
 	accessToken := auth.SecurityToken{
 		ID: uuid.New().ID(),
 		UserID: userRecord.ID,
-		Token: gToken,
+		Token: gaToken,
+		Type: auth.AccessTokenType,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&accessToken); err != nil {
-		return auth.User{}, auth.SecurityToken{}.Token, errors.New("could not create or update token")
+		return auth.User{}, "", "", errors.New("could not create or update token")
 	}
 
-	return userRecord, accessToken.Token, nil
+	return userRecord, refreshToken.Token, accessToken.Token, nil
 }

@@ -67,7 +67,7 @@ func (h *UserHandler) Login (ctx *gin.Context) {
 		return
 	}
 
-	userRecord, token, err := h.UserUseCase.Login(&user)
+	userRecord, refreshToken, accessToken, err := h.UserUseCase.Login(&user)
 	if err != nil {
 		switch err.(type) {
 		case *exception.NotFoundError:
@@ -82,7 +82,8 @@ func (h *UserHandler) Login (ctx *gin.Context) {
 	}
 
 	res.SetData(http.StatusOK, gin.H {
-		"token": token,
+		"refresh_token": refreshToken,
+		"access_token": accessToken,
 		"user": presenter.PresentUser(&userRecord),
 	})
 	ctx.JSON(res.GetStatus(), res.GetBody())

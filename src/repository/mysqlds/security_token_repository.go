@@ -17,8 +17,8 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 	var existingToken auth.SecurityToken
 
 	// find token id if it exist
-	query = `SELECT id FROM security_tokens WHERE user_id = ? LIMIT 1`
-	row := r.DB.QueryRow(query, token.UserID)
+	query = `SELECT id FROM security_tokens WHERE user_id = ? AND type = ? LIMIT 1`
+	row := r.DB.QueryRow(query, token.UserID, token.Type)
 	_ = row.Scan(&existingToken.ID)
 
 	switch existingToken.ID {
@@ -30,6 +30,7 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 				id=?,
 				user_id=?,
 				token=?,
+			    type=?,
 				created_at=?,
 				updated_at=?
 		`
@@ -38,6 +39,7 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 			token.ID,
 			token.UserID,
 			token.Token,
+			token.Type,
 			token.CreatedAt,
 			token.UpdatedAt,
 		)

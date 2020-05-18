@@ -4,11 +4,17 @@ import (
 	"time"
 )
 
+// RefreshTokenType security token type for refresh tokens
+const RefreshTokenType = "REFRESH"
+// AccessTokenType security token type for access tokens
+const AccessTokenType = "ACCESS"
+
 // SecurityToken entity struct
 type SecurityToken struct {
 	ID 				uint32		`json:"id"`
 	UserID 			uint32		`json:"user_id"`
 	Token 			string		`json:"token"`
+	Type			string		`json:"type"`
 	CreatedAt 		time.Time	`json:"created_at"`
 	UpdatedAt 		time.Time	`json:"updated_at"`
 }

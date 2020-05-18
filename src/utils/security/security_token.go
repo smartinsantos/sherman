@@ -6,15 +6,24 @@ import (
 	"time"
 )
 
-// GenToken generates a signed token string
-func GenToken(userID uint32) (string, error) {
+func genToken (userID uint32, exp int64) (string, error) {
 	cfg := config.Get()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
 		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(time.Minute * 15).Unix(),
+		"exp": exp,
 	})
 
 	return token.SignedString([]byte(cfg.Jwt.Secret))
+}
+
+// GenTokenAccessToken generates a signed token string
+func GenTokenAccessToken(userID uint32) (string, error) {
+	return genToken(userID, time.Now().Add(time.Minute * 15).Unix())
+}
+
+// GenRefreshToken generates a signed token string
+func GenRefreshToken(userID uint32) (string, error) {
+	return genToken(userID, time.Now().Add(time.Hour * 48).Unix())
 }
