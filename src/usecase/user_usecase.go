@@ -46,7 +46,7 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, string, error)
 	// refresh token
 	grToken, err := security.GenRefreshToken(userRecord.ID)
 	if err != nil {
-		return auth.User{}, "", "", errors.New("could not generate token")
+		return auth.User{}, "", "", errors.New("could not generate refresh token")
 	}
 	refreshToken := auth.SecurityToken{
 		ID: uuid.New().String(),
@@ -57,13 +57,13 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, string, error)
 		UpdatedAt: time.Now(),
 	}
 	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&refreshToken); err != nil {
-		return auth.User{}, "", "", errors.New("could not create or update token")
+		return auth.User{}, "", "", errors.New("could not create or update refresh token")
 	}
 
 	// access token
 	gaToken, err := security.GenTokenAccessToken(userRecord.ID)
 	if err != nil {
-		return auth.User{}, "", "", errors.New("could not generate token")
+		return auth.User{}, "", "", errors.New("could not generate access token")
 	}
 	accessToken := auth.SecurityToken{
 		ID: uuid.New().String(),
@@ -74,7 +74,7 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, string, error)
 		UpdatedAt: time.Now(),
 	}
 	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&accessToken); err != nil {
-		return auth.User{}, "", "", errors.New("could not create or update token")
+		return auth.User{}, "", "", errors.New("could not create or update access token")
 	}
 
 	return userRecord, refreshToken.Token, accessToken.Token, nil
