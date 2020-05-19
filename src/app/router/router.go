@@ -39,7 +39,7 @@ func Serve() {
 	v1.POST("/user/login", userHandler.Login)
 
 	// v1a api/v1/ group (auth)
-	v1.Use(middleware.AuthMiddleware(&diContainer))
+	v1.Use(middleware.AuthMiddleware())
 	v1.GET("/protected", func(context *gin.Context) {
 		context.String(200, "Protected resource")
 	})

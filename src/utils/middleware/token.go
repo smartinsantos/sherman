@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/sarulabs/di"
 	"net/http"
 	"root/config"
+	"root/src/app/registry"
 	"root/src/domain/auth"
 	"strings"
 )
@@ -56,9 +56,29 @@ func getAccessTokenFromRequest(req *http.Request) (*jwt.Token, error) {
 }
 
 // AuthMiddleware returns gin.handlerFunc middleware to handle Auth
-func AuthMiddleware(diContainer *di.Container) gin.HandlerFunc {
+func AuthMiddleware() gin.HandlerFunc {
+	diContainer, _ := registry.GetAppContainer()
+
 	return func(context *gin.Context) {
-		fmt.Println("Running AuthMiddleware")
+		if diContainer == nil {
+			context.AbortWithError(http.StatusInternalServerError, errors.New("internal server error"))
+			return
+		}
+
+		token, err := getAccessTokenFromRequest(context.Request)
+		if err != nil {
+			 context.AbortWithError(http.StatusUnauthorized, errors.New("invalid token"))
+			return
+		}
+
+		tokenMetadata, err := extractAccessTokenMetadata(token)
+		if err != nil {
+			context.AbortWithError(http.StatusUnauthorized, errors.New("invalid token"))
+			return
+		}
+
+		fmt.Println("tokenMetadata =>", tokenMetadata)
+		//securityTokenUseCase := diContainer.Get("security-token-usecase").(*usecase.SecurityTokenUseCase)
 
 		context.Next()
 	}
