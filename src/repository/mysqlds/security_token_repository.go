@@ -2,9 +2,8 @@ package mysqlds
 
 import (
 	"database/sql"
-	"errors"
-	"fmt"
 	"root/src/domain/auth"
+	"root/src/utils/exception"
 )
 
 // SecurityTokenRepository sql implementation of auth.SecurityTokenRepository
@@ -25,7 +24,7 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 
 	switch existingToken.ID {
 	case "":
-	// no existing token -> insert
+		// no existing token -> insert
 		query = `
 			INSERT security_tokens
 			SET
@@ -65,8 +64,21 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 }
 
 // GetTokenByMetadata finds a auth.SecurityToken in the datastore
-func (r *SecurityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMetadata) (*auth.SecurityToken, error) {
-	//@TODO implement
-	fmt.Println("tokenMetadata =>", tokenMetadata)
-	return nil, errors.New("not implemented")
+func (r *SecurityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMetadata) (auth.SecurityToken, error) {
+	var token auth.SecurityToken
+	query := `SELECT * FROM security_tokens WHERE user_id = ? AND type = ? LIMIT 1`
+	row := r.DB.QueryRow(query, tokenMetadata.UserID, tokenMetadata.Type)
+	err := row.Scan(
+		&token.ID,
+		&token.UserID,
+		&token.Token,
+		&token.Type,
+		&token.CreatedAt,
+		&token.UpdatedAt)
+
+	if err != nil {
+		return auth.SecurityToken{}, exception.NewNotFoundError("token not found")
+	}
+
+	return token, nil
 }

@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"errors"
 	"github.com/google/uuid"
 	"root/src/domain/auth"
 	"root/src/utils/exception"
@@ -12,6 +11,7 @@ import (
 // UserUseCase implementation of auth.UserUseCase
 type UserUseCase struct {
 	UserRepo auth.UserRepository
+	SecurityTokenUseCase auth.SecurityTokenUseCase
 	SecurityTokenRepo auth.SecurityTokenRepository
 }
 
@@ -43,39 +43,14 @@ func (uc *UserUseCase) Login(user *auth.User) (auth.User, string, string, error)
 		return auth.User{}, "", "", exception.NewUnAuthorizedError("password doesn't match")
 	}
 
-	//@TODO: move this logic to security_token_usecase
-	// refresh token
-	grToken, err := security.GenRefreshToken(userRecord.ID)
+	refreshToken, err := uc.SecurityTokenUseCase.GenRefreshToken(userRecord.ID)
 	if err != nil {
-		return auth.User{}, "", "", errors.New("could not generate refresh token")
+		return auth.User{}, "", "", err
 	}
-	refreshToken := auth.SecurityToken{
-		ID: uuid.New().String(),
-		UserID: userRecord.ID,
-		Token: grToken,
-		Type: auth.RefreshTokenType,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&refreshToken); err != nil {
-		return auth.User{}, "", "", errors.New("could not create or update refresh token")
-	}
-	//@TODO: move this logic to security_token_usecase
-	// access token
-	gaToken, err := security.GenTokenAccessToken(userRecord.ID)
+
+	accessToken, err := uc.SecurityTokenUseCase.GenAccessToken(userRecord.ID)
 	if err != nil {
-		return auth.User{}, "", "", errors.New("could not generate access token")
-	}
-	accessToken := auth.SecurityToken{
-		ID: uuid.New().String(),
-		UserID: userRecord.ID,
-		Token: gaToken,
-		Type: auth.AccessTokenType,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-	if err = uc.SecurityTokenRepo.CreateOrUpdateToken(&accessToken); err != nil {
-		return auth.User{}, "", "", errors.New("could not create or update access token")
+		return auth.User{}, "", "", err
 	}
 
 	return userRecord, refreshToken.Token, accessToken.Token, nil

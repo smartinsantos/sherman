@@ -18,7 +18,7 @@ type SecurityToken struct {
 const RefreshTokenType = "REFRESH"
 // AccessTokenType security token type for access tokens
 const AccessTokenType = "ACCESS"
-// AccessTokenMetadata struct definition
+// TokenMetadata struct definition
 type TokenMetadata struct {
 	UserID 	string
 	Type 	string
@@ -27,5 +27,11 @@ type TokenMetadata struct {
 // SecurityTokenRepository interface
 type SecurityTokenRepository interface {
 	CreateOrUpdateToken(token *SecurityToken) error
-	GetTokenByMetadata(tokenMetadata *TokenMetadata) (*SecurityToken, error)
+	GetTokenByMetadata(tokenMetadata *TokenMetadata) (SecurityToken, error)
+}
+
+// SecurityTokenUseCase interface
+type SecurityTokenUseCase interface {
+	GenRefreshToken(userID string) (SecurityToken, error)
+	GenAccessToken(userID string) (SecurityToken, error)
 }
