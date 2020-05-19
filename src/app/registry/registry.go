@@ -12,8 +12,8 @@ import (
 	"sync"
 )
 
-// definitions of the application services.
 var (
+	// definitions of the application services.
 	registry = []di.Def {
 		{
 			Name:  "mysql-db",
