@@ -12,7 +12,6 @@ import (
 type UserUseCase struct {
 	UserRepo auth.UserRepository
 	SecurityTokenUseCase auth.SecurityTokenUseCase
-	SecurityTokenRepo auth.SecurityTokenRepository
 }
 
 // Register creates a user

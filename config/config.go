@@ -7,53 +7,53 @@ import (
 	"sync"
 )
 
-type appConfig struct {
-	Env		string
-	Debug	bool
-	Addr	string
-}
+type (
+	appConfig struct {
+		Env		string
+		Debug	bool
+		Addr	string
+	}
+	dbConfig struct {
+		Driver string
+		Name   string
+		User   string
+		Pass   string
+		Host   string
+		Port   string
+	}
+	jwtConfig struct {
+		Secret string
+	}
+	// Config Wrapper for all configurations
+	Config struct {
+		App appConfig
+		Db  dbConfig
+		Jwt jwtConfig
+	}
+)
 
-type dbConfig struct {
-	Driver string
-	Name   string
-	User   string
-	Pass   string
-	Host   string
-	Port   string
-}
-
-type jwtConfig struct {
-	Secret string
-}
-
-// Config Wrapper for all configurations
-type Config struct {
-	App appConfig
-	Db  dbConfig
-	Jwt jwtConfig
-}
-
-var defaultConfig = &Config {
-	App: appConfig {
-		Env:   	"local",
-		Debug: 	true,
-		Addr:  	":8080",
-	},
-	Db: dbConfig {
-		Driver: "mysql",
-		Name:   "db_name",
-		User:   "db_user",
-		Pass:   "db_password",
-		Host:   "db_host",
-		Port:   "db_port",
-	},
-	Jwt: jwtConfig {
-		Secret: "jwt_secret",
-	},
-}
-
-var config *Config
-var once sync.Once
+var (
+	defaultConfig = &Config {
+		App: appConfig {
+			Env:   	"local",
+			Debug: 	true,
+			Addr:  	":8080",
+		},
+		Db: dbConfig {
+			Driver: "mysql",
+			Name:   "db_name",
+			User:   "db_user",
+			Pass:   "db_password",
+			Host:   "db_host",
+			Port:   "db_port",
+		},
+		Jwt: jwtConfig {
+			Secret: "jwt_secret",
+		},
+	}
+	config *Config
+	once sync.Once
+)
 
 // Get returns Config instance
 func Get() *Config {

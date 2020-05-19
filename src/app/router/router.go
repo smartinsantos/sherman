@@ -2,7 +2,6 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sarulabs/di"
 	"log"
 	"root/config"
 	"root/src/app/registry"
@@ -20,17 +19,10 @@ func Serve() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// build di container with registered services
-	builder, err := di.NewBuilder()
+	container, err := registry.NewAppContainer()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	err = builder.Add(registry.Registry...)
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-	container := builder.Build()
-
 	// root router
 	r := gin.Default()
 	// root router middleware

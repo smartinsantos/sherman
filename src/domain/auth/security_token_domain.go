@@ -4,35 +4,39 @@ import (
 	"time"
 )
 
-// SecurityToken entity struct
-type SecurityToken struct {
-	ID 				string		`json:"id"`
-	UserID 			string		`json:"user_id"`
-	Token 			string		`json:"token"`
-	Type			string		`json:"type"`
-	CreatedAt 		time.Time	`json:"created_at"`
-	UpdatedAt 		time.Time	`json:"updated_at"`
-}
+const (
+	// RefreshTokenType constant security token type for refresh tokens
+	RefreshTokenType = "REFRESH"
+	// AccessTokenType constant security token type for access tokens
+	AccessTokenType = "ACCESS"
+)
 
-// RefreshTokenType security token type for refresh tokens
-const RefreshTokenType = "REFRESH"
-// AccessTokenType security token type for access tokens
-const AccessTokenType = "ACCESS"
-// TokenMetadata struct definition
-type TokenMetadata struct {
-	UserID 	string
-	Type 	string
-}
+type (
+	// SecurityToken entity struct
+	SecurityToken struct {
+		ID 				string		`json:"id"`
+		UserID 			string		`json:"user_id"`
+		Token 			string		`json:"token"`
+		Type			string		`json:"type"`
+		CreatedAt 		time.Time	`json:"created_at"`
+		UpdatedAt 		time.Time	`json:"updated_at"`
+	}
+	// TokenMetadata struct definition
+	TokenMetadata struct {
+		UserID 	string
+		Type 	string
+	}
+	// SecurityTokenRepository interface
+	SecurityTokenRepository interface {
+		CreateOrUpdateToken(token *SecurityToken) error
+		GetTokenByMetadata(tokenMetadata *TokenMetadata) (SecurityToken, error)
+	}
+	// SecurityTokenUseCase interface
+	SecurityTokenUseCase interface {
+		GenRefreshToken(userID string) (SecurityToken, error)
+		GenAccessToken(userID string) (SecurityToken, error)
+		IsAccessTokenValid(tokenStr string) error
+	}
+)
 
-// SecurityTokenRepository interface
-type SecurityTokenRepository interface {
-	CreateOrUpdateToken(token *SecurityToken) error
-	GetTokenByMetadata(tokenMetadata *TokenMetadata) (SecurityToken, error)
-}
 
-// SecurityTokenUseCase interface
-type SecurityTokenUseCase interface {
-	GenRefreshToken(userID string) (SecurityToken, error)
-	GenAccessToken(userID string) (SecurityToken, error)
-	IsAccessTokenValid(tokenStr string) error
-}

@@ -10,8 +10,8 @@ import (
 	"root/src/usecase"
 )
 
-// Registry - definitions of the application services.
-var Registry = []di.Def {
+// definitions of the application services.
+var registry = []di.Def {
 	{
 		Name:  "mysql-db",
 		Scope: di.App,
@@ -59,7 +59,6 @@ var Registry = []di.Def {
 			var userUseCase auth.UserUseCase = &usecase.UserUseCase {
 				UserRepo: ctn.Get("mysql-user-repository").(*mysqlds.UserRepository),
 				SecurityTokenUseCase: ctn.Get("security-token-usecase").(*usecase.SecurityTokenUseCase),
-				SecurityTokenRepo: ctn.Get("mysql-security-token-repository").(*mysqlds.SecurityTokenRepository),
 			}
 			return userUseCase, nil
 		},
@@ -73,4 +72,18 @@ var Registry = []di.Def {
 			}, nil
 		},
 	},
+}
+
+// NewAppContainer creates app container with dependency injected services
+func NewAppContainer() (di.Container, error) {
+	builder, err := di.NewBuilder()
+	if err != nil {
+		return nil, err
+	}
+	err = builder.Add(registry...)
+	if err != nil {
+		return nil, err
+	}
+
+	return builder.Build(), nil
 }
