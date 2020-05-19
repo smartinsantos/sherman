@@ -80,8 +80,8 @@ var (
 	once sync.Once
 )
 
-// NewAppContainer creates app container with dependency injected services
-func NewAppContainer() (di.Container, error) {
+// GetAppContainer retrieves an instance of app container with dependency injected services
+func GetAppContainer() (di.Container, error) {
 	once.Do(func() {
 		builder, err := di.NewBuilder()
 		if err != nil {

@@ -2,7 +2,10 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"github.com/sarulabs/di"
 	"net/http"
 	"root/config"
 	"root/src/domain/auth"
@@ -50,4 +53,13 @@ func getAccessTokenFromRequest(req *http.Request) (*jwt.Token, error) {
 	}
 
 	return token, nil
+}
+
+// AuthMiddleware returns gin.handlerFunc middleware to handle Auth
+func AuthMiddleware(diContainer *di.Container) gin.HandlerFunc {
+	return func(context *gin.Context) {
+		fmt.Println("Running AuthMiddleware")
+
+		context.Next()
+	}
 }
