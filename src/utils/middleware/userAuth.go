@@ -8,13 +8,13 @@ import (
 
 // UserAuthMiddleware returns gin.handlerFunc middleware to handle user auth
 func UserAuthMiddleware() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		if _, err := security.GetAndValidateAccessToken(context.Request); err != nil {
-			context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H {
+	return func(ctx *gin.Context) {
+		if _, err := security.GetAndValidateAccessToken(ctx.Request); err != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H {
 				"error": "invalid token",
 			})
 			return
 		}
-		context.Next()
+		ctx.Next()
 	}
 }

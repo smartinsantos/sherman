@@ -91,12 +91,14 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
-// GetUser gets a user
-func (h *UserHandler) GetUser(ctx *gin.Context) {
-
-}
-
 // RefreshAccessToken refreshes user access token
 func (h *UserHandler) RefreshAccessToken(ctx *gin.Context) {
 
+
+	ctx.String(200, "RefreshAccessToken")
+}
+
+// Logouts the user
+func (h *UserHandler) Logout(ctx *gin.Context) {
+	ctx.String(200, "Logout")
 }

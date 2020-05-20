@@ -26,8 +26,8 @@ func Serve() {
 	// root router : /
 	router := gin.Default()
 	router.Use(middleware.CORSMiddleware())
-	router.GET("/", func(context *gin.Context) {
-		context.String(200, "Hello from /")
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.String(200, "Hello from /")
 	})
 
 	// router: /api/v1
@@ -39,13 +39,11 @@ func Serve() {
 	{
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
+		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
 
 		// auth middleware protected routes
 		userRouter.Use(middleware.UserAuthMiddleware())
-		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
-		userRouter.GET("/logout", func(context *gin.Context) {
-			context.String(200, "Logout")
-		})
+		userRouter.GET("/logout", userHandler.Logout)
 	}
 
 	// run the server
