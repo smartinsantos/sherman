@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"root/src/delivery/handler/presenter"
 	"root/src/delivery/handler/validator"
@@ -24,7 +23,6 @@ func (h *UserHandler) Register(ctx *gin.Context) {
 	if err := ctx.BindJSON(&user); err != nil {
 		res.SetError(http.StatusUnprocessableEntity, err.Error())
 		ctx.JSON(res.GetStatus(), res.GetBody())
-		log.Println(err.Error())
 		return
 	}
 
@@ -32,7 +30,6 @@ func (h *UserHandler) Register(ctx *gin.Context) {
 	if len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		ctx.JSON(res.GetStatus(), res.GetBody())
-		log.Println(errors)
 		return
 	}
 
@@ -44,7 +41,6 @@ func (h *UserHandler) Register(ctx *gin.Context) {
 			res.SetInternalServerError()
 		}
 		ctx.JSON(res.GetStatus(), res.GetBody())
-		log.Println(err)
 		return
 	}
 
@@ -62,14 +58,12 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 	if err := ctx.BindJSON(&user); err != nil {
 		res.SetError(http.StatusUnprocessableEntity, err.Error())
 		ctx.JSON(res.GetStatus(), res.GetBody())
-		log.Println(err)
 		return
 	}
 
 	if errors := validator.ValidateUserParams(&user, "login"); len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		ctx.JSON(res.GetStatus(), res.GetBody())
-		log.Println(errors)
 		return
 	}
 
@@ -84,7 +78,6 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 			res.SetInternalServerError()
 		}
 		ctx.JSON(res.GetStatus(), res.GetBody())
-		log.Println(err)
 		return
 	}
 

@@ -25,6 +25,7 @@ type (
 	TokenMetadata struct {
 		UserID 	string
 		Type 	string
+		Token	string
 	}
 	// SecurityTokenRepository interface
 	SecurityTokenRepository interface {
@@ -35,7 +36,7 @@ type (
 	SecurityTokenUseCase interface {
 		GenRefreshToken(userID string) (SecurityToken, error)
 		GenAccessToken(userID string) (SecurityToken, error)
-		IsAccessTokenValid(tokenStr string) error
+		IsRefreshTokenValid(tokenStr string) bool
 	}
 )
 
