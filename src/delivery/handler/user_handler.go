@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"root/src/delivery/handler/presenter"
 	"root/src/delivery/handler/validator"
 	"root/src/domain/auth"
 	"root/src/utils/exception"
@@ -135,9 +135,20 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 	res := response.NewResponse()
 	userID := ctx.Param("id")
 
-	fmt.Println("userID =>", userID)
+	user, err := h.UserUseCase.GetUserByID(userID)
 
-	res.SetData(http.StatusOK, nil)
+	if err != nil {
+		switch err.(type) {
+		case *exception.NotFoundError:
+			res.SetError(http.StatusNotFound, err.Error())
+		default:
+			res.SetInternalServerError()
+		}
+		ctx.JSON(res.GetStatus(), res.GetBody())
+	}
+
+	res.SetData(http.StatusOK, gin.H{ "user": presenter.PresentUser(&user) })
+	ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // Logout logs out the user

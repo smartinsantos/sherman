@@ -12,7 +12,7 @@ type UserRepository struct {
 	DB *sql.DB
 }
 
-// CreateUser persist a auth.User in the db
+// CreateUser persist a auth.User from the datastore
 func (r *UserRepository) CreateUser(user *auth.User) error {
 	query := `
 		INSERT users
@@ -48,7 +48,7 @@ func (r *UserRepository) CreateUser(user *auth.User) error {
 	return nil
 }
 
-// GetUserByEmail gets a auth.User by email in the db
+// GetUserByID gets a auth.User by email in the datastore
 func (r *UserRepository) GetUserByID(id string) (auth.User, error) {
 	var user auth.User
 
@@ -74,7 +74,7 @@ func (r *UserRepository) GetUserByID(id string) (auth.User, error) {
 	return user, nil
 }
 
-// GetUserByEmail gets a auth.User by email in the db
+// GetUserByEmail gets a auth.User by email from the datastore
 func (r *UserRepository) GetUserByEmail(email string) (auth.User, error) {
 	var user auth.User
 

@@ -30,7 +30,7 @@ func (uc *UserUseCase) Register(user *auth.User) error {
 	return err
 }
 
-// VerifyCredentials verifies user credentials
+// VerifyCredentials verifies a user credentials
 func (uc *UserUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
 	userRecord, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
@@ -42,4 +42,9 @@ func (uc *UserUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
 	}
 
 	return userRecord, nil
+}
+
+// GetUserByID creates a user by id
+func (uc *UserUseCase) GetUserByID(id string) (auth.User, error) {
+	return uc.UserRepo.GetUserByID(id)
 }

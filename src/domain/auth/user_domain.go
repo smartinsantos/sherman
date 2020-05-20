@@ -25,6 +25,7 @@ type (
 	// UserUseCase interface
 	UserUseCase interface {
 		Register(user *User) error
+		GetUserByID(id string) (User, error)
 		VerifyCredentials(user *User) (User, error)
 	}
 )
