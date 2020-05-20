@@ -3,7 +3,7 @@ package security
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	"net/http"
+	"github.com/gin-gonic/gin"
 	"root/config"
 	"root/src/domain/auth"
 	"strings"
@@ -22,8 +22,61 @@ func GenToken(userID string, tokenType string, exp int64) (string, error) {
 	return token.SignedString([]byte(config.Get().Jwt.Secret))
 }
 
-// ExtractTokenMetadata  extracts metadata of *jwt.Token
-func ExtractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
+// GetAndValidateAccessToken gets the access token from an http request and verifies signature
+func GetAndValidateAccessToken(ctx *gin.Context) (auth.TokenMetadata, error) {
+	bearToken := ctx.Request.Header.Get("Authorization")
+	tokenArr := strings.Split(bearToken, " ")
+	if len(tokenArr) != 2 {
+		return auth.TokenMetadata{}, errors.New("access token not found")
+	}
+
+	tokenStr := tokenArr[1]
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+ 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+ 		}
+
+ 		return []byte(config.Get().Jwt.Secret), nil
+	})
+	if err != nil {
+	 return auth.TokenMetadata{}, err
+	}
+
+	tokenMetadata, err := extractTokenMetadata(token)
+	if err != nil {
+		return auth.TokenMetadata{}, err
+	}
+	return tokenMetadata, nil
+}
+
+// GetAndValidateAccessToken gets the access token from an http request and verifies signature
+func GetAndValidateRefreshToken(ctx *gin.Context) (auth.TokenMetadata, error) {
+	refreshTokenCookie, err := ctx.Request.Cookie("REFRESH_TOKEN")
+	if err != nil {
+		return auth.TokenMetadata{}, errors.New("refresh token not found")
+	}
+
+	tokenStr := refreshTokenCookie.Value
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+
+		return []byte(config.Get().Jwt.Secret), nil
+	})
+	if err != nil {
+	 return auth.TokenMetadata{}, err
+	}
+
+	tokenMetadata, err := extractTokenMetadata(token)
+	if err != nil {
+		return auth.TokenMetadata{}, err
+	}
+	return tokenMetadata, nil
+}
+
+// extractTokenMetadata  extracts metadata of *jwt.Token
+func extractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
 		return auth.TokenMetadata{}, errors.New("invalid token data")
@@ -44,31 +97,4 @@ func ExtractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
 		Type: tokenType,
 		Token: token.Raw,
 	}, nil
-}
-
-// GetAndValidateAccessToken gets the access token from an http request and verifies signature
-func GetAndValidateAccessToken(req *http.Request) (auth.TokenMetadata, error) {
-	bearToken := req.Header.Get("Authorization")
-	tokenArr := strings.Split(bearToken, " ")
-	if len(tokenArr) != 2 {
-		return auth.TokenMetadata{}, errors.New("access token not found")
-	}
-
-	tokenStr := tokenArr[1]
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
- 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
- 		}
-
- 		return []byte(config.Get().Jwt.Secret), nil
-	})
-	if err != nil {
-	 return auth.TokenMetadata{}, err
-	}
-
-	tokenMetadata, err := ExtractTokenMetadata(token)
-	if err != nil {
-		return auth.TokenMetadata{}, err
-	}
-	return tokenMetadata, nil
 }

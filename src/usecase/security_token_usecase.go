@@ -55,7 +55,7 @@ func (uc *SecurityTokenUseCase) GenAccessToken(userID string) (auth.SecurityToke
 }
 
 // RefreshAccessToken generates a new access token from a refresh token
-func (uc *SecurityTokenUseCase) RefreshAccessToken(refreshTokenMetadata *auth.TokenMetadata) (auth.SecurityToken, error) {
+func (uc *SecurityTokenUseCase) RefreshAccessToken(refreshTokenMetadata *auth.TokenMetadata) (string, error) {
 	//@TODO: implement
-	return auth.SecurityToken{}, nil
+	return "", nil
 }

@@ -72,6 +72,7 @@ var (
 			Build: func(ctn di.Container) (interface{}, error) {
 				return &handler.UserHandler {
 					UserUseCase: ctn.Get("user-usecase").(*usecase.UserUseCase),
+					SecurityTokenUseCase: ctn.Get("security-token-usecase").(*usecase.SecurityTokenUseCase),
 				}, nil
 			},
 		},

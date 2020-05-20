@@ -3,16 +3,17 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"root/src/delivery/handler/presenter"
 	"root/src/delivery/handler/validator"
 	"root/src/domain/auth"
 	"root/src/utils/exception"
 	"root/src/utils/response"
+	"root/src/utils/security"
 )
 
 // UserHandler handler for /user/[routes]
 type UserHandler struct {
 	UserUseCase auth.UserUseCase
+	SecurityTokenUseCase auth.SecurityTokenUseCase
 }
 
 // Register registers the user
@@ -44,9 +45,7 @@ func (h *UserHandler) Register(ctx *gin.Context) {
 		return
 	}
 
-	res.SetData(http.StatusCreated, gin.H {
-		"user": presenter.PresentUser(&user),
-	})
+	res.SetData(http.StatusCreated, nil)
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
@@ -67,7 +66,7 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	userRecord, refreshToken, accessToken, err := h.UserUseCase.Login(&user)
+	refreshTokenStr, accessTokenStr, err := h.UserUseCase.Login(&user)
 	if err != nil {
 		switch err.(type) {
 		case *exception.NotFoundError:
@@ -81,21 +80,32 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	res.SetData(http.StatusOK, gin.H {
-		"access_token": accessToken,
-		"user": presenter.PresentUser(&userRecord),
-	})
-
+	res.SetData(http.StatusOK, gin.H { "access_token": accessTokenStr })
 	//@TODO: add secure to cookie when tls is ready
-	ctx.SetCookie("REFRESH_TOKEN", refreshToken, 3600, "/", ctx.Request.Host, false, true)
+	ctx.SetCookie("REFRESH_TOKEN", refreshTokenStr, 3600, "/", ctx.Request.Host, false, true)
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // RefreshAccessToken refreshes user access token
 func (h *UserHandler) RefreshAccessToken(ctx *gin.Context) {
+	res := response.NewResponse()
 
+	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
+	if err != nil {
+		res.SetError(http.StatusUnauthorized, err.Error())
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
 
-	ctx.String(200, "RefreshAccessToken")
+	accessTokenStr, err := h.SecurityTokenUseCase.RefreshAccessToken(&refreshTokenMetadata)
+	if err != nil {
+		res.SetError(http.StatusUnauthorized, err.Error())
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	res.SetData(http.StatusOK, gin.H { "access_token": accessTokenStr })
+	ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // Logouts the user
