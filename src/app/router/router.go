@@ -42,7 +42,7 @@ func Serve() {
 		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
 
 		// auth middleware protected routes
-		userRouter.GET("/get/:id", userHandler.GetUser)
+		userRouter.GET("/user/:id", userHandler.GetUser)
 		userRouter.Use(middleware.UserAuthMiddleware())
 		userRouter.GET("/logout", userHandler.Logout)
 	}
