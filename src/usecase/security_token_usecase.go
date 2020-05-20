@@ -54,8 +54,8 @@ func (uc *SecurityTokenUseCase) GenAccessToken(userID string) (auth.SecurityToke
 	return accessToken, nil
 }
 
-// RefreshAccessToken generates a new access token from a refresh token
-func (uc *SecurityTokenUseCase) RefreshAccessToken(refreshTokenMetadata *auth.TokenMetadata) (string, error) {
-	//@TODO: implement
-	return "", nil
+// IsRefreshTokenStored checks if a refresh token is persisted in the datastore
+func (uc *SecurityTokenUseCase) IsRefreshTokenStored(refreshTokenMetadata *auth.TokenMetadata) bool {
+	_, err := uc.SecurityTokenRepo.GetTokenByMetadata(refreshTokenMetadata)
+	return err == nil
 }

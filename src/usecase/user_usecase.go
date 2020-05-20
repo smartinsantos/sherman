@@ -11,7 +11,6 @@ import (
 // UserUseCase implementation of auth.UserUseCase
 type UserUseCase struct {
 	UserRepo auth.UserRepository
-	SecurityTokenUseCase auth.SecurityTokenUseCase
 }
 
 // Register creates a user
@@ -31,26 +30,16 @@ func (uc *UserUseCase) Register(user *auth.User) error {
 	return err
 }
 
-// Login logs a user in, returns user record and user refresh, access tokens
-func (uc *UserUseCase) Login(user *auth.User) (string, string, error) {
+// VerifyCredentials verifies user credentials
+func (uc *UserUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
 	userRecord, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
-		return "", "", err
+		return auth.User{}, err
 	}
 
 	if err := security.VerifyPassword(userRecord.Password, user.Password); err != nil {
-		return "", "", exception.NewUnAuthorizedError("password doesn't match")
+		return auth.User{}, exception.NewUnAuthorizedError("password doesn't match")
 	}
 
-	refreshToken, err := uc.SecurityTokenUseCase.GenRefreshToken(userRecord.ID)
-	if err != nil {
-		return "", "", err
-	}
-
-	accessToken, err := uc.SecurityTokenUseCase.GenAccessToken(userRecord.ID)
-	if err != nil {
-		return "", "", err
-	}
-
-	return refreshToken.Token, accessToken.Token, nil
+	return userRecord, nil
 }

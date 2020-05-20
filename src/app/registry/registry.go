@@ -61,7 +61,6 @@ var (
 			Build: func(ctn di.Container) (interface{}, error) {
 				var userUseCase auth.UserUseCase = &usecase.UserUseCase {
 					UserRepo: ctn.Get("mysql-user-repository").(*mysqlds.UserRepository),
-					SecurityTokenUseCase: ctn.Get("security-token-usecase").(*usecase.SecurityTokenUseCase),
 				}
 				return userUseCase, nil
 			},

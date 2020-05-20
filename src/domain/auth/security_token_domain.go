@@ -36,7 +36,7 @@ type (
 	SecurityTokenUseCase interface {
 		GenRefreshToken(userID string) (SecurityToken, error)
 		GenAccessToken(userID string) (SecurityToken, error)
-		RefreshAccessToken(refreshTokenMetadata *TokenMetadata) (string, error)
+		IsRefreshTokenStored(refreshTokenMetadata *TokenMetadata) bool
 	}
 )
 

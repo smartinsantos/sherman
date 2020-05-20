@@ -22,7 +22,7 @@ func GenToken(userID string, tokenType string, exp int64) (string, error) {
 	return token.SignedString([]byte(config.Get().Jwt.Secret))
 }
 
-// GetAndValidateAccessToken gets the access token from an http request and verifies signature
+// GetAndValidateAccessToken gets the access token from *gin.Context and verifies its signature
 func GetAndValidateAccessToken(ctx *gin.Context) (auth.TokenMetadata, error) {
 	bearToken := ctx.Request.Header.Get("Authorization")
 	tokenArr := strings.Split(bearToken, " ")
@@ -49,7 +49,7 @@ func GetAndValidateAccessToken(ctx *gin.Context) (auth.TokenMetadata, error) {
 	return tokenMetadata, nil
 }
 
-// GetAndValidateAccessToken gets the access token from an http request and verifies signature
+// GetAndValidateRefreshToken gets the refresh token from *gin.Context and verifies its signature
 func GetAndValidateRefreshToken(ctx *gin.Context) (auth.TokenMetadata, error) {
 	refreshTokenCookie, err := ctx.Request.Cookie("REFRESH_TOKEN")
 	if err != nil {

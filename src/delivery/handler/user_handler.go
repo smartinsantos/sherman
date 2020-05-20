@@ -66,7 +66,8 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	refreshTokenStr, accessTokenStr, err := h.UserUseCase.Login(&user)
+	verifiedUser, err := h.UserUseCase.VerifyCredentials(&user)
+
 	if err != nil {
 		switch err.(type) {
 		case *exception.NotFoundError:
@@ -80,9 +81,23 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	res.SetData(http.StatusOK, gin.H { "access_token": accessTokenStr })
+	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(verifiedUser.ID)
+	if err != nil {
+		res.SetInternalServerError()
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	refreshToken, err := h.SecurityTokenUseCase.GenRefreshToken(verifiedUser.ID)
+	if err != nil {
+		res.SetInternalServerError()
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	res.SetData(http.StatusOK, gin.H { "access_token": accessToken.Token })
 	//@TODO: add secure to cookie when tls is ready
-	ctx.SetCookie("REFRESH_TOKEN", refreshTokenStr, 3600, "/", ctx.Request.Host, false, true)
+	ctx.SetCookie("REFRESH_TOKEN", refreshToken.Token, 3600, "/", ctx.Request.Host, false, true)
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
@@ -97,18 +112,24 @@ func (h *UserHandler) RefreshAccessToken(ctx *gin.Context) {
 		return
 	}
 
-	accessTokenStr, err := h.SecurityTokenUseCase.RefreshAccessToken(&refreshTokenMetadata)
+	if !h.SecurityTokenUseCase.IsRefreshTokenStored(&refreshTokenMetadata) {
+		res.SetError(http.StatusUnauthorized, "invalid refresh token")
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(refreshTokenMetadata.UserID)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, err.Error())
 		ctx.JSON(res.GetStatus(), res.GetBody())
 		return
 	}
 
-	res.SetData(http.StatusOK, gin.H { "access_token": accessTokenStr })
+	res.SetData(http.StatusOK, gin.H { "access_token": accessToken.Token })
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
-// Logouts the user
+// Logout logs out the user
 func (h *UserHandler) Logout(ctx *gin.Context) {
 	ctx.String(200, "Logout")
 }
