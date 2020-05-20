@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"root/src/delivery/handler/validator"
@@ -127,6 +128,16 @@ func (h *UserHandler) RefreshAccessToken(ctx *gin.Context) {
 
 	res.SetData(http.StatusOK, gin.H { "access_token": accessToken.Token })
 	ctx.JSON(res.GetStatus(), res.GetBody())
+}
+
+// GetUser gets the user from access token
+func (h *UserHandler) GetUser(ctx *gin.Context) {
+	res := response.NewResponse()
+	userID := ctx.Param("id")
+
+	fmt.Println("userID =>", userID)
+
+	res.SetData(http.StatusOK, nil)
 }
 
 // Logout logs out the user

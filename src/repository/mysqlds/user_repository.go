@@ -49,6 +49,32 @@ func (r *UserRepository) CreateUser(user *auth.User) error {
 }
 
 // GetUserByEmail gets a auth.User by email in the db
+func (r *UserRepository) GetUserByID(id string) (auth.User, error) {
+	var user auth.User
+
+	query := `SELECT * FROM users WHERE id = ? LIMIT 1`
+	row := r.DB.QueryRow(query, id)
+	err := row.Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.EmailAddress,
+		&user.Password,
+		&user.Active,
+		&user.CreatedAt,
+		&user.UpdatedAt)
+
+	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
+			err = exception.NewNotFoundError("user not found")
+		}
+		return auth.User{}, err
+	}
+
+	return user, nil
+}
+
+// GetUserByEmail gets a auth.User by email in the db
 func (r *UserRepository) GetUserByEmail(email string) (auth.User, error) {
 	var user auth.User
 

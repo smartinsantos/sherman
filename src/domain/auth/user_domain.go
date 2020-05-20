@@ -19,6 +19,7 @@ type (
 	// UserRepository interface
 	UserRepository interface {
 		CreateUser(user *User) error
+		GetUserByID(id string) (User, error)
 		GetUserByEmail(email string) (User, error)
 	}
 	// UserUseCase interface

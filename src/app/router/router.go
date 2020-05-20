@@ -34,7 +34,7 @@ func Serve() {
 	v1Router := router.Group("/api/v1")
 
 	// router: /api/v1/users
-	userRouter := v1Router.Group("/user")
+	userRouter := v1Router.Group("/users")
 	userHandler := diContainer.Get("user-handler").(*handler.UserHandler)
 	{
 		userRouter.POST("/register", userHandler.Register)
@@ -42,6 +42,7 @@ func Serve() {
 		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
 
 		// auth middleware protected routes
+		userRouter.GET("/get/:id", userHandler.GetUser)
 		userRouter.Use(middleware.UserAuthMiddleware())
 		userRouter.GET("/logout", userHandler.Logout)
 	}
