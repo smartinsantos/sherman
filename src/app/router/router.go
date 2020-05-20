@@ -2,7 +2,6 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sarulabs/di"
 	"log"
 	"root/config"
 	"root/src/app/registry"
@@ -20,36 +19,35 @@ func Serve() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// build di container with registered services
-	builder, err := di.NewBuilder()
+	diContainer, err := registry.GetAppContainer()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	err = builder.Add(registry.Registry...)
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-	container := builder.Build()
+	// root router : /
+	router := gin.Default()
+	router.Use(middleware.CORSMiddleware())
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.String(200, "Hello from /")
+	})
 
-	// root router
-	r := gin.Default()
-	// root router middleware
-	r.Use(middleware.CORSMiddleware())
-	// root routes
+	// router: /api/v1
+	v1Router := router.Group("/api/v1")
+
+	// router: /api/v1/users
+	userRouter := v1Router.Group("/users")
+	userHandler := diContainer.Get("user-handler").(*handler.UserHandler)
 	{
-		r.GET("/", func(context *gin.Context) {
-			context.String(200, "Hello from /")
-		})
+		userRouter.POST("/register", userHandler.Register)
+		userRouter.POST("/login", userHandler.Login)
+		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
+
+		// auth middleware protected routes
+		userRouter.Use(middleware.UserAuthMiddleware())
+		userRouter.GET("/user/:id", userHandler.GetUser)
+		userRouter.GET("/logout", userHandler.Logout)
 	}
 
-	// v1 group
-	v1g := r.Group("/api/v1")
-	{
-		userHandler := container.Get("user-handler").(*handler.UserHandler)
-		v1g.POST("/user/register", userHandler.Register)
-		v1g.POST("/user/login", userHandler.Login)
-	}
 	// run the server
 	log.Println("Server Running on PORT", cfg.App.Addr)
-	log.Fatalln(r.Run(cfg.App.Addr))
+	log.Fatalln(router.Run(cfg.App.Addr))
 }

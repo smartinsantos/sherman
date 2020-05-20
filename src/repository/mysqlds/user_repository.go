@@ -2,18 +2,18 @@ package mysqlds
 
 import (
 	"database/sql"
-	"root/src/domain"
+	"root/src/domain/auth"
 	"root/src/utils/exception"
 	"strings"
 )
 
-// UserRepository sql implementation of domain.UserRepository
+// UserRepository sql implementation of auth.UserRepository
 type UserRepository struct {
 	DB *sql.DB
 }
 
-// CreateUser persist a domain.user in the db
-func (r *UserRepository) CreateUser(user *domain.User) error {
+// CreateUser persist a auth.User from the datastore
+func (r *UserRepository) CreateUser(user *auth.User) error {
 	query := `
 		INSERT users
 		SET
@@ -48,14 +48,13 @@ func (r *UserRepository) CreateUser(user *domain.User) error {
 	return nil
 }
 
-// GetUserByEmail find a domain.user by email in the db
-func (r *UserRepository) GetUserByEmail(email string) (domain.User, error) {
-	var err error
-	var user domain.User
+// GetUserByID gets a auth.User by email in the datastore
+func (r *UserRepository) GetUserByID(id string) (auth.User, error) {
+	var user auth.User
 
-	query := `SELECT * FROM users WHERE email_address = ? LIMIT 1`
-	row := r.DB.QueryRow(query, email)
-	err = row.Scan(
+	query := `SELECT * FROM users WHERE id = ? LIMIT 1`
+	row := r.DB.QueryRow(query, id)
+	err := row.Scan(
 		&user.ID,
 		&user.FirstName,
 		&user.LastName,
@@ -69,7 +68,33 @@ func (r *UserRepository) GetUserByEmail(email string) (domain.User, error) {
 		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
 			err = exception.NewNotFoundError("user not found")
 		}
-		return domain.User{}, err
+		return auth.User{}, err
+	}
+
+	return user, nil
+}
+
+// GetUserByEmail gets a auth.User by email from the datastore
+func (r *UserRepository) GetUserByEmail(email string) (auth.User, error) {
+	var user auth.User
+
+	query := `SELECT * FROM users WHERE email_address = ? LIMIT 1`
+	row := r.DB.QueryRow(query, email)
+	err := row.Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.EmailAddress,
+		&user.Password,
+		&user.Active,
+		&user.CreatedAt,
+		&user.UpdatedAt)
+
+	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
+			err = exception.NewNotFoundError("user not found")
+		}
+		return auth.User{}, err
 	}
 
 	return user, nil

@@ -5,19 +5,21 @@ import (
 	"net/http"
 	"root/src/delivery/handler/presenter"
 	"root/src/delivery/handler/validator"
-	"root/src/domain"
+	"root/src/domain/auth"
 	"root/src/utils/exception"
 	"root/src/utils/response"
+	"root/src/utils/security"
 )
 
 // UserHandler handler for /user/[routes]
 type UserHandler struct {
-	UserUseCase domain.UserUseCase
+	UserUseCase auth.UserUseCase
+	SecurityTokenUseCase auth.SecurityTokenUseCase
 }
 
 // Register registers the user
-func (h *UserHandler) Register (ctx *gin.Context) {
-	var user domain.User
+func (h *UserHandler) Register(ctx *gin.Context) {
+	var user auth.User
 	res := response.NewResponse()
 
 	if err := ctx.BindJSON(&user); err != nil {
@@ -33,7 +35,7 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 		return
 	}
 
-	if err := h.UserUseCase.CreateUser(&user); err != nil {
+	if err := h.UserUseCase.Register(&user); err != nil {
 		switch err.(type) {
 		case *exception.DuplicateEntryError:
 			res.SetError(http.StatusForbidden, err.Error())
@@ -44,15 +46,13 @@ func (h *UserHandler) Register (ctx *gin.Context) {
 		return
 	}
 
-	res.SetData(http.StatusCreated, gin.H {
-		"user": presenter.PresentUser(&user),
-	})
+	res.SetData(http.StatusCreated, nil)
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // Login logs the user in
-func (h *UserHandler) Login (ctx *gin.Context) {
-	var user domain.User
+func (h *UserHandler) Login(ctx *gin.Context) {
+	var user auth.User
 	res := response.NewResponse()
 
 	if err := ctx.BindJSON(&user); err != nil {
@@ -67,7 +67,8 @@ func (h *UserHandler) Login (ctx *gin.Context) {
 		return
 	}
 
-	userRecord, err := h.UserUseCase.Login(&user)
+	verifiedUser, err := h.UserUseCase.VerifyCredentials(&user)
+
 	if err != nil {
 		switch err.(type) {
 		case *exception.NotFoundError:
@@ -81,9 +82,94 @@ func (h *UserHandler) Login (ctx *gin.Context) {
 		return
 	}
 
-	res.SetData(http.StatusOK, gin.H {
-		"token": "",
-		"user": presenter.PresentUser(&userRecord),
-	})
+	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(verifiedUser.ID)
+	if err != nil {
+		res.SetInternalServerError()
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	refreshToken, err := h.SecurityTokenUseCase.GenRefreshToken(verifiedUser.ID)
+	if err != nil {
+		res.SetInternalServerError()
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	res.SetData(http.StatusOK, gin.H { "access_token": accessToken.Token })
+	//@TODO: add secure to cookie when tls is ready
+	ctx.SetCookie("REFRESH_TOKEN", refreshToken.Token, 3600, "/", ctx.Request.Host, false, true)
 	ctx.JSON(res.GetStatus(), res.GetBody())
+}
+
+// RefreshAccessToken refreshes user access token
+func (h *UserHandler) RefreshAccessToken(ctx *gin.Context) {
+	res := response.NewResponse()
+
+	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
+	if err != nil {
+		res.SetError(http.StatusUnauthorized, "invalid refresh token")
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	if !h.SecurityTokenUseCase.IsRefreshTokenStored(&refreshTokenMetadata) {
+		res.SetError(http.StatusUnauthorized, "invalid refresh token")
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(refreshTokenMetadata.UserID)
+	if err != nil {
+		res.SetError(http.StatusUnauthorized, err.Error())
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	res.SetData(http.StatusOK, gin.H { "access_token": accessToken.Token })
+	ctx.JSON(res.GetStatus(), res.GetBody())
+}
+
+// GetUser gets the user from access token
+func (h *UserHandler) GetUser(ctx *gin.Context) {
+	res := response.NewResponse()
+	userID := ctx.Param("id")
+
+	user, err := h.UserUseCase.GetUserByID(userID)
+
+	if err != nil {
+		switch err.(type) {
+		case *exception.NotFoundError:
+			res.SetError(http.StatusNotFound, err.Error())
+		default:
+			res.SetInternalServerError()
+		}
+		ctx.JSON(res.GetStatus(), res.GetBody())
+	}
+
+	res.SetData(http.StatusOK, gin.H{ "user": presenter.PresentUser(&user) })
+	ctx.JSON(res.GetStatus(), res.GetBody())
+}
+
+// Logout logs out the user
+func (h *UserHandler) Logout(ctx *gin.Context) {
+	res := response.NewResponse()
+
+	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
+	if err != nil {
+		res.SetError(http.StatusUnauthorized, err.Error())
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	err = h.SecurityTokenUseCase.RemoveRefreshToken(&refreshTokenMetadata)
+	if err != nil {
+		res.SetInternalServerError()
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	//@TODO: add secure to cookie when tls is ready
+	ctx.SetCookie("REFRESH_TOKEN", "", 0, "/", ctx.Request.Host, false, true)
+	res.SetData(http.StatusOK, nil)
 }

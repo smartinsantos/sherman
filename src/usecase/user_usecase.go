@@ -2,20 +2,20 @@ package usecase
 
 import (
 	"github.com/google/uuid"
-	"root/src/domain"
+	"root/src/domain/auth"
 	"root/src/utils/exception"
 	"root/src/utils/security"
 	"time"
 )
 
-// UserUseCase implementation of domain.UserUseCase
+// UserUseCase implementation of auth.UserUseCase
 type UserUseCase struct {
-	UserRepo domain.UserRepository
+	UserRepo auth.UserRepository
 }
 
-// CreateUser creates a user
-func (uc *UserUseCase) CreateUser(user *domain.User) error {
-	user.ID = uuid.New().ID()
+// Register creates a user
+func (uc *UserUseCase) Register(user *auth.User) error {
+	user.ID = uuid.New().String()
 	user.Active = true
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
@@ -30,17 +30,21 @@ func (uc *UserUseCase) CreateUser(user *domain.User) error {
 	return err
 }
 
-// Login logs a user in, returns user record and user token[TODO]
-func (uc *UserUseCase) Login(user *domain.User) (domain.User, error) {
-	record, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
+// VerifyCredentials verifies a user credentials
+func (uc *UserUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
+	userRecord, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
-		return domain.User{}, err
+		return auth.User{}, err
 	}
 
-	err = security.VerifyPassword(record.Password, user.Password)
-	if err != nil {
-		return record, exception.NewUnAuthorizedError("password doesn't match")
+	if err := security.VerifyPassword(userRecord.Password, user.Password); err != nil {
+		return auth.User{}, exception.NewUnAuthorizedError("password doesn't match")
 	}
 
-	return record, nil
+	return userRecord, nil
+}
+
+// GetUserByID creates a user by id
+func (uc *UserUseCase) GetUserByID(id string) (auth.User, error) {
+	return uc.UserRepo.GetUserByID(id)
 }
