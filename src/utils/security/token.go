@@ -42,6 +42,7 @@ func ExtractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
 	return auth.TokenMetadata{
 		UserID: userID,
 		Type: tokenType,
+		Token: token.Raw,
 	}, nil
 }
 

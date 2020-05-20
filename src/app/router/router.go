@@ -23,28 +23,32 @@ func Serve() {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	// root router
-	r := gin.Default()
-	r.Use(middleware.CORSMiddleware())
-	r.GET("/", func(context *gin.Context) {
+	// root router : /
+	router := gin.Default()
+	router.Use(middleware.CORSMiddleware())
+	router.GET("/", func(context *gin.Context) {
 		context.String(200, "Hello from /")
 	})
 
-	// handlers
+	// router: /api/v1
+	v1Router := router.Group("/api/v1")
+
+	// router: /api/v1/users
+	userRouter := v1Router.Group("/user")
 	userHandler := diContainer.Get("user-handler").(*handler.UserHandler)
+	{
+		userRouter.POST("/register", userHandler.Register)
+		userRouter.POST("/login", userHandler.Login)
 
-	// v1 /api/v1/ group (auth-less)
-	v1 := r.Group("/api/v1")
-	v1.POST("/user/register", userHandler.Register)
-	v1.POST("/user/login", userHandler.Login)
-
-	// v1a api/v1/ group (auth)
-	v1.Use(middleware.AuthMiddleware())
-	v1.GET("/protected", func(context *gin.Context) {
-		context.String(200, "Protected resource")
-	})
+		// auth middleware protected routes
+		userRouter.Use(middleware.UserAuthMiddleware())
+		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
+		userRouter.GET("/logout", func(context *gin.Context) {
+			context.String(200, "Logout")
+		})
+	}
 
 	// run the server
 	log.Println("Server Running on PORT", cfg.App.Addr)
-	log.Fatalln(r.Run(cfg.App.Addr))
+	log.Fatalln(router.Run(cfg.App.Addr))
 }

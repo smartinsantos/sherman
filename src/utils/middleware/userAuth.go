@@ -6,8 +6,8 @@ import (
 	"root/src/utils/security"
 )
 
-// AuthMiddleware returns gin.handlerFunc middleware to handle Auth
-func AuthMiddleware() gin.HandlerFunc {
+// UserAuthMiddleware returns gin.handlerFunc middleware to handle user auth
+func UserAuthMiddleware() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		if _, err := security.GetAndValidateAccessToken(context.Request); err != nil {
 			context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H {
