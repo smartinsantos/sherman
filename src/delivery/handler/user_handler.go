@@ -107,7 +107,7 @@ func (h *UserHandler) RefreshAccessToken(ctx *gin.Context) {
 
 	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
 	if err != nil {
-		res.SetError(http.StatusUnauthorized, err.Error())
+		res.SetError(http.StatusUnauthorized, "invalid refresh token")
 		ctx.JSON(res.GetStatus(), res.GetBody())
 		return
 	}
@@ -131,5 +131,23 @@ func (h *UserHandler) RefreshAccessToken(ctx *gin.Context) {
 
 // Logout logs out the user
 func (h *UserHandler) Logout(ctx *gin.Context) {
-	ctx.String(200, "Logout")
+	res := response.NewResponse()
+
+	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
+	if err != nil {
+		res.SetError(http.StatusUnauthorized, err.Error())
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	err = h.SecurityTokenUseCase.RemoveRefreshToken(&refreshTokenMetadata)
+	if err != nil {
+		res.SetInternalServerError()
+		ctx.JSON(res.GetStatus(), res.GetBody())
+		return
+	}
+
+	//@TODO: add secure to cookie when tls is ready
+	ctx.SetCookie("REFRESH_TOKEN", "", 0, "/", ctx.Request.Host, false, true)
+	res.SetData(http.StatusOK, nil)
 }

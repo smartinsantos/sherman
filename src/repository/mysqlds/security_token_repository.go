@@ -82,3 +82,13 @@ func (r *SecurityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMe
 
 	return token, nil
 }
+
+// RemoveTokenByMetadata removes a token from the datastore
+func (r *SecurityTokenRepository) RemoveTokenByMetadata(tokenMetadata *auth.TokenMetadata) error {
+	query := `DELETE FROM security_tokens WHERE user_id = ? AND type = ?`
+	_, err := r.DB.Exec(query,
+		tokenMetadata.UserID,
+		tokenMetadata.Type,
+	)
+	return err
+}

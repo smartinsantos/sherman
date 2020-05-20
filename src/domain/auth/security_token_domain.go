@@ -31,12 +31,14 @@ type (
 	SecurityTokenRepository interface {
 		CreateOrUpdateToken(token *SecurityToken) error
 		GetTokenByMetadata(tokenMetadata *TokenMetadata) (SecurityToken, error)
+		RemoveTokenByMetadata(tokenMetadata *TokenMetadata) error
 	}
 	// SecurityTokenUseCase interface
 	SecurityTokenUseCase interface {
 		GenRefreshToken(userID string) (SecurityToken, error)
 		GenAccessToken(userID string) (SecurityToken, error)
 		IsRefreshTokenStored(refreshTokenMetadata *TokenMetadata) bool
+		RemoveRefreshToken(refreshTokenMetadata *TokenMetadata) error
 	}
 )
 

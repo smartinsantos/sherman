@@ -59,3 +59,8 @@ func (uc *SecurityTokenUseCase) IsRefreshTokenStored(refreshTokenMetadata *auth.
 	_, err := uc.SecurityTokenRepo.GetTokenByMetadata(refreshTokenMetadata)
 	return err == nil
 }
+
+// RemoveRefreshToken removes a refresh token from the datastore
+func (uc *SecurityTokenUseCase) RemoveRefreshToken(refreshTokenMetadata *auth.TokenMetadata) error {
+	return uc.SecurityTokenRepo.RemoveTokenByMetadata(refreshTokenMetadata)
+}
