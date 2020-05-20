@@ -90,3 +90,13 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 	ctx.SetCookie("REFRESH_TOKEN", refreshToken, 3600, "/", ctx.Request.Host, false, true)
 	ctx.JSON(res.GetStatus(), res.GetBody())
 }
+
+// GetUser gets a user
+func (h *UserHandler) GetUser(ctx *gin.Context) {
+
+}
+
+// RefreshAccessToken refreshes user access token
+func (h *UserHandler) RefreshAccessToken(ctx *gin.Context) {
+
+}
