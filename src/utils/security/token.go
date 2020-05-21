@@ -3,7 +3,7 @@ package security
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
 	"root/config"
 	"root/src/domain/auth"
 	"strings"
@@ -22,9 +22,9 @@ func GenToken(userID string, tokenType string, exp int64) (string, error) {
 	return token.SignedString([]byte(config.Get().Jwt.Secret))
 }
 
-// GetAndValidateAccessToken gets the access token from *gin.Context and verifies its signature
-func GetAndValidateAccessToken(ctx *gin.Context) (auth.TokenMetadata, error) {
-	bearToken := ctx.Request.Header.Get("Authorization")
+// GetAndValidateAccessToken gets the access token from echo.Context and verifies its signature
+func GetAndValidateAccessToken(ctx echo.Context) (auth.TokenMetadata, error) {
+	bearToken := ctx.Request().Header.Get("Authorization")
 	tokenArr := strings.Split(bearToken, " ")
 	if len(tokenArr) != 2 {
 		return auth.TokenMetadata{}, errors.New("access token not found")
@@ -33,25 +33,25 @@ func GetAndValidateAccessToken(ctx *gin.Context) (auth.TokenMetadata, error) {
 	tokenStr := tokenArr[1]
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
  		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
+			return nil, errors.New("invalid token")
  		}
 
  		return []byte(config.Get().Jwt.Secret), nil
 	})
 	if err != nil {
-	 return auth.TokenMetadata{}, err
+	 return auth.TokenMetadata{}, errors.New("invalid token")
 	}
 
 	tokenMetadata, err := extractTokenMetadata(token)
 	if err != nil {
-		return auth.TokenMetadata{}, err
+		return auth.TokenMetadata{}, errors.New("invalid token")
 	}
 	return tokenMetadata, nil
 }
 
-// GetAndValidateRefreshToken gets the refresh token from *gin.Context and verifies its signature
-func GetAndValidateRefreshToken(ctx *gin.Context) (auth.TokenMetadata, error) {
-	refreshTokenCookie, err := ctx.Request.Cookie("REFRESH_TOKEN")
+// GetAndValidateRefreshToken gets the refresh token from echo.Context and verifies its signature
+func GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetadata, error) {
+	refreshTokenCookie, err := ctx.Request().Cookie("REFRESH_TOKEN")
 	if err != nil {
 		return auth.TokenMetadata{}, errors.New("refresh token not found")
 	}
@@ -59,18 +59,18 @@ func GetAndValidateRefreshToken(ctx *gin.Context) (auth.TokenMetadata, error) {
 	tokenStr := refreshTokenCookie.Value
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
+			return nil, errors.New("invalid refresh token")
 		}
 
 		return []byte(config.Get().Jwt.Secret), nil
 	})
 	if err != nil {
-	 return auth.TokenMetadata{}, err
+	 return auth.TokenMetadata{}, errors.New("invalid refresh token")
 	}
 
 	tokenMetadata, err := extractTokenMetadata(token)
 	if err != nil {
-		return auth.TokenMetadata{}, err
+		return auth.TokenMetadata{}, errors.New("invalid refresh token")
 	}
 	return tokenMetadata, nil
 }

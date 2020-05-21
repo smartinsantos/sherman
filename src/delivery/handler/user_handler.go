@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
 	"net/http"
 	"root/src/delivery/handler/presenter"
 	"root/src/delivery/handler/validator"
@@ -18,21 +18,19 @@ type UserHandler struct {
 }
 
 // Register registers the user
-func (h *UserHandler) Register(ctx *gin.Context) {
+func (h *UserHandler) Register(ctx echo.Context) error {
 	var user auth.User
 	res := response.NewResponse()
 
-	if err := ctx.BindJSON(&user); err != nil {
+	if err := ctx.Bind(&user); err != nil {
 		res.SetError(http.StatusUnprocessableEntity, err.Error())
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	errors := validator.ValidateUserParams(&user, "register")
 	if len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	if err := h.UserUseCase.Register(&user); err != nil {
@@ -42,29 +40,26 @@ func (h *UserHandler) Register(ctx *gin.Context) {
 		default:
 			res.SetInternalServerError()
 		}
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	res.SetData(http.StatusCreated, nil)
-	ctx.JSON(res.GetStatus(), res.GetBody())
+	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // Login logs the user in
-func (h *UserHandler) Login(ctx *gin.Context) {
+func (h *UserHandler) Login(ctx echo.Context) error {
 	var user auth.User
 	res := response.NewResponse()
 
-	if err := ctx.BindJSON(&user); err != nil {
+	if err := ctx.Bind(&user); err != nil {
 		res.SetError(http.StatusUnprocessableEntity, err.Error())
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	if errors := validator.ValidateUserParams(&user, "login"); len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	verifiedUser, err := h.UserUseCase.VerifyCredentials(&user)
@@ -78,60 +73,62 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 		default:
 			res.SetInternalServerError()
 		}
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(verifiedUser.ID)
 	if err != nil {
 		res.SetInternalServerError()
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	refreshToken, err := h.SecurityTokenUseCase.GenRefreshToken(verifiedUser.ID)
 	if err != nil {
 		res.SetInternalServerError()
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, gin.H { "access_token": accessToken.Token })
+	res.SetData(http.StatusOK, response.D{ "access_token": accessToken.Token })
 	//@TODO: add secure to cookie when tls is ready
-	ctx.SetCookie("REFRESH_TOKEN", refreshToken.Token, 3600, "/", ctx.Request.Host, false, true)
-	ctx.JSON(res.GetStatus(), res.GetBody())
+	ctx.SetCookie(&http.Cookie{
+		Name: "REFRESH_TOKEN",
+		Value: refreshToken.Token,
+		MaxAge: 3600,
+		Path: "/",
+		Domain: ctx.Request().Host,
+		Secure: false,
+		HttpOnly: true,
+	})
+	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // RefreshAccessToken refreshes user access token
-func (h *UserHandler) RefreshAccessToken(ctx *gin.Context) {
+func (h *UserHandler) RefreshAccessToken(ctx echo.Context) error {
 	res := response.NewResponse()
 
 	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, "invalid refresh token")
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	if !h.SecurityTokenUseCase.IsRefreshTokenStored(&refreshTokenMetadata) {
 		res.SetError(http.StatusUnauthorized, "invalid refresh token")
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(refreshTokenMetadata.UserID)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, err.Error())
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, gin.H { "access_token": accessToken.Token })
-	ctx.JSON(res.GetStatus(), res.GetBody())
+	res.SetData(http.StatusOK, response.D{ "access_token": accessToken.Token })
+	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // GetUser gets the user from access token
-func (h *UserHandler) GetUser(ctx *gin.Context) {
+func (h *UserHandler) GetUser(ctx echo.Context) error {
 	res := response.NewResponse()
 	userID := ctx.Param("id")
 
@@ -144,32 +141,39 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 		default:
 			res.SetInternalServerError()
 		}
-		ctx.JSON(res.GetStatus(), res.GetBody())
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, gin.H{ "user": presenter.PresentUser(&user) })
-	ctx.JSON(res.GetStatus(), res.GetBody())
+	res.SetData(http.StatusOK, response.D{ "user": presenter.PresentUser(&user) })
+	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // Logout logs out the user
-func (h *UserHandler) Logout(ctx *gin.Context) {
+func (h *UserHandler) Logout(ctx echo.Context) error {
 	res := response.NewResponse()
 
 	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, err.Error())
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	err = h.SecurityTokenUseCase.RemoveRefreshToken(&refreshTokenMetadata)
 	if err != nil {
 		res.SetInternalServerError()
-		ctx.JSON(res.GetStatus(), res.GetBody())
-		return
+		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
 	//@TODO: add secure to cookie when tls is ready
-	ctx.SetCookie("REFRESH_TOKEN", "", 0, "/", ctx.Request.Host, false, true)
+	ctx.SetCookie(&http.Cookie{
+		Name: "REFRESH_TOKEN",
+		Value: "",
+		MaxAge: 0,
+		Path: "/",
+		Domain: ctx.Request().Host,
+		Secure: false,
+		HttpOnly: true,
+	})
 	res.SetData(http.StatusOK, nil)
+	return ctx.JSON(res.GetStatus(), res.GetBody())
 }

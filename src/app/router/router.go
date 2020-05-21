@@ -1,11 +1,14 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
 	"log"
 	"root/config"
 	"root/src/app/registry"
 	"root/src/delivery/handler"
+
+	//"root/src/app/registry"
+	//"root/src/delivery/handler"
 	"root/src/utils/middleware"
 )
 
@@ -14,25 +17,23 @@ func Serve() {
 	cfg := config.Get()
 	if cfg.App.Debug {
 		log.Println("Server Running on DEBUG mode")
-		gin.SetMode(gin.DebugMode)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
 	}
 
 	diContainer, err := registry.GetAppContainer()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+
 	// root router : /
-	router := gin.Default()
-	router.Use(middleware.CORSMiddleware())
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.String(200, "Hello from /")
+	router := echo.New()
+	router.Use(middleware.CORSMiddleware)
+
+	router.GET("/", func(ctx echo.Context) error {
+		return ctx.String(200, "Hello from /")
 	})
 
 	// router: /api/v1
 	v1Router := router.Group("/api/v1")
-
 	// router: /api/v1/users
 	userRouter := v1Router.Group("/users")
 	userHandler := diContainer.Get("user-handler").(*handler.UserHandler)
@@ -40,14 +41,10 @@ func Serve() {
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
 		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
-
-		// auth middleware protected routes
-		userRouter.Use(middleware.UserAuthMiddleware())
-		userRouter.GET("/user/:id", userHandler.GetUser)
-		userRouter.GET("/logout", userHandler.Logout)
+		userRouter.GET("/:id", userHandler.GetUser, middleware.UserAuthMiddleware)
+		userRouter.GET("/logout", userHandler.Logout, middleware.UserAuthMiddleware)
 	}
 
 	// run the server
-	log.Println("Server Running on PORT", cfg.App.Addr)
-	log.Fatalln(router.Run(cfg.App.Addr))
+	log.Fatalln(router.Start(cfg.App.Addr))
 }
