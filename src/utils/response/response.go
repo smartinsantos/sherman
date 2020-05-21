@@ -5,14 +5,17 @@ import (
 )
 
 var internalServerError = "internal server error"
-
-// Response struct for response shape
-type Response struct {
-	Status int
-	Error string
-	Errors map[string]string
-	Data map[string]interface{}
-}
+type (
+	// D Response Data type
+	D map[string]interface{}
+	// Response struct for response shape
+	Response struct {
+		Status int
+		Error string
+		Errors map[string]string
+		Data D
+	}
+)
 
 // NewResponse Response constructor defaults to { Status: 500, error: "internal server error" }
 func NewResponse() Response {
