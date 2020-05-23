@@ -2,13 +2,11 @@ package router
 
 import (
 	"github.com/labstack/echo"
-	"log"
+	echoMiddleWare "github.com/labstack/echo/middleware"
+	"github.com/rs/zerolog/log"
 	"root/src/app/config"
 	"root/src/app/registry"
 	"root/src/delivery/handler"
-
-	//"root/src/app/registry"
-	//"root/src/delivery/handler"
 	"root/src/utils/middleware"
 )
 
@@ -16,17 +14,21 @@ import (
 func Serve() {
 	cfg := config.Get()
 	if cfg.App.Debug {
-		log.Println("Server Running on DEBUG mode")
+		log.Info().Msg("Server Running on DEBUG mode")
 	}
 
 	diContainer, err := registry.GetAppContainer()
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatal().Msg(err.Error())
+		return
 	}
 
 	// root router : /
 	router := echo.New()
 	router.Use(middleware.CORSMiddleware)
+	if cfg.App.Debug {
+		router.Use(echoMiddleWare.Logger())
+	}
 
 	router.GET("/", func(ctx echo.Context) error {
 		return ctx.String(200, "Hello from /")
@@ -46,5 +48,5 @@ func Serve() {
 	}
 
 	// run the server
-	log.Fatalln(router.Start(cfg.App.Addr))
+	log.Fatal().Err(router.Start(cfg.App.Addr))
 }

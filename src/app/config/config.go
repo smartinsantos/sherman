@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/joho/godotenv"
-	"log"
+	"github.com/rs/zerolog/log"
 	"strconv"
 	"sync"
 )
@@ -61,7 +61,7 @@ func Get() *Config {
 		envMap, err := godotenv.Read(".env")
 
 		if err != nil {
-			log.Fatalln("couldn't read contents of .env file")
+			log.Fatal().Msg("couldn't read contents of .env file")
 		}
 
 		config = &Config {
