@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"root/config"
+	"root/src/app/config"
 )
 
 // NewConnection creates a db connection

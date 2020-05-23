@@ -2,7 +2,7 @@ package main
 
 import (
 	_ "github.com/go-sql-driver/mysql"
-	_ "root/config"
+	_ "root/src/app/config"
 	"root/src/app/router"
 )
 

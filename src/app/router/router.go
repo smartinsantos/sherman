@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/labstack/echo"
 	"log"
-	"root/config"
+	"root/src/app/config"
 	"root/src/app/registry"
 	"root/src/delivery/handler"
 

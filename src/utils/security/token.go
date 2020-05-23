@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
-	"root/config"
+	"root/src/app/config"
 	"root/src/domain/auth"
 	"strings"
 	"time"
