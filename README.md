@@ -8,6 +8,7 @@ Identity service written in go
 - Dependency injection container: https://github.com/sarulabs/di
 - Echo web framework: https://echo.labstack.com/guide
 - JWT tokens: https://github.com/dgrijalva/jwt-go
+- Logger: https://github.com/rs/zerolog
 
 ## Bin
 - ```bin/setup```                           : Install all project dependencies
