@@ -1,8 +1,7 @@
 package router
 
 import (
-	"github.com/labstack/echo"
-	echoMiddleWare "github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"root/src/app/config"
 	"root/src/app/registry"
@@ -27,7 +26,7 @@ func Serve() {
 	router := echo.New()
 	router.Use(middleware.CORSMiddleware)
 	if cfg.App.Debug {
-		router.Use(echoMiddleWare.Logger())
+		router.Use(middleware.ZeroLog())
 	}
 
 	router.GET("/", func(ctx echo.Context) error {

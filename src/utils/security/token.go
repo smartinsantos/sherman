@@ -3,7 +3,7 @@ package security
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"root/src/app/config"
 	"root/src/domain/auth"
 	"strings"
