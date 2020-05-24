@@ -2,11 +2,13 @@ package router
 
 import (
 	"github.com/labstack/echo/v4"
+	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog/log"
+	"net/http"
 	"root/src/app/config"
 	"root/src/app/registry"
 	"root/src/delivery/handler"
-	"root/src/utils/middleware"
+	cmw "root/src/utils/middleware"
 )
 
 // Serve mounts the base application router
@@ -22,28 +24,31 @@ func Serve() {
 		return
 	}
 
-	// root router : /
 	router := echo.New()
-	router.Use(middleware.CORSMiddleware)
-	if cfg.App.Debug {
-		router.Use(middleware.ZeroLog())
-	}
+	router.Use(emw.Recover())
+	router.Use(emw.CORSWithConfig(emw.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowCredentials: true,
+		AllowHeaders: []string{"Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
+  		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+	}))
+	router.Use(cmw.ZeroLog())
 
+	// root routes : /
 	router.GET("/", func(ctx echo.Context) error {
 		return ctx.String(200, "Hello from /")
 	})
-
-	// router: /api/v1
+	// routes: /api/v1
 	v1Router := router.Group("/api/v1")
-	// router: /api/v1/users
+	// routes: /api/v1/users
 	userRouter := v1Router.Group("/users")
 	userHandler := diContainer.Get("user-handler").(*handler.UserHandler)
 	{
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
 		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
-		userRouter.GET("/:id", userHandler.GetUser, middleware.UserAuthMiddleware)
-		userRouter.GET("/logout", userHandler.Logout, middleware.UserAuthMiddleware)
+		userRouter.GET("/:id", userHandler.GetUser, cmw.UserAuthMiddleware())
+		userRouter.GET("/logout", userHandler.Logout, cmw.UserAuthMiddleware())
 	}
 
 	// run the server
