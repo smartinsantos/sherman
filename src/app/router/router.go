@@ -3,8 +3,10 @@ package router
 import (
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"os"
 	"root/src/app/config"
 	"root/src/app/registry"
 	"root/src/delivery/handler"
@@ -15,6 +17,7 @@ import (
 func Serve() {
 	cfg := config.Get()
 	if cfg.App.Debug {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 		log.Info().Msg("Server Running on DEBUG mode")
 	}
 

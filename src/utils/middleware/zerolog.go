@@ -5,16 +5,18 @@ import (
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"os"
+	"root/src/app/config"
 	"strconv"
 	"strings"
 	"time"
 )
 
-// ZeroLogConfig defines the config for ZeroLog middleware.
-type ZeroLogConfig struct {
+// zeroLogConfig defines the config for ZeroLog middleware.
+type zeroLogConfig struct {
 	// FieldMap set a list of fields with tags
 	//
-	// Tags to constructed the logger fields.
+	// Tags to constructed the .go fields.
 	//
 	// - @id (Request ID)
 	// - @remote_ip
@@ -37,15 +39,15 @@ type ZeroLogConfig struct {
 	// - @cookie:<NAME>
 	FieldMap map[string]string
 
-	// Logger it is a zerolog logger
+	// Logger it is a zerolog .go
 	Logger zerolog.Logger
 
 	// Skipper defines a function to skip middleware.
 	Skipper emw.Skipper
 }
 
-// DefaultZeroLogConfig is the default ZeroLog middleware config.
-var DefaultZeroLogConfig = ZeroLogConfig{
+// defaultZeroLogConfig is the default ZeroLog middleware config.
+var defaultZeroLogConfig = zeroLogConfig{
 	FieldMap: map[string]string{
 		"remote_ip": "@remote_ip",
 		"uri":       "@uri",
@@ -55,25 +57,30 @@ var DefaultZeroLogConfig = ZeroLogConfig{
 		"latency":   "@latency",
 		"error":     "@error",
 	},
-	Logger:  log.Logger,
+	Logger: func() zerolog.Logger {
+		if config.Get().App.Debug {
+			log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+		}
+
+		return log.Logger
+	}(),
 	Skipper: emw.DefaultSkipper,
 }
 
 // ZeroLog returns a middleware that logs HTTP requests.
 func ZeroLog() echo.MiddlewareFunc {
-	return ZeroLogWithConfig(DefaultZeroLogConfig)
+	return zeroLogWithConfig(defaultZeroLogConfig)
 }
 
-// ZeroLogWithConfig returns a ZeroLog middleware with config.
-// See: `ZeroLog()`.
-func ZeroLogWithConfig(cfg ZeroLogConfig) echo.MiddlewareFunc {
+// zeroLogWithConfig returns a ZeroLog middleware with config.
+func zeroLogWithConfig(cfg zeroLogConfig) echo.MiddlewareFunc {
 	// Defaults
 	if cfg.Skipper == nil {
-		cfg.Skipper = DefaultZeroLogConfig.Skipper
+		cfg.Skipper = defaultZeroLogConfig.Skipper
 	}
 
 	if len(cfg.FieldMap) == 0 {
-		cfg.FieldMap = DefaultZeroLogConfig.FieldMap
+		cfg.FieldMap = defaultZeroLogConfig.FieldMap
 	}
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
