@@ -17,6 +17,7 @@ import (
 func Serve() {
 	cfg := config.Get()
 	if cfg.App.Debug {
+		// pretty logger
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 		log.Info().Msg("Server Running on DEBUG mode")
 	}

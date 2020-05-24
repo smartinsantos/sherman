@@ -59,17 +59,13 @@ var defaultZeroLogConfig = zeroLogConfig{
 	},
 	Logger: func() zerolog.Logger {
 		if config.Get().App.Debug {
+			// pretty logger
 			log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 		}
 
 		return log.Logger
 	}(),
 	Skipper: emw.DefaultSkipper,
-}
-
-// ZeroLog returns a middleware that logs HTTP requests.
-func ZeroLog() echo.MiddlewareFunc {
-	return zeroLogWithConfig(defaultZeroLogConfig)
 }
 
 // zeroLogWithConfig returns a ZeroLog middleware with config.
@@ -179,4 +175,9 @@ func zeroLogWithConfig(cfg zeroLogConfig) echo.MiddlewareFunc {
 			return
 		}
 	}
+}
+
+// ZeroLog returns a middleware that logs HTTP requests.
+func ZeroLog() echo.MiddlewareFunc {
+	return zeroLogWithConfig(defaultZeroLogConfig)
 }
