@@ -6,7 +6,7 @@ services:
      container_name: sherman-mysql
      restart: always
      ports:
-       - 3306:3306
+       - ${DB_PORT}:3306
      environment:
        - MYSQL_ROOT_HOST=${DB_HOST}
        - MYSQL_USER=${DB_USER}
