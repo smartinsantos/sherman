@@ -7,10 +7,10 @@ import (
 	"github.com/rs/zerolog/log"
 	"net/http"
 	"os"
-	"root/src/app/config"
-	"root/src/app/registry"
-	"root/src/delivery/handler"
-	cmw "root/src/utils/middleware"
+	"sherman/src/app/config"
+	"sherman/src/app/registry"
+	"sherman/src/delivery/handler"
+	cmw "sherman/src/utils/middleware"
 )
 
 // Serve mounts the base application router

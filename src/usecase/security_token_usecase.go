@@ -3,8 +3,8 @@ package usecase
 import (
 	"errors"
 	"github.com/google/uuid"
-	"root/src/domain/auth"
-	"root/src/utils/security"
+	"sherman/src/domain/auth"
+	"sherman/src/utils/security"
 	"time"
 )
 

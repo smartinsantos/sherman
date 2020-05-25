@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
-	"root/src/app/config"
-	"root/src/domain/auth"
+	"sherman/src/app/config"
+	"sherman/src/domain/auth"
 	"strings"
 	"time"
 )

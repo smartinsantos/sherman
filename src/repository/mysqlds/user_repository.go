@@ -2,8 +2,8 @@ package mysqlds
 
 import (
 	"database/sql"
-	"root/src/domain/auth"
-	"root/src/utils/exception"
+	"sherman/src/domain/auth"
+	"sherman/src/utils/exception"
 	"strings"
 )
 
@@ -48,7 +48,7 @@ func (r *UserRepository) CreateUser(user *auth.User) error {
 	return nil
 }
 
-// GetUserByID gets a auth.User by email in the datastore
+// GetUserByID gets a auth.User by id in the datastore
 func (r *UserRepository) GetUserByID(id string) (auth.User, error) {
 	var user auth.User
 

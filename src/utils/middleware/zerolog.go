@@ -6,7 +6,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
-	"root/src/app/config"
+	"sherman/src/app/config"
 	"strconv"
 	"strings"
 	"time"

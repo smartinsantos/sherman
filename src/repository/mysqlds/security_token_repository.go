@@ -2,8 +2,8 @@ package mysqlds
 
 import (
 	"database/sql"
-	"root/src/domain/auth"
-	"root/src/utils/exception"
+	"sherman/src/domain/auth"
+	"sherman/src/utils/exception"
 )
 
 // SecurityTokenRepository sql implementation of auth.SecurityTokenRepository

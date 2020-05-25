@@ -1,4 +1,4 @@
-module root
+module sherman
 
 go 1.14
 

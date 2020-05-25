@@ -3,8 +3,8 @@ package middleware
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"root/src/utils/response"
-	"root/src/utils/security"
+	"sherman/src/utils/response"
+	"sherman/src/utils/security"
 )
 
 // UserAuthMiddleware returns echo.HandlerFunc middleware to handle user auth

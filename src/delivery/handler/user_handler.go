@@ -3,12 +3,12 @@ package handler
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"root/src/delivery/handler/presenter"
-	"root/src/delivery/handler/validator"
-	"root/src/domain/auth"
-	"root/src/utils/exception"
-	"root/src/utils/response"
-	"root/src/utils/security"
+	"sherman/src/delivery/handler/presenter"
+	"sherman/src/delivery/handler/validator"
+	"sherman/src/domain/auth"
+	"sherman/src/utils/exception"
+	"sherman/src/utils/response"
+	"sherman/src/utils/security"
 )
 
 // UserHandler handler for /user/[routes]

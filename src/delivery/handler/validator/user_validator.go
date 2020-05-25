@@ -1,7 +1,7 @@
 package validator
 
 import (
-	"root/src/domain/auth"
+	"sherman/src/domain/auth"
 	"strings"
 )
 
