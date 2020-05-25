@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
@@ -56,5 +57,6 @@ func Serve() {
 	}
 
 	// run the server
+	log.Info().Msg(fmt.Sprintf("Server Running on PORT%s", cfg.App.Addr))
 	log.Fatal().Err(router.Start(cfg.App.Addr))
 }
