@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  db-mysql:
+  sherman-mysql:
      image: mysql:5.7
      container_name: sherman-mysql
      restart: always
@@ -14,7 +14,7 @@ services:
        - MYSQL_DATABASE=${DB_NAME}
        - MYSQL_ROOT_PASSWORD=${DB_PASS}
      volumes:
-       - database_mysql:/var/lib/mysql
+       - sherman_mysql:/var/lib/mysql
 
 volumes:
-  database_mysql:
+  sherman_mysql:
