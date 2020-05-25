@@ -1,9 +1,10 @@
-# go-auth-api
-Identity service written in go
+# Sherman Starter Kit
+A Go microservice implementation featuring Robert "Uncle Bob" Clean Architecture
 
 ## Dependencies
 - Linter: https://github.com/golangci/golangci-lint
 - Watcher: https://github.com/cosmtrek/air
+- MYSQL Driver: https://github.com/go-sql-driver/mysql
 - Migrations: https://github.com/pressly/goose
 - Dependency injection container: https://github.com/sarulabs/di
 - Echo web framework: https://echo.labstack.com/guide
