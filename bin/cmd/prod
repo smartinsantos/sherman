@@ -2,13 +2,13 @@
 
 # change to the project root
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$DIR"/.. || exit
+cd "$DIR"/../.. || exit
 
-echo "Downloading dependencies..."
+# setup dependencies
 bin/setup
-
+# build application
 echo "Building..."
 go build -o production_build
-
+# deprecated_run build
 echo "Running..."
 ./production_build

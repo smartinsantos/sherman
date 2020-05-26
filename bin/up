@@ -4,4 +4,4 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/.. || exit
 
-docker-compose build && docker-compose up -d "$@" && docker-compose logs -f
+docker-compose up "$@"

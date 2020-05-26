@@ -1,9 +1,21 @@
 version: '3.5'
 
 services:
-  sherman-mysql:
+  app-go:
+    build: ./
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    restart: on-failure
+    volumes:
+      - ./:/app
+    depends_on:
+      - app-mysql
+    networks:
+      - app-network
+
+  app-mysql:
      image: mysql:5.7
-     container_name: sherman-mysql
+     container_name: app-mysql
      restart: always
      ports:
        - ${DB_PORT}:3306
@@ -14,7 +26,14 @@ services:
        - MYSQL_DATABASE=${DB_NAME}
        - MYSQL_ROOT_PASSWORD=${DB_PASS}
      volumes:
-       - sherman_mysql:/var/lib/mysql
+       - app_mysql:/var/lib/mysql
+     networks:
+       - app-network
 
 volumes:
-  sherman_mysql:
+  app_mysql:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  app-network:
+    driver: bridge

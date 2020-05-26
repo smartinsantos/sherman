@@ -4,6 +4,4 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/.. || exit
 
-echo "Creating Migration..."
-goose --dir "./src/app/database/migrations" create "$@" sql
-echo "Done!"
+docker-compose exec app-go bin/cmd/"$@"

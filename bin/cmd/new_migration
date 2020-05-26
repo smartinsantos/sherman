@@ -2,8 +2,8 @@
 
 # change to the project root
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$DIR"/.. || exit
+cd "$DIR"/../.. || exit
 
-echo "Running..."
-go run main.go
+echo "Creating Migration..."
+goose --dir "./src/app/database/migrations" create "$@" sql
 echo "Done!"
