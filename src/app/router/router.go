@@ -1,16 +1,17 @@
 package router
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"net/http"
 	"os"
-	"root/src/app/config"
-	"root/src/app/registry"
-	"root/src/delivery/handler"
-	cmw "root/src/utils/middleware"
+	"sherman/src/app/config"
+	"sherman/src/app/registry"
+	"sherman/src/delivery/handler"
+	cmw "sherman/src/utils/middleware"
 )
 
 // Serve mounts the base application router
@@ -56,5 +57,6 @@ func Serve() {
 	}
 
 	// run the server
+	log.Info().Msg(fmt.Sprintf("Server Running on PORT%s", cfg.App.Addr))
 	log.Fatal().Err(router.Start(cfg.App.Addr))
 }

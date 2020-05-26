@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+  sherman-mysql:
+     image: mysql:5.7
+     container_name: sherman-mysql
+     restart: always
+     ports:
+       - ${DB_PORT}:3306
+     environment:
+       - MYSQL_ROOT_HOST=${DB_HOST}
+       - MYSQL_USER=${DB_USER}
+       - MYSQL_PASSWORD=${DB_PASS}
+       - MYSQL_DATABASE=${DB_NAME}
+       - MYSQL_ROOT_PASSWORD=${DB_PASS}
+     volumes:
+       - sherman_mysql:/var/lib/mysql
+
+volumes:
+  sherman_mysql:

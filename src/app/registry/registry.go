@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/sarulabs/di"
-	"root/src/app/database"
-	"root/src/delivery/handler"
-	"root/src/domain/auth"
-	"root/src/repository/mysqlds"
-	"root/src/usecase"
+	"sherman/src/app/database"
+	"sherman/src/delivery/handler"
+	"sherman/src/domain/auth"
+	"sherman/src/repository/mysqlds"
+	"sherman/src/usecase"
 	"sync"
 )
 

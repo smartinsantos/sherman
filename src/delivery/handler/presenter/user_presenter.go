@@ -1,7 +1,7 @@
 package presenter
 
 import (
-	"root/src/domain/auth"
+	"sherman/src/domain/auth"
 	"time"
 )
 

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"root/src/app/config"
+	"sherman/src/app/config"
 )
 
 // NewConnection creates a db connection

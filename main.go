@@ -2,8 +2,8 @@ package main
 
 import (
 	_ "github.com/go-sql-driver/mysql"
-	_ "root/src/app/config"
-	"root/src/app/router"
+	_ "sherman/src/app/config"
+	"sherman/src/app/router"
 )
 
 func main() {

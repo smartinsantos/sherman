@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"github.com/google/uuid"
-	"root/src/domain/auth"
-	"root/src/utils/exception"
-	"root/src/utils/security"
+	"sherman/src/domain/auth"
+	"sherman/src/utils/exception"
+	"sherman/src/utils/security"
 	"time"
 )
 
