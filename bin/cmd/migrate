@@ -4,18 +4,19 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/../.. || exit
 
-read_var() {
-    VAR=$(grep $1 $2 | xargs)
-    IFS="=" read -ra VAR <<< "$VAR"
-    echo ${VAR[1]}
+function export_envs() {
+  local envFile=${1:-.env}
+  while IFS='=' read -r key temp || [ -n "$key" ]; do
+    local isComment='^[[:space:]]*#'
+    local isBlank='^[[:space:]]*$'
+    [[ $key =~ $isComment ]] && continue
+    [[ $key =~ $isBlank ]] && continue
+    value=$(eval echo "$temp")
+    eval export "$key='$value'";
+  done < "$envFile"
 }
+export_envs .env
 
-DB_DRIVER=$(read_var DB_DRIVER .env)
-DB_NAME=$(read_var DB_NAME .env)
-DB_USER=$(read_var DB_USER .env)
-DB_PASS=$(read_var DB_PASS .env)
-DB_HOST=$(read_var DB_HOST .env)
-DB_PORT=$(read_var DB_PORT .env)
 DB_URI="$DB_USER:$DB_PASS@tcp($DB_HOST:$DB_PORT)/$DB_NAME?parseTime=true"
 
 echo "Running migrate..."
