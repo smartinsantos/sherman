@@ -4,6 +4,5 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/../.. || exit
 
-echo "Creating Migration..."
+echo "Running new_migration..."
 goose --dir "./src/app/database/migrations" create "$@" sql
-echo "Done!"

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# change to the project root
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$DIR"/.. || exit
+
+echo "Running init..."
+echo "Cleaning up..."
+rm -rf ./tmp
+rm -rf ./vendor
+echo "Building containers..."
+docker-compose build
+echo "Starting Containers..."
+docker-compose up -d
+echo "Installing dependencies..."
+bin/go mod vendor
+echo "Running migrations..."
+bin/exec migrate reset
+bin/exec migrate up
+echo "Tasks completed!"
+docker-compose logs -f

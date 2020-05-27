@@ -2,8 +2,6 @@
 
 # change to the project root
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$DIR"/../.. || exit
+cd "$DIR"/.. || exit
 
-echo "Running lint..."
-golint ./...
-golangci-lint run ./...
+docker-compose exec app-go go "$@"

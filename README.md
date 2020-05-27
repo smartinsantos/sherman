@@ -4,19 +4,26 @@ A Go microservice implementation following Robert "Uncle Bob" Clean Architecture
 # Application dependencies
 - Docker: https://docs.docker.com/get-docker/ (Development)
 
-# First time setup
-- run ```bin/setup```
+# To set up application for the first time
+- run ```bin/init```
 
 # To run the application
-- Terminal [ 1 ]
-    - run ```bin/up```
-- Terminal [ 2 ]
-    - if first time setup run ```bin/migrate up```
-    - run ```bin/watch```
+- run ```bin/up```
+
+# To connect from a mysql client to the database
+```
+DB_NAME=[your-database-name]
+DB_USER=[your-user-name]
+DB_PASS=[your-user-password]
+DB_HOST=localhost
+DB_PORT=5001 * Mapped host 5001:3306 container
+```
     
 ## Bin command reference
+- ```bin/init```                            : Initialize/Reset containers && database
 - ```bin/up```                              : Builds and/or spins up docker containers https://docs.docker.com/compose/reference/up/  
 - ```bin/down```                            : Stops docker containers https://docs.docker.com/compose/reference/down/
+- ```bin/go```                              : run go commands in the app container
 - ```bin/exec```
     - ```setup```                           : Install all project dependencies
     - ```lint```                            : Finds lint errors in the application
@@ -32,11 +39,6 @@ A Go microservice implementation following Robert "Uncle Bob" Clean Architecture
         - ```reset```                       : Roll back all migrations
         - ```status```                      : Dump the migration status for the current DB
         - ```version```                     : Print the current version of the database
-
-## Production Build
-Docker is being currently supported ONLY for development, an environment with Golang 1.14 will be required
-- ```bin/cmd/prod```                        : Setup/Build/Run application for production
-
 
 ## Go Packages reference
 - Linter: https://github.com/golangci/golangci-lint
