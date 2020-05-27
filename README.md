@@ -1,16 +1,16 @@
 # Sherman Starter Kit
 A Go microservice implementation following Robert "Uncle Bob" Clean Architecture
 
-# Application dependencies
+### Application dependencies
 - Docker: https://docs.docker.com/get-docker/ (Development)
 
-# To set up application for the first time
+### Set up application for the first time
 - run ```bin/init```
 
-# To run the application
+### Run the application
 - run ```bin/up```
 
-# To connect from a mysql client to the database
+### Connect from a mysql client to the database
 ```
 DB_NAME=[your-database-name]
 DB_USER=[your-user-name]
@@ -19,7 +19,7 @@ DB_HOST=localhost
 DB_PORT=5001 * Mapped host 5001:3306 container
 ```
     
-## Bin command reference
+### Bin command reference
 - ```bin/init```                            : Initialize/Reset containers && database
 - ```bin/up```                              : Builds and/or spins up docker containers https://docs.docker.com/compose/reference/up/  
 - ```bin/down```                            : Stops docker containers https://docs.docker.com/compose/reference/down/
