@@ -44,7 +44,7 @@ var (
 			Name:   "db_name",
 			User:   "db_user",
 			Pass:   "db_password",
-			Host:   "db_host",
+			Host:   "app-mysql",
 			Port:   "3306",
 		},
 		Jwt: jwtConfig {
