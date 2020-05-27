@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# change to the project root
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$DIR"/../.. || exit
+
+function export_envs() {
+  local envFile=${1:-.env}
+  while IFS='=' read -r key temp || [ -n "$key" ]; do
+    local isComment='^[[:space:]]*#'
+    local isBlank='^[[:space:]]*$'
+    [[ $key =~ $isComment ]] && continue
+    [[ $key =~ $isBlank ]] && continue
+    value=$(eval echo "$temp")
+    eval export "$key='$value'";
+  done < "$envFile"
+}
+export_envs .env
+
+DB_URI="$DB_USER:$DB_PASS@tcp($DB_HOST:$DB_PORT)/$DB_NAME?parseTime=true"
+
+echo "Running migrate..."
+goose --dir "./src/app/database/migrations" "$DB_DRIVER" "$DB_URI" "$@"
+echo "Done!"
