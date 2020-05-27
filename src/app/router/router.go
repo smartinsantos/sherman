@@ -56,7 +56,7 @@ func Serve() {
 		userRouter.GET("/logout", userHandler.Logout, cmw.UserAuthMiddleware())
 	}
 
-	// deprecated_run the server
+	// run the server
 	log.Info().Msg(fmt.Sprintf("Server Running on PORT%s", cfg.App.Addr))
 	log.Fatal().Err(router.Start(cfg.App.Addr))
 }
