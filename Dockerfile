@@ -1,7 +1,9 @@
-FROM golang:1.14
+FROM golang:1.14.3-alpine
 
 ARG APP_PORT
 ENV GO111MODULE=on
+
+RUN apk update && apk add bash
 
 WORKDIR /app
 
