@@ -21,7 +21,7 @@ func (uc *UserUseCase) Register(user *auth.User) error {
 	user.UpdatedAt = time.Now()
 
 	hashPassword, err := security.Hash(user.Password)
-	if  err != nil {
+	if err != nil {
 		return err
 	}
 	user.Password = string(hashPassword)

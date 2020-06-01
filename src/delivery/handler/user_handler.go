@@ -13,7 +13,7 @@ import (
 
 // UserHandler handler for /user/[routes]
 type UserHandler struct {
-	UserUseCase auth.UserUseCase
+	UserUseCase          auth.UserUseCase
 	SecurityTokenUseCase auth.SecurityTokenUseCase
 }
 
@@ -88,15 +88,15 @@ func (h *UserHandler) Login(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, response.D{ "access_token": accessToken.Token })
-	//@TODO: add secure to cookie when tls is ready
+	res.SetData(http.StatusOK, response.D{"access_token": accessToken.Token})
+	// TODO: add secure to cookie when tls is ready
 	ctx.SetCookie(&http.Cookie{
-		Name: "REFRESH_TOKEN",
-		Value: refreshToken.Token,
-		MaxAge: 3600,
-		Path: "/",
-		Domain: ctx.Request().Host,
-		Secure: false,
+		Name:     "REFRESH_TOKEN",
+		Value:    refreshToken.Token,
+		MaxAge:   3600,
+		Path:     "/",
+		Domain:   ctx.Request().Host,
+		Secure:   false,
 		HttpOnly: true,
 	})
 	return ctx.JSON(res.GetStatus(), res.GetBody())
@@ -123,7 +123,7 @@ func (h *UserHandler) RefreshAccessToken(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, response.D{ "access_token": accessToken.Token })
+	res.SetData(http.StatusOK, response.D{"access_token": accessToken.Token})
 	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
@@ -144,7 +144,7 @@ func (h *UserHandler) GetUser(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, response.D{ "user": presenter.PresentUser(&user) })
+	res.SetData(http.StatusOK, response.D{"user": presenter.PresentUser(&user)})
 	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
@@ -164,14 +164,14 @@ func (h *UserHandler) Logout(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	//@TODO: add secure to cookie when tls is ready
+	// TODO: add secure to cookie when tls is ready
 	ctx.SetCookie(&http.Cookie{
-		Name: "REFRESH_TOKEN",
-		Value: "",
-		MaxAge: 0,
-		Path: "/",
-		Domain: ctx.Request().Host,
-		Secure: false,
+		Name:     "REFRESH_TOKEN",
+		Value:    "",
+		MaxAge:   0,
+		Path:     "/",
+		Domain:   ctx.Request().Host,
+		Secure:   false,
 		HttpOnly: true,
 	})
 	res.SetData(http.StatusOK, nil)

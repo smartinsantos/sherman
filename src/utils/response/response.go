@@ -12,9 +12,9 @@ type (
 	// Response struct for response shape
 	Response struct {
 		Status int
-		Error string
+		Error  string
 		Errors map[string]string
-		Data D
+		Data   D
 	}
 )
 
@@ -22,7 +22,7 @@ type (
 func NewResponse() Response {
 	return Response{
 		Status: http.StatusInternalServerError,
-		Error: internalServerError,
+		Error:  internalServerError,
 	}
 }
 

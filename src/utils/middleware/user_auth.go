@@ -9,7 +9,7 @@ import (
 
 // UserAuthMiddleware returns echo.HandlerFunc middleware to handle user auth
 func UserAuthMiddleware() echo.MiddlewareFunc {
-	return func (next echo.HandlerFunc) echo.HandlerFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			if _, err := security.GetAndValidateAccessToken(ctx); err != nil {
 				res := response.NewResponse()
@@ -20,4 +20,3 @@ func UserAuthMiddleware() echo.MiddlewareFunc {
 		}
 	}
 }
-

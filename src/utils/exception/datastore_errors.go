@@ -4,10 +4,12 @@ package exception
 type NotFoundError struct {
 	msg string
 }
+
 // NewNotFoundError is the ErrValidation constructor.
 func NewNotFoundError(msg string) *NotFoundError {
-	return &NotFoundError { msg: msg }
+	return &NotFoundError{msg: msg}
 }
+
 // Error returns the error message.
 func (err *NotFoundError) Error() string {
 	return err.msg
@@ -17,10 +19,12 @@ func (err *NotFoundError) Error() string {
 type DuplicateEntryError struct {
 	msg string
 }
+
 // NewDuplicateEntryError is the ErrValidation constructor.
 func NewDuplicateEntryError(msg string) *DuplicateEntryError {
-	return &DuplicateEntryError { msg: msg }
+	return &DuplicateEntryError{msg: msg}
 }
+
 // Error returns the error message.
 func (err *DuplicateEntryError) Error() string {
 	return err.msg

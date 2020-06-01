@@ -13,22 +13,22 @@ func NewConnection() (*sql.DB, error) {
 
 	var connectionURL string
 
-	switch cfg.Db.Driver {
+	switch cfg.DB.Driver {
 	case "mysql":
 		connectionURL = fmt.Sprintf(
 			"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-			cfg.Db.User,
-			cfg.Db.Pass,
-			cfg.Db.Host,
-			cfg.Db.Port,
-			cfg.Db.Name,
+			cfg.DB.User,
+			cfg.DB.Pass,
+			cfg.DB.Host,
+			cfg.DB.Port,
+			cfg.DB.Name,
 		)
 	default:
-		errorMessage := fmt.Sprintf("DB_DRIVER: %s, not supported", cfg.Db.Driver)
+		errorMessage := fmt.Sprintf("DB_DRIVER: %s, not supported", cfg.DB.Driver)
 		return nil, errors.New(errorMessage)
 	}
 
-	db, err := sql.Open(cfg.Db.Driver, connectionURL)
+	db, err := sql.Open(cfg.DB.Driver, connectionURL)
 	if err != nil {
 		return nil, err
 	}

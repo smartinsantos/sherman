@@ -9,9 +9,9 @@ import (
 
 type (
 	appConfig struct {
-		Env		string
-		Debug	bool
-		Addr	string
+		Env   string
+		Debug bool
+		Addr  string
 	}
 	dbConfig struct {
 		Driver string
@@ -27,19 +27,19 @@ type (
 	// Config Wrapper for all configurations
 	Config struct {
 		App appConfig
-		Db  dbConfig
+		DB  dbConfig
 		Jwt jwtConfig
 	}
 )
 
 var (
-	defaultConfig = &Config {
-		App: appConfig {
-			Env:   	"local",
-			Debug: 	true,
-			Addr:  	":8080",
+	defaultConfig = &Config{
+		App: appConfig{
+			Env:   "local",
+			Debug: true,
+			Addr:  ":8080",
 		},
-		Db: dbConfig {
+		DB: dbConfig{
 			Driver: "mysql",
 			Name:   "db_name",
 			User:   "db_user",
@@ -47,12 +47,12 @@ var (
 			Host:   "app-mysql",
 			Port:   "3306",
 		},
-		Jwt: jwtConfig {
+		Jwt: jwtConfig{
 			Secret: "jwt_secret",
 		},
 	}
 	config *Config
-	once sync.Once
+	once   sync.Once
 )
 
 // Get returns Config instance
@@ -64,21 +64,21 @@ func Get() *Config {
 			log.Fatal().Msg("couldn't read contents of .env file")
 		}
 
-		config = &Config {
-			App: appConfig {
+		config = &Config{
+			App: appConfig{
 				Env:   getKey(envMap, "APP_ENV", defaultConfig.App.Env),
 				Debug: getKeyAsBool(envMap, "APP_DEBUG", defaultConfig.App.Debug),
 				Addr:  getKey(envMap, "APP_ADDR", defaultConfig.App.Addr),
 			},
-			Db: dbConfig {
-				Driver: getKey(envMap, "DB_DRIVER", defaultConfig.Db.Driver),
-				Name:   getKey(envMap, "DB_NAME", defaultConfig.Db.Name),
-				User:   getKey(envMap, "DB_USER", defaultConfig.Db.User),
-				Pass:   getKey(envMap, "DB_PASS", defaultConfig.Db.Pass),
-				Host:   getKey(envMap, "DB_HOST", defaultConfig.Db.Host),
-				Port:   getKey(envMap, "DB_PORT", defaultConfig.Db.Port),
+			DB: dbConfig{
+				Driver: getKey(envMap, "DB_DRIVER", defaultConfig.DB.Driver),
+				Name:   getKey(envMap, "DB_NAME", defaultConfig.DB.Name),
+				User:   getKey(envMap, "DB_USER", defaultConfig.DB.User),
+				Pass:   getKey(envMap, "DB_PASS", defaultConfig.DB.Pass),
+				Host:   getKey(envMap, "DB_HOST", defaultConfig.DB.Host),
+				Port:   getKey(envMap, "DB_PORT", defaultConfig.DB.Port),
 			},
-			Jwt: jwtConfig { Secret: getKey(envMap, "JWT_SECRET", defaultConfig.Jwt.Secret) },
+			Jwt: jwtConfig{Secret: getKey(envMap, "JWT_SECRET", defaultConfig.Jwt.Secret)},
 		}
 	})
 	return config
@@ -99,10 +99,12 @@ func getKeyAsBool(env map[string]string, key string, defaultValue bool) bool {
 	return defaultValue
 }
 
-//func getKeyAsInt(env map[string]string, key string, defaultValue int) int {
-//	valueStr := getKey(env, key, "")
-//	if value, err := strconv.Atoi(valueStr); err == nil {
-//		return value
-//	}
-//	return defaultValue
-//}
+/*
+func getKeyAsInt(env map[string]string, key string, defaultValue int) int {
+	valueStr := getKey(env, key, "")
+	if value, err := strconv.Atoi(valueStr); err == nil {
+		return value
+	}
+	return defaultValue
+}
+*/

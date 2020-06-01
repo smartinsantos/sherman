@@ -15,16 +15,17 @@ type SecurityTokenUseCase struct {
 
 // GenRefreshToken generates a new refresh token and stores it
 func (uc *SecurityTokenUseCase) GenRefreshToken(userID string) (auth.SecurityToken, error) {
-	token, err := security.GenToken(userID, auth.RefreshTokenType, time.Now().Add(time.Hour * 48).Unix())
+	duration := time.Hour * time.Duration(48)
+	token, err := security.GenToken(userID, auth.RefreshTokenType, time.Now().Add(duration).Unix())
 	if err != nil {
 		return auth.SecurityToken{}, errors.New("could not generate refresh token")
 	}
 
 	refreshToken := auth.SecurityToken{
-		ID: uuid.New().String(),
-		UserID: userID,
-		Token: token,
-		Type: auth.RefreshTokenType,
+		ID:        uuid.New().String(),
+		UserID:    userID,
+		Token:     token,
+		Type:      auth.RefreshTokenType,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -37,16 +38,17 @@ func (uc *SecurityTokenUseCase) GenRefreshToken(userID string) (auth.SecurityTok
 
 // GenAccessToken generates a new access token
 func (uc *SecurityTokenUseCase) GenAccessToken(userID string) (auth.SecurityToken, error) {
-	token, err := security.GenToken(userID, auth.AccessTokenType, time.Now().Add(time.Minute * 15).Unix())
+	duration := time.Minute * time.Duration(15)
+	token, err := security.GenToken(userID, auth.AccessTokenType, time.Now().Add(duration).Unix())
 	if err != nil {
 		return auth.SecurityToken{}, errors.New("could not generate access token")
 	}
 
 	accessToken := auth.SecurityToken{
-		ID: uuid.New().String(),
-		UserID: userID,
-		Token: token,
-		Type: auth.AccessTokenType,
+		ID:        uuid.New().String(),
+		UserID:    userID,
+		Token:     token,
+		Type:      auth.AccessTokenType,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

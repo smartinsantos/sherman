@@ -19,7 +19,7 @@ func Serve() {
 	cfg := config.Get()
 	if cfg.App.Debug {
 		// pretty logger
-		log.Logger = log.Output(zerolog.ConsoleWriter{ Out: os.Stderr })
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 		log.Info().Msg("Server Running on DEBUG mode")
 	}
 
@@ -32,23 +32,33 @@ func Serve() {
 	router := echo.New()
 	router.Use(emw.Recover())
 	router.Use(emw.CORSWithConfig(emw.CORSConfig{
-		AllowOrigins: []string{"*"},
+		AllowOrigins:     []string{"*"},
 		AllowCredentials: true,
-		AllowHeaders: []string{"Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
-  		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+		AllowHeaders: []string{
+			"Content-Type",
+			"Content-Length",
+			"Accept-Encoding",
+			"X-CSRF-Token",
+			"Authorization",
+			"accept",
+			"origin",
+			"Cache-Control",
+			"X-Requested-With"},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
 	}))
 	router.Use(cmw.ZeroLog())
 
 	// root routes : /
 	router.GET("/", func(ctx echo.Context) error {
-		return ctx.String(200, "Hello from /")
+		return ctx.String(http.StatusOK, "Hello from /")
 	})
 	// routes: /api/v1
 	v1Router := router.Group("/api/v1")
 	// routes: /api/v1/users
 	userRouter := v1Router.Group("/users")
-	userHandler := diContainer.Get("user-handler").(*handler.UserHandler)
 	{
+		userHandler := diContainer.Get("user-handler").(*handler.UserHandler)
+
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
 		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)

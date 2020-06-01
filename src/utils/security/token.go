@@ -14,9 +14,9 @@ import (
 func GenToken(userID string, tokenType string, exp int64) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
-		"type": tokenType,
-		"iat": time.Now().Unix(),
-		"exp": exp,
+		"type":    tokenType,
+		"iat":     time.Now().Unix(),
+		"exp":     exp,
 	})
 
 	return token.SignedString([]byte(config.Get().Jwt.Secret))
@@ -32,14 +32,14 @@ func GetAndValidateAccessToken(ctx echo.Context) (auth.TokenMetadata, error) {
 
 	tokenStr := tokenArr[1]
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
- 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid token")
- 		}
+		}
 
- 		return []byte(config.Get().Jwt.Secret), nil
+		return []byte(config.Get().Jwt.Secret), nil
 	})
 	if err != nil {
-	 return auth.TokenMetadata{}, errors.New("invalid token")
+		return auth.TokenMetadata{}, errors.New("invalid token")
 	}
 
 	tokenMetadata, err := extractTokenMetadata(token)
@@ -65,7 +65,7 @@ func GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetadata, error) {
 		return []byte(config.Get().Jwt.Secret), nil
 	})
 	if err != nil {
-	 return auth.TokenMetadata{}, errors.New("invalid refresh token")
+		return auth.TokenMetadata{}, errors.New("invalid refresh token")
 	}
 
 	tokenMetadata, err := extractTokenMetadata(token)
@@ -94,7 +94,7 @@ func extractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
 
 	return auth.TokenMetadata{
 		UserID: userID,
-		Type: tokenType,
-		Token: token.Raw,
+		Type:   tokenType,
+		Token:  token.Raw,
 	}, nil
 }
