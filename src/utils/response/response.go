@@ -55,17 +55,17 @@ func (res *Response) SetInternalServerError() {
 }
 
 // SetError sets with an error { Status: [status], Error: [error], Errors: nil, Data: nil }
-func (res *Response) SetError(status int, error string) {
+func (res *Response) SetError(status int, err string) {
 	res.Status = status
-	res.Error = error
+	res.Error = err
 	res.Errors = nil
 	res.Data = nil
 }
 
 // SetErrors sets a response with multiple errors { Status: [status], Errors: [errors], Error: "", Data: nil }
-func (res *Response) SetErrors(status int, errors map[string]string) {
+func (res *Response) SetErrors(status int, errs map[string]string) {
 	res.Status = status
-	res.Errors = errors
+	res.Errors = errs
 	res.Error = ""
 	res.Data = nil
 }

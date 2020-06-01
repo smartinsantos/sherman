@@ -84,7 +84,7 @@ func Get() *Config {
 	return config
 }
 
-func getKey(env map[string]string, key string, defaultValue string) string {
+func getKey(env map[string]string, key, defaultValue string) string {
 	if value, exist := env[key]; exist {
 		return value
 	}

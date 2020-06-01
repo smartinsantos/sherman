@@ -13,8 +13,8 @@ linters-settings:
   exhaustive:
     default-signifies-exhaustive: false
   funlen:
-    lines: 100
-    statements: 50
+    lines: 150
+    statements: 75
   goconst:
     min-len: 2
     min-occurrences: 2
@@ -31,10 +31,6 @@ linters-settings:
       - octalLiteral
       - whyNoLint
       - wrapperFunc
-  gocyclo:
-    min-complexity: 15
-  goimports:
-    local-prefixes: github.com/golangci/golangci-lint
   golint:
     min-confidence: 0
   govet:
@@ -73,9 +69,7 @@ linters:
     - gochecknoinits
     - goconst
     - gocritic
-    - gocyclo
     - gofmt
-    - goimports
     - golint
     - goprintffuncname
     - gosec

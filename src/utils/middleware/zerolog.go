@@ -69,7 +69,7 @@ var defaultZeroLogConfig = zeroLogConfig{
 }
 
 // zeroLogWithConfig returns a ZeroLog middleware with config.
-func zeroLogWithConfig(cfg zeroLogConfig) echo.MiddlewareFunc {
+func zeroLogWithConfig(cfg *zeroLogConfig) echo.MiddlewareFunc {
 	// Defaults
 	if cfg.Skipper == nil {
 		cfg.Skipper = defaultZeroLogConfig.Skipper
@@ -179,5 +179,5 @@ func zeroLogWithConfig(cfg zeroLogConfig) echo.MiddlewareFunc {
 
 // ZeroLog returns a middleware that logs HTTP requests.
 func ZeroLog() echo.MiddlewareFunc {
-	return zeroLogWithConfig(defaultZeroLogConfig)
+	return zeroLogWithConfig(&defaultZeroLogConfig)
 }
