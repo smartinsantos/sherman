@@ -23,8 +23,9 @@ DB_PORT=5001 * Mapped host 5001:3306 container
 - ```bin/init```                            : Initialize/Reset containers && database
 - ```bin/up```                              : Builds and/or spins up docker containers https://docs.docker.com/compose/reference/up/  
 - ```bin/down```                            : Stops docker containers https://docs.docker.com/compose/reference/down/
-- ```bin/go```                              : run go commands in the app container
-- ```bin/mockery```                         : generates mocks for every interface in the project under ./src/mocks
+- ```bin/go```                              : Run go commands in the app container
+- ```bin/mockery```                         : Generates mocks for every interface in the project under ./src/mocks
+- ```bin/lint```                            : Finds lint errors in the application
 - ```bin/exec```
     - ```setup```                           : Install all project dependencies
     - ```lint```                            : Finds lint errors in the application

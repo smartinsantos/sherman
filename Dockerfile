@@ -1,14 +1,9 @@
-FROM golang:1.14.3-alpine
-
+FROM golang:1.14.3
 # Get app port from .env
 ARG APP_PORT
 # Set GO111MODULE to on
 # Force using Go modules even if the project is in your GOPATH. Requires go.mod to work
 ENV GO111MODULE=on
-# Install alpine dependencies
-RUN apk update && apk upgrade && \
-    apk add bash && \
-    apk add curl
 # Set working dir inside the container
 WORKDIR /app
 # Copy contents of host to the workdir inside the container

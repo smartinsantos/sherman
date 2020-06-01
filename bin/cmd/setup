@@ -7,8 +7,6 @@ cd "$DIR"/../.. || exit
 echo "Running setup..."
 rm -rf ./tmp
 rm -rf ./vendor
-curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
-go get -u golang.org/x/lint/golint
 go get -u github.com/cosmtrek/air@v1.12.1
 go get -u github.com/pressly/goose/cmd/goose@v2.6.0
 go mod vendor
