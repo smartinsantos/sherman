@@ -12,6 +12,29 @@ type UserRepository struct {
 	DB *sql.DB
 }
 
+func (r *UserRepository) readUser(query string, values ...interface{}) (auth.User, error) {
+	var user auth.User
+	row := r.DB.QueryRow(query, values...)
+	err := row.Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.EmailAddress,
+		&user.Password,
+		&user.Active,
+		&user.CreatedAt,
+		&user.UpdatedAt)
+
+	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
+			err = exception.NewNotFoundError("user not found")
+		}
+		return auth.User{}, err
+	}
+
+	return user, nil
+}
+
 // CreateUser persist a auth.User from the datastore
 func (r *UserRepository) CreateUser(user *auth.User) error {
 	query := `
@@ -50,52 +73,12 @@ func (r *UserRepository) CreateUser(user *auth.User) error {
 
 // GetUserByID gets a auth.User by id in the datastore
 func (r *UserRepository) GetUserByID(id string) (auth.User, error) {
-	var user auth.User
-
 	query := `SELECT * FROM users WHERE id = ? LIMIT 1`
-	row := r.DB.QueryRow(query, id)
-	err := row.Scan(
-		&user.ID,
-		&user.FirstName,
-		&user.LastName,
-		&user.EmailAddress,
-		&user.Password,
-		&user.Active,
-		&user.CreatedAt,
-		&user.UpdatedAt)
-
-	if err != nil {
-		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
-			err = exception.NewNotFoundError("user not found")
-		}
-		return auth.User{}, err
-	}
-
-	return user, nil
+	return r.readUser(query, id)
 }
 
 // GetUserByEmail gets a auth.User by email from the datastore
 func (r *UserRepository) GetUserByEmail(email string) (auth.User, error) {
-	var user auth.User
-
 	query := `SELECT * FROM users WHERE email_address = ? LIMIT 1`
-	row := r.DB.QueryRow(query, email)
-	err := row.Scan(
-		&user.ID,
-		&user.FirstName,
-		&user.LastName,
-		&user.EmailAddress,
-		&user.Password,
-		&user.Active,
-		&user.CreatedAt,
-		&user.UpdatedAt)
-
-	if err != nil {
-		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
-			err = exception.NewNotFoundError("user not found")
-		}
-		return auth.User{}, err
-	}
-
-	return user, nil
+	return r.readUser(query, email)
 }
