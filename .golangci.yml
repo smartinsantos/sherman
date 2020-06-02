@@ -1,23 +1,27 @@
-# https://github.com/golangci/golangci-lint/blob/master/.golangci.yml
+linters:
+  disable-all: true
+  enable:
+    - depguard
+    - dupl
+    - lll
+    - gocritic
+    - golint
+    - govet
+    - gofmt
+
+issues:
+  exclude-use-default: false
+  exclude:
+    # should have a package comment, unless it's in another file for this package (golint)
+    - 'in another file for this package'
+
 linters-settings:
   depguard:
     list-type: blacklist
-    packages:
-      # logging is allowed only by logutils.Log, logrus
-      # is allowed to use only in logutils package
-      - github.com/sirupsen/logrus
-    packages-with-error-message:
-      - github.com/sirupsen/logrus: "logging is allowed only by logutils.Log"
   dupl:
     threshold: 100
-  exhaustive:
-    default-signifies-exhaustive: false
-  funlen:
-    lines: 150
-    statements: 75
-  goconst:
-    min-len: 2
-    min-occurrences: 2
+  lll:
+    line-length: 160
   gocritic:
     enabled-tags:
       - diagnostic
@@ -32,98 +36,27 @@ linters-settings:
       - whyNoLint
       - wrapperFunc
   golint:
+    # minimal confidence for issues, default is 0.8
     min-confidence: 0
   govet:
+    # report about shadowed variables
     check-shadowing: true
-    settings:
-      printf:
-        funcs:
-          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
-          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
-          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
-          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
-  lll:
-    line-length: 160
-  maligned:
-    suggest-new: true
-  misspell:
-    locale: US
-  nolintlint:
-    allow-leading-space: true # don't require machine-readable nolint directives (i.e. with no leading space)
-    allow-unused: false # report any unused nolint directives
-    require-explanation: false # don't require an explanation for nolint directives
-    require-specific: false # don't require nolint directives to be specific about which linter is being skipped
 
-linters:
-  # please, do not use `enable-all`: it's deprecated and will be removed soon.
-  # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
-  disable-all: true
-  enable:
-    - bodyclose
-    - deadcode
-    - depguard
-    - dogsled
-    - dupl
-    - errcheck
-    - funlen
-    - gochecknoinits
-    - goconst
-    - gocritic
-    - gofmt
-    - golint
-    - goprintffuncname
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
-    - interfacer
-    - lll
-    - misspell
-    - nakedret
-    - nolintlint
-    - rowserrcheck
-    - scopelint
-    - staticcheck
-    - structcheck
-    - stylecheck
-    - typecheck
-    - unconvert
-    - unparam
-    - unused
-    - varcheck
-    - whitespace
+output:
+  # colored-line-number|line-number|json|tab|checkstyle|code-climate, default is "colored-line-number"
+  format: colored-line-number
 
-  # don't enable:
-  # - asciicheck
-  # - exhaustive (TODO: enable after next release; current release at time of writing is v1.27)
-  # - gochecknoglobals
-  # - gocognit
-  # - godot
-  # - godox
-  # - goerr113
-  # - maligned
-  # - nestif
-  # - prealloc
-  # - testpackage
-  # - wsl
+  # print lines of code with issue, default is true
+  print-issued-lines: false
 
-issues:
-  # Excluding configuration per-path, per-linter, per-text and per-source
-  exclude-rules:
-    - linters:
-        - gocritic
-      text: "unnecessaryDefer:"
+  # print linter name in the end of issue text, default is true
+  print-linter-name: true
+
+service:
+  golangci-lint-version: 1.23.x # use the fixed version to not introduce new linters unexpectedly
+  prepare:
+    - echo "here I can run custom commands, but no preparation needed for this repo"
 
 run:
   skip-dirs:
     - app/src/mocks
-    - internal/cache
-    - internal/renameio
-    - internal/robustio
-
-# golangci.com configuration
-# https://github.com/golangci/golangci/wiki/Configuration
-service:
-  golangci-lint-version: 1.27.x # use the fixed version to not introduce new linters unexpectedly
-  prepare:
-    - echo "here I can run custom commands, but no preparation needed for this repo"
