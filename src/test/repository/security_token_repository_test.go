@@ -24,8 +24,9 @@ func TestCreateOrUpdateToken(t *testing.T) {
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
+	defer db.Close()
 
-	mock.ExpectExec("INSERT security_tokens SET").WithArgs(st.ID, st.UserID, st.Token, st.Type, st.CreatedAt, st.UpdatedAt)
+	mock.ExpectExec("INSERT security_tokens SET").WithArgs(st.ID, st.UserID, st.Token, st.Type, st.CreatedAt, st.UpdatedAt).WillReturnResult(sqlmock.NewResult(1,1))
 
 	var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
 	err = securityTokenRepository.CreateOrUpdateToken(st)
