@@ -26,9 +26,20 @@ func TestCreateOrUpdateToken(t *testing.T) {
 	}
 	defer db.Close()
 
-	mock.ExpectExec("INSERT security_tokens SET").WithArgs(st.ID, st.UserID, st.Token, st.Type, st.CreatedAt, st.UpdatedAt).WillReturnResult(sqlmock.NewResult(1,1))
+	mock.
+		ExpectQuery("SELECT id FROM security_tokens").
+		WithArgs(st.UserID, st.Type).
+		WillReturnRows(sqlmock.NewRows([]string{ "id" }))
+
+	mock.
+		ExpectExec("INSERT security_tokens SET").
+		WithArgs(st.ID, st.UserID, st.Token, st.Type, st.CreatedAt, st.UpdatedAt).
+		WillReturnResult(sqlmock.NewResult(1,1))
 
 	var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
 	err = securityTokenRepository.CreateOrUpdateToken(st)
+
+	
+
 	assert.NoError(t, err)
 }
