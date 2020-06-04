@@ -27,7 +27,7 @@ func TestCreateOrUpdateTokenShouldInsert(t *testing.T) {
 	}
 	defer db.Close()
 
-	var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
+	var securityTokenRepo auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
 
 	mock.
 		ExpectQuery("SELECT id FROM security_tokens").
@@ -39,7 +39,7 @@ func TestCreateOrUpdateTokenShouldInsert(t *testing.T) {
 		WithArgs(st.ID, st.UserID, st.Token, st.Type, st.CreatedAt, st.UpdatedAt).
 		WillReturnResult(sqlmock.NewResult(1,1))
 
-	err = securityTokenRepository.CreateOrUpdateToken(st)
+	err = securityTokenRepo.CreateOrUpdateToken(st)
 
 	assert.NoError(t, err)
 }
@@ -60,7 +60,7 @@ func TestCreateOrUpdateTokenShouldUpdate(t *testing.T) {
 	}
 	defer db.Close()
 
-	var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
+	var securityTokenRepo auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
 
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(st.ID)
 
@@ -74,7 +74,7 @@ func TestCreateOrUpdateTokenShouldUpdate(t *testing.T) {
 		WithArgs(st.Token, st.UpdatedAt, st.ID).
 		WillReturnResult(sqlmock.NewResult(1,1))
 
-	err = securityTokenRepository.CreateOrUpdateToken(st)
+	err = securityTokenRepo.CreateOrUpdateToken(st)
 
 	assert.NoError(t, err)
 }
@@ -97,9 +97,9 @@ func TestCreateOrUpdateTokenShouldThrowError(t *testing.T) {
 
 	db.Close()
 
-	var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
+	var securityTokenRepo auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
 
-	err = securityTokenRepository.CreateOrUpdateToken(st)
+	err = securityTokenRepo.CreateOrUpdateToken(st)
 
 	assert.Error(t, err)
 }
@@ -126,7 +126,7 @@ func TestGetTokenByMetadataShouldReturnToken(t *testing.T) {
 	}
 	defer db.Close()
 
-	var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
+	var securityTokenRepo auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
 
 	rows := sqlmock.
 		NewRows([]string{"id", "user_id", "token", "type", "created_at", "updated_at"}).
@@ -136,7 +136,7 @@ func TestGetTokenByMetadataShouldReturnToken(t *testing.T) {
 		WithArgs(st.UserID, st.Type).
 		WillReturnRows(rows)
 
-	token, err := securityTokenRepository.GetTokenByMetadata(tmd)
+	token, err := securityTokenRepo.GetTokenByMetadata(tmd)
 
 	assert.EqualValues(t, st, &token)
 	assert.NoError(t, err)
@@ -164,14 +164,14 @@ func TestGetTokenByMetadataShouldThrowError(t *testing.T) {
 	}
 	defer db.Close()
 
-	var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
+	var securityTokenRepo auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
 
 	mock.
 		ExpectQuery("SELECT id, user_id, token, type, created_at, updated_at FROM security_tokens").
 		WithArgs(st.UserID, st.Type).
 		WillReturnError(exception.NewNotFoundError("token not found"))
 
-	_, err = securityTokenRepository.GetTokenByMetadata(tmd)
+	_, err = securityTokenRepo.GetTokenByMetadata(tmd)
 
 	assert.Error(t, err)
 }
@@ -189,14 +189,14 @@ func TestRemoveTokenMetadata(t *testing.T) {
 	}
 	defer db.Close()
 
-	var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
+	var securityTokenRepo auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
 
 	mock.
 		ExpectExec("DELETE FROM security_tokens WHERE").
 		WithArgs(tmd.UserID, tmd.Type).
 		WillReturnResult(sqlmock.NewResult(0, 0))
 
-	err = securityTokenRepository.RemoveTokenByMetadata(tmd)
+	err = securityTokenRepo.RemoveTokenByMetadata(tmd)
 
 	assert.NoError(t, err)
 }
