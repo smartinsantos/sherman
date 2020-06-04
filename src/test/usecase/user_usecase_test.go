@@ -123,4 +123,39 @@ func TestVerifyCredentials(t *testing.T) {
 	})
 }
 
-func TestGetUserByID(t *testing.T) {}
+func TestGetUserByID(t *testing.T) {
+	t.Run("it should succeed", func(t *testing.T) {
+		mockUser := auth.User{
+			FirstName:    "first",
+			LastName:     "last",
+			EmailAddress: "some@email.com",
+			Password:     "some-password",
+		}
+
+		mockUserRepo := new(mocks.UserRepository)
+		mockUserRepo.On("GetUserByID", mock.AnythingOfType("string")).Return(mockUser, nil)
+
+		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
+			UserRepo: mockUserRepo,
+		}
+		userRecord, err := userUseCase.GetUserByID("some-id")
+
+		assert.NoError(t, err)
+		assert.EqualValues(t, mockUser, userRecord)
+	})
+
+	t.Run("it should return an error", func(t *testing.T) {
+		mockError := errors.New("GetUserByID error")
+		mockUserRepo := new(mocks.UserRepository)
+		mockUserRepo.On("GetUserByID", mock.Anything).Return(auth.User{}, mockError)
+
+		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
+			UserRepo: mockUserRepo,
+		}
+		_, err := userUseCase.GetUserByID("some-id")
+
+		if assert.Error(t, err) {
+			assert.Equal(t, mockError, err)
+		}
+	})
+}
