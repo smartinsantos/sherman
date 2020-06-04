@@ -1,4 +1,4 @@
-package test
+package mysqlds
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
