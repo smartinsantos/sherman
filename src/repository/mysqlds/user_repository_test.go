@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"sherman/src/domain/auth"
-	"sherman/src/repository/mysqlds"
 	"sherman/src/utils/exception"
 	"testing"
 	"time"
@@ -30,7 +29,7 @@ func TestCreateUser(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		var userRepo auth.UserRepository = &UserRepository{DB: db}
 
 		mock.
 			ExpectExec("INSERT users SET").
@@ -49,7 +48,7 @@ func TestCreateUser(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		var userRepo auth.UserRepository = &UserRepository{DB: db}
 
 		expectedError := exception.NewDuplicateEntryError("user already exist")
 
@@ -89,7 +88,7 @@ func TestGetUserByID(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		var userRepo auth.UserRepository = &UserRepository{DB: db}
 
 		rows := sqlmock.
 			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
@@ -115,7 +114,7 @@ func TestGetUserByID(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		var userRepo auth.UserRepository = &UserRepository{DB: db}
 
 		expectedError := exception.NewNotFoundError("user not found")
 
@@ -150,7 +149,7 @@ func TestGetUserByEmail(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		var userRepo auth.UserRepository = &UserRepository{DB: db}
 
 		rows := sqlmock.
 			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
@@ -176,7 +175,7 @@ func TestGetUserByEmail(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		var userRepo auth.UserRepository = &UserRepository{DB: db}
 
 		expectedError := exception.NewNotFoundError("user not found")
 

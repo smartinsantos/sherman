@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"sherman/src/domain/auth"
 	"sherman/src/test/mocks"
-	"sherman/src/usecase"
 	"sherman/src/utils/exception"
 	"sherman/src/utils/security"
 	"testing"
@@ -25,7 +24,7 @@ func TestRegister(t *testing.T) {
 		mockUserRepo.On("CreateUser", mock.Anything).Return(nil)
 		muCopy := mockUser
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
+		var userUseCase auth.UserUseCase = &UserUseCase{
 			UserRepo: mockUserRepo,
 		}
 
@@ -48,7 +47,7 @@ func TestRegister(t *testing.T) {
 		muCopy := mockUser
 		mockError := errors.New("TestRegister Error")
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
+		var userUseCase auth.UserUseCase = &UserUseCase{
 			UserRepo: mockUserRepo,
 		}
 
@@ -80,7 +79,7 @@ func TestVerifyCredentials(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
+		var userUseCase auth.UserUseCase = &UserUseCase{
 			UserRepo: mockUserRepo,
 		}
 		userRecord, err := userUseCase.VerifyCredentials(&mockUser)
@@ -94,7 +93,7 @@ func TestVerifyCredentials(t *testing.T) {
 		mockError := errors.New("GetUserByEmail Error")
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(auth.User{}, mockError)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
+		var userUseCase auth.UserUseCase = &UserUseCase{
 			UserRepo: mockUserRepo,
 		}
 		_, err := userUseCase.VerifyCredentials(&mockUser)
@@ -112,7 +111,7 @@ func TestVerifyCredentials(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
+		var userUseCase auth.UserUseCase = &UserUseCase{
 			UserRepo: mockUserRepo,
 		}
 		_, err := userUseCase.VerifyCredentials(&mockUserWithWrongPassword)
@@ -135,7 +134,7 @@ func TestGetUserByID(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByID", mock.AnythingOfType("string")).Return(mockUser, nil)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
+		var userUseCase auth.UserUseCase = &UserUseCase{
 			UserRepo: mockUserRepo,
 		}
 		userRecord, err := userUseCase.GetUserByID("some-id")
@@ -149,7 +148,7 @@ func TestGetUserByID(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByID", mock.Anything).Return(auth.User{}, mockError)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
+		var userUseCase auth.UserUseCase = &UserUseCase{
 			UserRepo: mockUserRepo,
 		}
 		_, err := userUseCase.GetUserByID("some-id")
