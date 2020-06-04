@@ -175,3 +175,28 @@ func TestGetTokenByMetadataShouldThrowError(t *testing.T) {
 
 	assert.Error(t, err)
 }
+
+func TestRemoveTokenMetadata(t *testing.T) {
+	tmd := &auth.TokenMetadata{
+		UserID: "some-user-id",
+		Type: "some-token-type",
+		Token: "some-user-token",
+	}
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	var securityTokenRepository auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{ DB: db }
+
+	mock.
+		ExpectExec("DELETE FROM security_tokens WHERE").
+		WithArgs(tmd.UserID, tmd.Type).
+		WillReturnResult(sqlmock.NewResult(0, 0))
+
+	err = securityTokenRepository.RemoveTokenByMetadata(tmd)
+
+	assert.NoError(t, err)
+}
