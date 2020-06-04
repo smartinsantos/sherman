@@ -73,12 +73,36 @@ func (r *UserRepository) CreateUser(user *auth.User) error {
 
 // GetUserByID gets a auth.User by id in the datastore
 func (r *UserRepository) GetUserByID(id string) (auth.User, error) {
-	query := `SELECT * FROM users WHERE id = ? LIMIT 1`
+	query := `
+		SELECT
+			id,
+			first_name,
+			last_name,
+			email_address,
+			password,
+			active,
+			created_at,
+			updated_at
+		FROM users 
+		WHERE id = ? LIMIT 1
+	`
 	return r.readUser(query, id)
 }
 
 // GetUserByEmail gets a auth.User by email from the datastore
 func (r *UserRepository) GetUserByEmail(email string) (auth.User, error) {
-	query := `SELECT * FROM users WHERE email_address = ? LIMIT 1`
+	query := `
+		SELECT
+			id,
+			first_name,
+			last_name,
+			email_address,
+			password,
+			active,
+			created_at,
+			updated_at
+		FROM users
+		WHERE email_address = ? LIMIT 1
+	`
 	return r.readUser(query, email)
 }
