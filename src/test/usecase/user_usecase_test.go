@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"sherman/src/domain/auth"
@@ -24,7 +25,6 @@ func TestRegister(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		muCopy := mockUser
-
 		mockUserRepo.On("Register", mock.Anything).Return(nil)
 		mockUserRepo.On("CreateUser", mock.Anything).Return(nil)
 
@@ -40,6 +40,16 @@ func TestRegister(t *testing.T) {
 		assert.EqualValues(t, mockUser.EmailAddress, muCopy.EmailAddress)
 		err = security.VerifyPassword(muCopy.Password, mockUser.Password)
 		assert.NoError(t, err)
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		muCopy := mockUser
+		mockError := errors.New("TestRegister Error")
+		mockUserRepo.On("Register", mock.Anything).Return(mockError)
+		mockUserRepo.On("CreateUser", mock.Anything).Return(mockError)
+
+		err := userUseCase.Register(&muCopy)
+		assert.Error(t, mockError, err)
 	})
 }
 
