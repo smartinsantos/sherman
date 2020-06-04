@@ -26,8 +26,7 @@ func (uc *UserUseCase) Register(user *auth.User) error {
 	}
 	user.Password = string(hashPassword)
 
-	err = uc.UserRepo.CreateUser(user)
-	return err
+	return uc.UserRepo.CreateUser(user)
 }
 
 // VerifyCredentials verifies a user credentials
