@@ -13,14 +13,14 @@ import (
 
 func TestCreateUserShouldInsert(t *testing.T) {
 	u := &auth.User{
-		ID: uuid.New().String(),
-		FirstName: "first",
-		LastName: "last",
+		ID:           uuid.New().String(),
+		FirstName:    "first",
+		LastName:     "last",
 		EmailAddress: "some@email.com",
-		Password: "some-password",
-		Active: true,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Password:     "some-password",
+		Active:       true,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 
 	db, mock, err := sqlmock.New()
@@ -29,12 +29,12 @@ func TestCreateUserShouldInsert(t *testing.T) {
 	}
 	defer db.Close()
 
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{ DB: db }
+	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
 	mock.
 		ExpectExec("INSERT users SET").
 		WithArgs(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt).
-		WillReturnResult(sqlmock.NewResult(1,1))
+		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err = userRepo.CreateUser(u)
 
@@ -43,14 +43,14 @@ func TestCreateUserShouldInsert(t *testing.T) {
 
 func TestCreateUserShouldTrowError(t *testing.T) {
 	u := &auth.User{
-		ID: uuid.New().String(),
-		FirstName: "first",
-		LastName: "last",
+		ID:           uuid.New().String(),
+		FirstName:    "first",
+		LastName:     "last",
 		EmailAddress: "some@email.com",
-		Password: "some-password",
-		Active: true,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Password:     "some-password",
+		Active:       true,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 
 	db, mock, err := sqlmock.New()
@@ -59,7 +59,7 @@ func TestCreateUserShouldTrowError(t *testing.T) {
 	}
 	defer db.Close()
 
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{ DB: db }
+	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
 	sqlmock.
 		NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
@@ -77,14 +77,14 @@ func TestCreateUserShouldTrowError(t *testing.T) {
 
 func TestGetUserByIDShouldReturnUser(t *testing.T) {
 	u := &auth.User{
-		ID: uuid.New().String(),
-		FirstName: "first",
-		LastName: "last",
+		ID:           uuid.New().String(),
+		FirstName:    "first",
+		LastName:     "last",
 		EmailAddress: "some@email.com",
-		Password: "some-password",
-		Active: true,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Password:     "some-password",
+		Active:       true,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 
 	db, mock, err := sqlmock.New()
@@ -93,7 +93,7 @@ func TestGetUserByIDShouldReturnUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{ DB: db }
+	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
 	rows := sqlmock.
 		NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
@@ -132,7 +132,7 @@ func TestGetUserByIDShouldThrowError(t *testing.T) {
 
 	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
- 	sqlmock.
+	sqlmock.
 		NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
 		AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
 
@@ -148,14 +148,14 @@ func TestGetUserByIDShouldThrowError(t *testing.T) {
 
 func TestGetUserByEmailShouldReturnUser(t *testing.T) {
 	u := &auth.User{
-		ID: uuid.New().String(),
-		FirstName: "first",
-		LastName: "last",
+		ID:           uuid.New().String(),
+		FirstName:    "first",
+		LastName:     "last",
 		EmailAddress: "some@email.com",
-		Password: "some-password",
-		Active: true,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Password:     "some-password",
+		Active:       true,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 
 	db, mock, err := sqlmock.New()
@@ -164,7 +164,7 @@ func TestGetUserByEmailShouldReturnUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{ DB: db }
+	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
 	rows := sqlmock.
 		NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
