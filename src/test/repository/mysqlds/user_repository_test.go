@@ -43,7 +43,7 @@ func TestCreateUser(t *testing.T) {
 	})
 
 	t.Run("should throw an error", func(t *testing.T) {
-		db, _, err := sqlmock.New()
+		db, mock, err := sqlmock.New()
 		if err != nil {
 			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 		}
@@ -59,7 +59,14 @@ func TestCreateUser(t *testing.T) {
 
 		err = userRepo.CreateUser(u)
 
-		assert.Error(t, expectedError, err)
+		mock.
+			ExpectExec("INSERT users SET").
+			WithArgs(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt).
+			WillReturnError(expectedError)
+
+		if assert.Error(t, err) {
+			assert.Equal(t, expectedError, err)
+		}
 	})
 }
 
@@ -118,7 +125,9 @@ func TestGetUserByID(t *testing.T) {
 
 		_, err = userRepo.GetUserByID(wrongID)
 
-		assert.Error(t, expectedError, err)
+		if assert.Error(t, err) {
+			assert.Equal(t, expectedError, err)
+		}
 	})
 }
 
@@ -177,7 +186,8 @@ func TestGetUserByEmail(t *testing.T) {
 
 		_, err = userRepo.GetUserByEmail(wrongEmail)
 
-		assert.Error(t, expectedError, err)
+		if assert.Error(t, err) {
+			assert.Equal(t, expectedError, err)
+		}
 	})
-
 }

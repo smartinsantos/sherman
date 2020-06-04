@@ -84,7 +84,7 @@ func TestCreateOrUpdateToken(t *testing.T) {
 
 		err = securityTokenRepo.CreateOrUpdateToken(st)
 
-		assert.Error(t, err, err)
+		assert.Error(t, err)
 	})
 
 }
@@ -146,7 +146,9 @@ func TestGetTokenByMetadata(t *testing.T) {
 
 		_, err = securityTokenRepo.GetTokenByMetadata(tmd)
 
-		assert.Error(t, expectedError, err)
+		if assert.Error(t, err) {
+			assert.Equal(t, expectedError, err)
+		}
 	})
 }
 
