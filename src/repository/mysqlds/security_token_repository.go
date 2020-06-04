@@ -66,7 +66,17 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 // GetTokenByMetadata finds a auth.SecurityToken in the datastore
 func (r *SecurityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMetadata) (auth.SecurityToken, error) {
 	var token auth.SecurityToken
-	query := `SELECT * FROM security_tokens WHERE user_id = ? AND type = ? LIMIT 1`
+	query := `
+		SELECT 
+			id, 
+			user_id,
+			token,
+			type,
+			created_at,
+			updated_at
+		FROM security_tokens 
+		WHERE user_id = ? AND type = ? LIMIT 1
+	`
 	row := r.DB.QueryRow(query, tokenMetadata.UserID, tokenMetadata.Type)
 	err := row.Scan(
 		&token.ID,
