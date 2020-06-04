@@ -23,9 +23,8 @@ func TestRegister(t *testing.T) {
 		UserRepo: mockUserRepo,
 	}
 
-	t.Run("success", func(t *testing.T) {
+	t.Run("it should succeed", func(t *testing.T) {
 		muCopy := mockUser
-		mockUserRepo.On("Register", mock.Anything).Return(nil)
 		mockUserRepo.On("CreateUser", mock.Anything).Return(nil)
 
 		err := userUseCase.Register(&muCopy)
@@ -42,10 +41,9 @@ func TestRegister(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	t.Run("failure", func(t *testing.T) {
+	t.Run("it should throw an error", func(t *testing.T) {
 		muCopy := mockUser
 		mockError := errors.New("TestRegister Error")
-		mockUserRepo.On("Register", mock.Anything).Return(mockError)
 		mockUserRepo.On("CreateUser", mock.Anything).Return(mockError)
 
 		err := userUseCase.Register(&muCopy)

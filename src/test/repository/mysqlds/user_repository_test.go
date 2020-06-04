@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func TestCreateUserShouldInsert(t *testing.T) {
+func TestCreateUser(t *testing.T) {
 	u := &auth.User{
 		ID:           uuid.New().String(),
 		FirstName:    "first",
@@ -23,25 +23,47 @@ func TestCreateUserShouldInsert(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
+	t.Run("should insert", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
 
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
-	mock.
-		ExpectExec("INSERT users SET").
-		WithArgs(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt).
-		WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.
+			ExpectExec("INSERT users SET").
+			WithArgs(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt).
+			WillReturnResult(sqlmock.NewResult(1, 1))
 
-	err = userRepo.CreateUser(u)
+		err = userRepo.CreateUser(u)
 
-	assert.NoError(t, err)
+		assert.NoError(t, err)
+	})
+
+	t.Run("should throw an error", func(t *testing.T) {
+		db, _, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
+
+		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+
+		expectedError := exception.NewDuplicateEntryError("user already exist")
+
+		sqlmock.
+			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
+			AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
+
+		err = userRepo.CreateUser(u)
+
+		assert.Error(t, expectedError, err)
+	})
 }
 
-func TestCreateUserShouldTrowError(t *testing.T) {
+func TestGetUserByID(t *testing.T) {
 	u := &auth.User{
 		ID:           uuid.New().String(),
 		FirstName:    "first",
@@ -53,26 +75,54 @@ func TestCreateUserShouldTrowError(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	db, _, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
+	t.Run("should return a user", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
 
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
-	expectedError := exception.NewDuplicateEntryError("user already exist")
+		rows := sqlmock.
+			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
+			AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
 
-	sqlmock.
-		NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
-		AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
+		mock.
+			ExpectQuery("SELECT id, first_name, last_name, email_address, password, active, created_at, updated_at FROM users").
+			WithArgs(u.ID).
+			WillReturnRows(rows)
 
-	err = userRepo.CreateUser(u)
+		user, err := userRepo.GetUserByID(u.ID)
 
-	assert.Error(t, expectedError, err)
+		assert.EqualValues(t, u, &user)
+		assert.NoError(t, err)
+	})
+
+	t.Run("should return an error", func(t *testing.T) {
+		wrongID := "some-wrong-user-id"
+
+		db, _, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
+
+		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+
+		expectedError := exception.NewNotFoundError("user not found")
+
+		sqlmock.
+			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
+			AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
+
+		_, err = userRepo.GetUserByID(wrongID)
+
+		assert.Error(t, expectedError, err)
+	})
 }
 
-func TestGetUserByIDShouldReturnUser(t *testing.T) {
+func TestGetUserByEmail(t *testing.T) {
 	u := &auth.User{
 		ID:           uuid.New().String(),
 		FirstName:    "first",
@@ -84,126 +134,50 @@ func TestGetUserByIDShouldReturnUser(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
+	t.Run("should return a user", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
 
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
-	rows := sqlmock.
-		NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
-		AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
+		rows := sqlmock.
+			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
+			AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
 
-	mock.
-		ExpectQuery("SELECT id, first_name, last_name, email_address, password, active, created_at, updated_at FROM users").
-		WithArgs(u.ID).
-		WillReturnRows(rows)
+		mock.
+			ExpectQuery("SELECT id, first_name, last_name, email_address, password, active, created_at, updated_at FROM users").
+			WithArgs(u.EmailAddress).
+			WillReturnRows(rows)
 
-	user, err := userRepo.GetUserByID(u.ID)
+		user, err := userRepo.GetUserByEmail(u.EmailAddress)
 
-	assert.EqualValues(t, u, &user)
-	assert.NoError(t, err)
-}
+		assert.EqualValues(t, u, &user)
+		assert.NoError(t, err)
+	})
 
-func TestGetUserByIDShouldThrowError(t *testing.T) {
-	u := &auth.User{
-		ID:           uuid.New().String(),
-		FirstName:    "first",
-		LastName:     "last",
-		EmailAddress: "some@email.com",
-		Password:     "some-password",
-		Active:       true,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
-	}
+	t.Run("should return an error", func(t *testing.T) {
+		wrongEmail := "wrongg@email.com"
 
-	wrongID := "some-wrong-user-id"
+		db, _, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		}
+		defer db.Close()
 
-	db, _, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
+		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		expectedError := exception.NewNotFoundError("user not found")
 
-	expectedError := exception.NewNotFoundError("user not found")
+		sqlmock.
+			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
+			AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
 
-	sqlmock.
-		NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
-		AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
+		_, err = userRepo.GetUserByEmail(wrongEmail)
 
-	_, err = userRepo.GetUserByID(wrongID)
+		assert.Error(t, expectedError, err)
+	})
 
-	assert.Error(t, expectedError, err)
-}
-
-func TestGetUserByEmailShouldReturnUser(t *testing.T) {
-	u := &auth.User{
-		ID:           uuid.New().String(),
-		FirstName:    "first",
-		LastName:     "last",
-		EmailAddress: "some@email.com",
-		Password:     "some-password",
-		Active:       true,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
-	}
-
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
-
-	rows := sqlmock.
-		NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
-		AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
-
-	mock.
-		ExpectQuery("SELECT id, first_name, last_name, email_address, password, active, created_at, updated_at FROM users").
-		WithArgs(u.EmailAddress).
-		WillReturnRows(rows)
-
-	user, err := userRepo.GetUserByEmail(u.EmailAddress)
-
-	assert.EqualValues(t, u, &user)
-	assert.NoError(t, err)
-}
-
-func TestGetUserByEmailShouldThrowError(t *testing.T) {
-	u := &auth.User{
-		ID:           uuid.New().String(),
-		FirstName:    "first",
-		LastName:     "last",
-		EmailAddress: "some@email.com",
-		Password:     "some-password",
-		Active:       true,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
-	}
-
-	wrongEmail := "wrongg@email.com"
-
-	db, _, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
-	var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
-
-	expectedError := exception.NewNotFoundError("user not found")
-
-	sqlmock.
-		NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
-		AddRow(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt)
-
-	_, err = userRepo.GetUserByEmail(wrongEmail)
-
-	assert.Error(t, expectedError, err)
 }
