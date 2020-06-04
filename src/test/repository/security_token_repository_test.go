@@ -101,7 +101,7 @@ func TestCreateOrUpdateTokenShouldThrowError(t *testing.T) {
 
 	err = securityTokenRepo.CreateOrUpdateToken(st)
 
-	assert.Error(t, err)
+	assert.Error(t, err, err)
 }
 
 func TestGetTokenByMetadataShouldReturnToken(t *testing.T) {
@@ -166,14 +166,16 @@ func TestGetTokenByMetadataShouldThrowError(t *testing.T) {
 
 	var securityTokenRepo auth.SecurityTokenRepository = &mysqlds.SecurityTokenRepository{DB: db}
 
+	expectedError := exception.NewNotFoundError("token not found")
+
 	mock.
 		ExpectQuery("SELECT id, user_id, token, type, created_at, updated_at FROM security_tokens").
 		WithArgs(st.UserID, st.Type).
-		WillReturnError(exception.NewNotFoundError("token not found"))
+		WillReturnError(expectedError)
 
 	_, err = securityTokenRepo.GetTokenByMetadata(tmd)
 
-	assert.Error(t, err)
+	assert.Error(t, expectedError, err)
 }
 
 func TestRemoveTokenMetadata(t *testing.T) {
