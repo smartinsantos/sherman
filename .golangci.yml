@@ -59,4 +59,4 @@ service:
 
 run:
   skip-dirs:
-    - app/src/mocks
+    - src/test/
