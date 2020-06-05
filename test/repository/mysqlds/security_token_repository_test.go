@@ -1,4 +1,4 @@
-package mysqlds
+package test_mysqlds
 
 import (
 	"errors"
