@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-
 // userRepository sql implementation of auth.UserRepository
 type userRepository struct {
 	DB *sql.DB
