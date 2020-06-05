@@ -2,8 +2,8 @@ package mysqlds
 
 import (
 	"database/sql"
+	"sherman/src/app/utils/exception"
 	"sherman/src/domain/auth"
-	"sherman/src/utils/exception"
 	"strings"
 )
 

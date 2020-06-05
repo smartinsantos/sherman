@@ -5,9 +5,9 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"sherman/src/app/utils/exception"
 	"sherman/src/domain/auth"
 	"sherman/src/repository/mysqlds"
-	"sherman/src/utils/exception"
 	"testing"
 	"time"
 )

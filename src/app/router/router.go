@@ -10,8 +10,8 @@ import (
 	"os"
 	"sherman/src/app/config"
 	"sherman/src/app/registry"
+	cmw "sherman/src/app/utils/middleware"
 	"sherman/src/delivery/handler"
-	cmw "sherman/src/utils/middleware"
 )
 
 // Serve mounts the base application router
