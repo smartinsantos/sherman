@@ -17,6 +17,15 @@ type UserHandler struct {
 	SecurityTokenUseCase auth.SecurityTokenUseCase
 }
 
+// NewUserHandler constructor
+func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase) *UserHandler {
+	userHandler := &UserHandler{
+		UserUseCase: uuc,
+		SecurityTokenUseCase: stuc,
+	}
+	return userHandler
+}
+
 // Register registers the user
 func (h *UserHandler) Register(ctx echo.Context) error {
 	var user auth.User

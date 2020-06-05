@@ -12,6 +12,14 @@ type UserRepository struct {
 	DB *sql.DB
 }
 
+// NewUserRepository constructor
+func NewUserRepository(db *sql.DB) auth.UserRepository {
+	var userRepo auth.UserRepository = &UserRepository{
+		DB: db,
+	}
+	return userRepo
+}
+
 func (r *UserRepository) readUser(query string, values ...interface{}) (auth.User, error) {
 	var user auth.User
 	row := r.DB.QueryRow(query, values...)

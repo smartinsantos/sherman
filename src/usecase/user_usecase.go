@@ -13,6 +13,14 @@ type UserUseCase struct {
 	UserRepo auth.UserRepository
 }
 
+// NewUserUseCase constructor
+func NewUserUseCase(ur auth.UserRepository) auth.UserUseCase {
+	var userUseCase auth.UserUseCase = &UserUseCase{
+		UserRepo: ur,
+	}
+	return userUseCase
+}
+
 // Register creates a user
 func (uc *UserUseCase) Register(user *auth.User) error {
 	user.ID = uuid.New().String()

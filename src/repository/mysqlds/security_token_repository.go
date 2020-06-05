@@ -11,6 +11,14 @@ type SecurityTokenRepository struct {
 	DB *sql.DB
 }
 
+// NewSecurityTokenRepository constructor
+func NewSecurityTokenRepository(db *sql.DB) auth.SecurityTokenRepository {
+	var securityTokenRepo auth.SecurityTokenRepository = &SecurityTokenRepository{
+		DB: db,
+	}
+	return securityTokenRepo
+}
+
 // CreateOrUpdateToken persist a auth.SecurityToken in the datastore
 func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken) error {
 	var err error

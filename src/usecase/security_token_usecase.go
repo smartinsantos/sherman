@@ -13,6 +13,14 @@ type SecurityTokenUseCase struct {
 	SecurityTokenRepo auth.SecurityTokenRepository
 }
 
+// NewSecurityTokenUseCase constructor
+func NewSecurityTokenUseCase(str auth.SecurityTokenRepository) auth.SecurityTokenUseCase {
+	var securityTokenUseCase auth.SecurityTokenUseCase = &SecurityTokenUseCase{
+		SecurityTokenRepo: str,
+	}
+	return securityTokenUseCase
+}
+
 // GenRefreshToken generates a new refresh token and stores it
 func (uc *SecurityTokenUseCase) GenRefreshToken(userID string) (auth.SecurityToken, error) {
 	duration := time.Hour * time.Duration(48)
