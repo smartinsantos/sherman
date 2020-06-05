@@ -9,20 +9,19 @@ import (
 )
 
 // UserUseCase implementation of auth.UserUseCase
-type UserUseCase struct {
+type userUseCase struct {
 	UserRepo auth.UserRepository
 }
 
 // NewUserUseCase constructor
 func NewUserUseCase(ur auth.UserRepository) auth.UserUseCase {
-	var userUseCase auth.UserUseCase = &UserUseCase{
+	return &userUseCase{
 		UserRepo: ur,
 	}
-	return userUseCase
 }
 
 // Register creates a user
-func (uc *UserUseCase) Register(user *auth.User) error {
+func (uc *userUseCase) Register(user *auth.User) error {
 	user.ID = uuid.New().String()
 	user.Active = true
 	user.CreatedAt = time.Now()
@@ -38,7 +37,7 @@ func (uc *UserUseCase) Register(user *auth.User) error {
 }
 
 // VerifyCredentials verifies a user credentials
-func (uc *UserUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
+func (uc *userUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
 	userRecord, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
 		return auth.User{}, err
@@ -52,6 +51,6 @@ func (uc *UserUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
 }
 
 // GetUserByID creates a user by id
-func (uc *UserUseCase) GetUserByID(id string) (auth.User, error) {
+func (uc *userUseCase) GetUserByID(id string) (auth.User, error) {
 	return uc.UserRepo.GetUserByID(id)
 }

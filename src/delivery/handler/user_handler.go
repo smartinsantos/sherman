@@ -20,7 +20,7 @@ type UserHandler struct {
 // NewUserHandler constructor
 func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase) *UserHandler {
 	userHandler := &UserHandler{
-		UserUseCase: uuc,
+		UserUseCase:          uuc,
 		SecurityTokenUseCase: stuc,
 	}
 	return userHandler

@@ -6,21 +6,20 @@ import (
 	"sherman/src/utils/exception"
 )
 
-// SecurityTokenRepository sql implementation of auth.SecurityTokenRepository
-type SecurityTokenRepository struct {
+// NewSecurityTokenRepository constructor
+func NewSecurityTokenRepository(db *sql.DB) auth.SecurityTokenRepository {
+	return &securityTokenRepository{
+		DB: db,
+	}
+}
+
+// securityTokenRepository sql implementation of auth.SecurityTokenRepository
+type securityTokenRepository struct {
 	DB *sql.DB
 }
 
-// NewSecurityTokenRepository constructor
-func NewSecurityTokenRepository(db *sql.DB) auth.SecurityTokenRepository {
-	var securityTokenRepo auth.SecurityTokenRepository = &SecurityTokenRepository{
-		DB: db,
-	}
-	return securityTokenRepo
-}
-
 // CreateOrUpdateToken persist a auth.SecurityToken in the datastore
-func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken) error {
+func (r *securityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken) error {
 	var err error
 	var query string
 	var existingToken auth.SecurityToken
@@ -72,7 +71,7 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 }
 
 // GetTokenByMetadata finds a auth.SecurityToken in the datastore
-func (r *SecurityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMetadata) (auth.SecurityToken, error) {
+func (r *securityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMetadata) (auth.SecurityToken, error) {
 	var token auth.SecurityToken
 	query := `
 		SELECT 
@@ -102,7 +101,7 @@ func (r *SecurityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMe
 }
 
 // RemoveTokenByMetadata removes a token from the datastore
-func (r *SecurityTokenRepository) RemoveTokenByMetadata(tokenMetadata *auth.TokenMetadata) error {
+func (r *securityTokenRepository) RemoveTokenByMetadata(tokenMetadata *auth.TokenMetadata) error {
 	query := `DELETE FROM security_tokens WHERE user_id = ? AND type = ?`
 	_, err := r.DB.Exec(query,
 		tokenMetadata.UserID,

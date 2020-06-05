@@ -9,20 +9,19 @@ import (
 )
 
 // SecurityTokenUseCase implementation of auth.SecurityTokenUseCase
-type SecurityTokenUseCase struct {
+type securityTokenUseCase struct {
 	SecurityTokenRepo auth.SecurityTokenRepository
 }
 
 // NewSecurityTokenUseCase constructor
 func NewSecurityTokenUseCase(str auth.SecurityTokenRepository) auth.SecurityTokenUseCase {
-	var securityTokenUseCase auth.SecurityTokenUseCase = &SecurityTokenUseCase{
+	return &securityTokenUseCase{
 		SecurityTokenRepo: str,
 	}
-	return securityTokenUseCase
 }
 
 // GenRefreshToken generates a new refresh token and stores it
-func (uc *SecurityTokenUseCase) GenRefreshToken(userID string) (auth.SecurityToken, error) {
+func (uc *securityTokenUseCase) GenRefreshToken(userID string) (auth.SecurityToken, error) {
 	duration := time.Hour * time.Duration(48)
 	token, err := security.GenToken(userID, auth.RefreshTokenType, time.Now().Add(duration).Unix())
 	if err != nil {
@@ -45,7 +44,7 @@ func (uc *SecurityTokenUseCase) GenRefreshToken(userID string) (auth.SecurityTok
 }
 
 // GenAccessToken generates a new access token
-func (uc *SecurityTokenUseCase) GenAccessToken(userID string) (auth.SecurityToken, error) {
+func (uc *securityTokenUseCase) GenAccessToken(userID string) (auth.SecurityToken, error) {
 	duration := time.Minute * time.Duration(15)
 	token, err := security.GenToken(userID, auth.AccessTokenType, time.Now().Add(duration).Unix())
 	if err != nil {
@@ -65,12 +64,12 @@ func (uc *SecurityTokenUseCase) GenAccessToken(userID string) (auth.SecurityToke
 }
 
 // IsRefreshTokenStored checks if a refresh token is persisted in the datastore
-func (uc *SecurityTokenUseCase) IsRefreshTokenStored(refreshTokenMetadata *auth.TokenMetadata) bool {
+func (uc *securityTokenUseCase) IsRefreshTokenStored(refreshTokenMetadata *auth.TokenMetadata) bool {
 	_, err := uc.SecurityTokenRepo.GetTokenByMetadata(refreshTokenMetadata)
 	return err == nil
 }
 
 // RemoveRefreshToken removes a refresh token from the datastore
-func (uc *SecurityTokenUseCase) RemoveRefreshToken(refreshTokenMetadata *auth.TokenMetadata) error {
+func (uc *securityTokenUseCase) RemoveRefreshToken(refreshTokenMetadata *auth.TokenMetadata) error {
 	return uc.SecurityTokenRepo.RemoveTokenByMetadata(refreshTokenMetadata)
 }

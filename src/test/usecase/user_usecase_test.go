@@ -25,9 +25,7 @@ func TestRegister(t *testing.T) {
 		mockUserRepo.On("CreateUser", mock.Anything).Return(nil)
 		muCopy := mockUser
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
-			UserRepo: mockUserRepo,
-		}
+		userUseCase := usecase.NewUserUseCase(mockUserRepo)
 
 		err := userUseCase.Register(&muCopy)
 
@@ -48,9 +46,7 @@ func TestRegister(t *testing.T) {
 		muCopy := mockUser
 		mockError := errors.New("TestRegister Error")
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
-			UserRepo: mockUserRepo,
-		}
+		userUseCase := usecase.NewUserUseCase(mockUserRepo)
 
 		mockUserRepo.On("CreateUser", mock.Anything).Return(mockError)
 
@@ -80,9 +76,7 @@ func TestVerifyCredentials(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
-			UserRepo: mockUserRepo,
-		}
+		userUseCase := usecase.NewUserUseCase(mockUserRepo)
 		userRecord, err := userUseCase.VerifyCredentials(&mockUser)
 
 		assert.NoError(t, err)
@@ -94,9 +88,7 @@ func TestVerifyCredentials(t *testing.T) {
 		mockError := errors.New("GetUserByEmail Error")
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(auth.User{}, mockError)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
-			UserRepo: mockUserRepo,
-		}
+		userUseCase := usecase.NewUserUseCase(mockUserRepo)
 		_, err := userUseCase.VerifyCredentials(&mockUser)
 
 		if assert.Error(t, err) {
@@ -112,9 +104,7 @@ func TestVerifyCredentials(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
-			UserRepo: mockUserRepo,
-		}
+		userUseCase := usecase.NewUserUseCase(mockUserRepo)
 		_, err := userUseCase.VerifyCredentials(&mockUserWithWrongPassword)
 
 		if assert.Error(t, err) {
@@ -135,9 +125,7 @@ func TestGetUserByID(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByID", mock.AnythingOfType("string")).Return(mockUser, nil)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
-			UserRepo: mockUserRepo,
-		}
+		userUseCase := usecase.NewUserUseCase(mockUserRepo)
 		userRecord, err := userUseCase.GetUserByID("some-id")
 
 		assert.NoError(t, err)
@@ -149,9 +137,7 @@ func TestGetUserByID(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByID", mock.Anything).Return(auth.User{}, mockError)
 
-		var userUseCase auth.UserUseCase = &usecase.UserUseCase{
-			UserRepo: mockUserRepo,
-		}
+		userUseCase := usecase.NewUserUseCase(mockUserRepo)
 		_, err := userUseCase.GetUserByID("some-id")
 
 		if assert.Error(t, err) {

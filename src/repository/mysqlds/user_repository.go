@@ -7,20 +7,19 @@ import (
 	"strings"
 )
 
-// UserRepository sql implementation of auth.UserRepository
-type UserRepository struct {
+// userRepository sql implementation of auth.UserRepository
+type userRepository struct {
 	DB *sql.DB
 }
 
 // NewUserRepository constructor
 func NewUserRepository(db *sql.DB) auth.UserRepository {
-	var userRepo auth.UserRepository = &UserRepository{
+	return &userRepository{
 		DB: db,
 	}
-	return userRepo
 }
 
-func (r *UserRepository) readUser(query string, values ...interface{}) (auth.User, error) {
+func (r *userRepository) readUser(query string, values ...interface{}) (auth.User, error) {
 	var user auth.User
 	row := r.DB.QueryRow(query, values...)
 	err := row.Scan(
@@ -44,7 +43,7 @@ func (r *UserRepository) readUser(query string, values ...interface{}) (auth.Use
 }
 
 // CreateUser persist a auth.User from the datastore
-func (r *UserRepository) CreateUser(user *auth.User) error {
+func (r *userRepository) CreateUser(user *auth.User) error {
 	query := `
 		INSERT users
 		SET
@@ -80,7 +79,7 @@ func (r *UserRepository) CreateUser(user *auth.User) error {
 }
 
 // GetUserByID gets a auth.User by id in the datastore
-func (r *UserRepository) GetUserByID(id string) (auth.User, error) {
+func (r *userRepository) GetUserByID(id string) (auth.User, error) {
 	query := `
 		SELECT
 			id,
@@ -98,7 +97,7 @@ func (r *UserRepository) GetUserByID(id string) (auth.User, error) {
 }
 
 // GetUserByEmail gets a auth.User by email from the datastore
-func (r *UserRepository) GetUserByEmail(email string) (auth.User, error) {
+func (r *userRepository) GetUserByEmail(email string) (auth.User, error) {
 	query := `
 		SELECT
 			id,

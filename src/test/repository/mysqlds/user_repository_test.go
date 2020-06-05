@@ -31,7 +31,7 @@ func TestCreateUser(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		userRepo := mysqlds.NewUserRepository(db)
 
 		mock.
 			ExpectExec("INSERT users SET").
@@ -50,7 +50,7 @@ func TestCreateUser(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		userRepo := mysqlds.NewUserRepository(db)
 
 		returnError := exception.NewDuplicateEntryError("duplicate")
 		mock.
@@ -86,7 +86,7 @@ func TestGetUserByID(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		userRepo := mysqlds.NewUserRepository(db)
 
 		rows := sqlmock.
 			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
@@ -110,7 +110,7 @@ func TestGetUserByID(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		userRepo := mysqlds.NewUserRepository(db)
 		wrongID := "some-wrong-user-id"
 
 		returnError := errors.New("no rows")
@@ -147,7 +147,7 @@ func TestGetUserByEmail(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		userRepo := mysqlds.NewUserRepository(db)
 
 		rows := sqlmock.
 			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
@@ -171,7 +171,7 @@ func TestGetUserByEmail(t *testing.T) {
 		}
 		defer db.Close()
 
-		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
+		userRepo := mysqlds.NewUserRepository(db)
 
 		wrongEmail := "wrongg@email.com"
 
