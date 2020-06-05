@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+
 // userRepository sql implementation of auth.UserRepository
 type userRepository struct {
 	DB *sql.DB
@@ -19,9 +20,9 @@ func NewUserRepository(db *sql.DB) auth.UserRepository {
 	}
 }
 
-func (r *userRepository) readUser(query string, values ...interface{}) (auth.User, error) {
+func (r *userRepository) scanUserRow(row *sql.Row) (auth.User, error) {
 	var user auth.User
-	row := r.DB.QueryRow(query, values...)
+
 	err := row.Scan(
 		&user.ID,
 		&user.FirstName,
@@ -93,7 +94,8 @@ func (r *userRepository) GetUserByID(id string) (auth.User, error) {
 		FROM users 
 		WHERE id = ? LIMIT 1
 	`
-	return r.readUser(query, id)
+	row := r.DB.QueryRow(query, id)
+	return r.scanUserRow(row)
 }
 
 // GetUserByEmail gets a auth.User by email from the datastore
@@ -111,5 +113,6 @@ func (r *userRepository) GetUserByEmail(email string) (auth.User, error) {
 		FROM users
 		WHERE email_address = ? LIMIT 1
 	`
-	return r.readUser(query, email)
+	row := r.DB.QueryRow(query, email)
+	return r.scanUserRow(row)
 }

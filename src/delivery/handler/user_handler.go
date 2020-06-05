@@ -19,11 +19,10 @@ type UserHandler struct {
 
 // NewUserHandler constructor
 func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase) *UserHandler {
-	userHandler := &UserHandler{
+	return &UserHandler{
 		UserUseCase:          uuc,
 		SecurityTokenUseCase: stuc,
 	}
-	return userHandler
 }
 
 // Register registers the user
