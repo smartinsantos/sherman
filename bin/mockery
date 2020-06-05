@@ -5,4 +5,4 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/.. || exit
 
 docker container run -v "$PWD":/app \
-       -w /app/src/utils vektra/mockery -all -recursive -dir ./..
+       -w /app/ vektra/mockery -all -recursive -dir ./src/
