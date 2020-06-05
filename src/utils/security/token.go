@@ -11,8 +11,7 @@ import (
 )
 
 // GenToken generates a jwt.token
-func GenToken(userID, tokenType string, exp int64) (string, error)
-{
+func GenToken(userID, tokenType string, exp int64) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
 		"type":    tokenType,
