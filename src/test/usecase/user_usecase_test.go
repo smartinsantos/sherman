@@ -5,9 +5,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"sherman/src/domain/auth"
-	"sherman/src/test/mocks"
 	"sherman/src/usecase"
 	"sherman/src/utils/exception"
+	"sherman/src/utils/mocks"
 	"sherman/src/utils/security"
 	"testing"
 )

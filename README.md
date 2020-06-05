@@ -28,7 +28,9 @@ DB_PORT=5001 * Mapped host 5001:3306 container
 - ```bin/lint```                            : Finds lint errors in the application
 - ```bin/exec```
     - ```setup```                           : Install all project dependencies
+    - ```gofmt```                           : Formats .go files in /src folder
     - ```lint```                            : Finds lint errors in the application
+    - ```test```                            : Runs test suites
     - ```watch```                           : Runs the server on watch mode
     - ```new-migration [migration-name]```  : Creates a migration
     - ```migrate [command]```               : Migrate the DB see cmd list
@@ -51,3 +53,6 @@ DB_PORT=5001 * Mapped host 5001:3306 container
 - Echo web framework: https://echo.labstack.com/guide
 - JWT tokens: https://github.com/dgrijalva/jwt-go
 - Logger: https://github.com/rs/zerolog
+- Testify: https://github.com/stretchr/testify
+- Mockery: https://github.com/vektra/mockery
+- Go SqlMock: https://github.com/DATA-DOG/go-sqlmock  
