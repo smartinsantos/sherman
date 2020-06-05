@@ -6,16 +6,16 @@ import (
 	"sherman/src/utils/exception"
 )
 
+// securityTokenRepository sql implementation of auth.SecurityTokenRepository
+type securityTokenRepository struct {
+	DB *sql.DB
+}
+
 // NewSecurityTokenRepository constructor
 func NewSecurityTokenRepository(db *sql.DB) auth.SecurityTokenRepository {
 	return &securityTokenRepository{
 		DB: db,
 	}
-}
-
-// securityTokenRepository sql implementation of auth.SecurityTokenRepository
-type securityTokenRepository struct {
-	DB *sql.DB
 }
 
 // CreateOrUpdateToken persist a auth.SecurityToken in the datastore
