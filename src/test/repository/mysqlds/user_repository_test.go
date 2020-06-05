@@ -52,7 +52,6 @@ func TestCreateUser(t *testing.T) {
 
 		var userRepo auth.UserRepository = &mysqlds.UserRepository{DB: db}
 
-
 		returnError := exception.NewDuplicateEntryError("duplicate")
 		mock.
 			ExpectExec("INSERT users SET").

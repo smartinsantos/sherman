@@ -54,7 +54,6 @@ func TestRegister(t *testing.T) {
 
 		mockUserRepo.On("CreateUser", mock.Anything).Return(mockError)
 
-
 		err := userUseCase.Register(&muCopy)
 		if assert.Error(t, err) {
 			assert.Equal(t, mockError, err)
