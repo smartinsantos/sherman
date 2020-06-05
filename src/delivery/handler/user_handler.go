@@ -3,30 +3,40 @@ package handler
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"sherman/src/delivery/handler/presenter"
-	"sherman/src/delivery/handler/validator"
 	"sherman/src/domain/auth"
 	"sherman/src/utils/exception"
+	"sherman/src/utils/presenter"
 	"sherman/src/utils/response"
 	"sherman/src/utils/security"
+	"sherman/src/utils/validator"
 )
 
-// UserHandler handler for /user/[routes]
-type UserHandler struct {
-	UserUseCase          auth.UserUseCase
-	SecurityTokenUseCase auth.SecurityTokenUseCase
-}
+type (
+	// UserHandler handler for /user/[routes]
+	UserHandler interface {
+		Register(ctx echo.Context) error
+		Login(ctx echo.Context) error
+		RefreshAccessToken(ctx echo.Context) error
+		GetUser(ctx echo.Context) error
+		Logout(ctx echo.Context) error
+	}
+
+	userHandler struct {
+		UserUseCase          auth.UserUseCase
+		SecurityTokenUseCase auth.SecurityTokenUseCase
+	}
+)
 
 // NewUserHandler constructor
-func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase) *UserHandler {
-	return &UserHandler{
+func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase) UserHandler {
+	return &userHandler{
 		UserUseCase:          uuc,
 		SecurityTokenUseCase: stuc,
 	}
 }
 
 // Register registers the user
-func (h *UserHandler) Register(ctx echo.Context) error {
+func (h *userHandler) Register(ctx echo.Context) error {
 	var user auth.User
 	res := response.NewResponse()
 
@@ -56,7 +66,7 @@ func (h *UserHandler) Register(ctx echo.Context) error {
 }
 
 // Login logs the user in
-func (h *UserHandler) Login(ctx echo.Context) error {
+func (h *userHandler) Login(ctx echo.Context) error {
 	var user auth.User
 	res := response.NewResponse()
 
@@ -111,7 +121,7 @@ func (h *UserHandler) Login(ctx echo.Context) error {
 }
 
 // RefreshAccessToken refreshes user access token
-func (h *UserHandler) RefreshAccessToken(ctx echo.Context) error {
+func (h *userHandler) RefreshAccessToken(ctx echo.Context) error {
 	res := response.NewResponse()
 
 	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
@@ -136,7 +146,7 @@ func (h *UserHandler) RefreshAccessToken(ctx echo.Context) error {
 }
 
 // GetUser gets the user from access token
-func (h *UserHandler) GetUser(ctx echo.Context) error {
+func (h *userHandler) GetUser(ctx echo.Context) error {
 	res := response.NewResponse()
 	userID := ctx.Param("id")
 
@@ -157,7 +167,7 @@ func (h *UserHandler) GetUser(ctx echo.Context) error {
 }
 
 // Logout logs out the user
-func (h *UserHandler) Logout(ctx echo.Context) error {
+func (h *userHandler) Logout(ctx echo.Context) error {
 	res := response.NewResponse()
 
 	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)

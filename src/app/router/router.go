@@ -57,7 +57,7 @@ func Serve() {
 	// routes: /api/v1/users
 	userRouter := v1Router.Group("/users")
 	{
-		userHandler := diContainer.Get("user-handler").(*handler.UserHandler)
+		userHandler := diContainer.Get("user-handler").(handler.UserHandler)
 
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
