@@ -10,13 +10,15 @@ import (
 
 // UserUseCase implementation of auth.UserUseCase
 type userUseCase struct {
-	UserRepo auth.UserRepository
+	userRepo     auth.UserRepository
+	passwordUtil security.PasswordUtil
 }
 
 // NewUserUseCase constructor
-func NewUserUseCase(ur auth.UserRepository) auth.UserUseCase {
+func NewUserUseCase(ur auth.UserRepository, p security.PasswordUtil) auth.UserUseCase {
 	return &userUseCase{
-		UserRepo: ur,
+		userRepo:     ur,
+		passwordUtil: p,
 	}
 }
 
@@ -27,23 +29,23 @@ func (uc *userUseCase) Register(user *auth.User) error {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	hashPassword, err := security.Hash(user.Password)
+	hashPassword, err := uc.passwordUtil.Hash(user.Password)
 	if err != nil {
 		return err
 	}
 	user.Password = string(hashPassword)
 
-	return uc.UserRepo.CreateUser(user)
+	return uc.userRepo.CreateUser(user)
 }
 
 // VerifyCredentials verifies a user credentials
 func (uc *userUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
-	userRecord, err := uc.UserRepo.GetUserByEmail(user.EmailAddress)
+	userRecord, err := uc.userRepo.GetUserByEmail(user.EmailAddress)
 	if err != nil {
 		return auth.User{}, err
 	}
 
-	if err := security.VerifyPassword(userRecord.Password, user.Password); err != nil {
+	if err := uc.passwordUtil.VerifyPassword(userRecord.Password, user.Password); err != nil {
 		return auth.User{}, exception.NewUnAuthorizedError("password doesn't match")
 	}
 
@@ -52,5 +54,5 @@ func (uc *userUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
 
 // GetUserByID creates a user by id
 func (uc *userUseCase) GetUserByID(id string) (auth.User, error) {
-	return uc.UserRepo.GetUserByID(id)
+	return uc.userRepo.GetUserByID(id)
 }

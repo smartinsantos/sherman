@@ -22,16 +22,18 @@ type (
 	}
 
 	userHandler struct {
-		UserUseCase          auth.UserUseCase
-		SecurityTokenUseCase auth.SecurityTokenUseCase
+		userUseCase          auth.UserUseCase
+		securityTokenUseCase auth.SecurityTokenUseCase
+		tokenUtil            security.TokenUtil
 	}
 )
 
 // NewUserHandler constructor
-func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase) UserHandler {
+func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase, tu security.TokenUtil) UserHandler {
 	return &userHandler{
-		UserUseCase:          uuc,
-		SecurityTokenUseCase: stuc,
+		userUseCase:          uuc,
+		securityTokenUseCase: stuc,
+		tokenUtil:            tu,
 	}
 }
 
@@ -51,7 +53,7 @@ func (h *userHandler) Register(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	if err := h.UserUseCase.Register(&user); err != nil {
+	if err := h.userUseCase.Register(&user); err != nil {
 		switch err.(type) {
 		case *exception.DuplicateEntryError:
 			res.SetError(http.StatusForbidden, err.Error())
@@ -80,7 +82,7 @@ func (h *userHandler) Login(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	verifiedUser, err := h.UserUseCase.VerifyCredentials(&user)
+	verifiedUser, err := h.userUseCase.VerifyCredentials(&user)
 
 	if err != nil {
 		switch err.(type) {
@@ -94,13 +96,13 @@ func (h *userHandler) Login(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(verifiedUser.ID)
+	accessToken, err := h.securityTokenUseCase.GenAccessToken(verifiedUser.ID)
 	if err != nil {
 		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	refreshToken, err := h.SecurityTokenUseCase.GenRefreshToken(verifiedUser.ID)
+	refreshToken, err := h.securityTokenUseCase.GenRefreshToken(verifiedUser.ID)
 	if err != nil {
 		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())
@@ -124,18 +126,18 @@ func (h *userHandler) Login(ctx echo.Context) error {
 func (h *userHandler) RefreshAccessToken(ctx echo.Context) error {
 	res := response.NewResponse()
 
-	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
+	refreshTokenMetadata, err := h.tokenUtil.GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, "invalid refresh token")
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	if !h.SecurityTokenUseCase.IsRefreshTokenStored(&refreshTokenMetadata) {
+	if !h.securityTokenUseCase.IsRefreshTokenStored(&refreshTokenMetadata) {
 		res.SetError(http.StatusUnauthorized, "invalid refresh token")
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(refreshTokenMetadata.UserID)
+	accessToken, err := h.securityTokenUseCase.GenAccessToken(refreshTokenMetadata.UserID)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, err.Error())
 		return ctx.JSON(res.GetStatus(), res.GetBody())
@@ -150,7 +152,7 @@ func (h *userHandler) GetUser(ctx echo.Context) error {
 	res := response.NewResponse()
 	userID := ctx.Param("id")
 
-	user, err := h.UserUseCase.GetUserByID(userID)
+	user, err := h.userUseCase.GetUserByID(userID)
 
 	if err != nil {
 		switch err.(type) {
@@ -170,13 +172,13 @@ func (h *userHandler) GetUser(ctx echo.Context) error {
 func (h *userHandler) Logout(ctx echo.Context) error {
 	res := response.NewResponse()
 
-	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
+	refreshTokenMetadata, err := h.tokenUtil.GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, err.Error())
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	err = h.SecurityTokenUseCase.RemoveRefreshToken(&refreshTokenMetadata)
+	err = h.securityTokenUseCase.RemoveRefreshToken(&refreshTokenMetadata)
 	if err != nil {
 		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())

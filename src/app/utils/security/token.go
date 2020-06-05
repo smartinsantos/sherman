@@ -10,8 +10,23 @@ import (
 	"time"
 )
 
+type (
+	TokenUtil interface {
+		GenToken(userID, tokenType string, exp int64) (string, error)
+		GetAndValidateAccessToken(ctx echo.Context) (auth.TokenMetadata, error)
+		GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetadata, error)
+	}
+
+	tokenUtil struct{}
+)
+
+// NewToken Token constructor
+func NewTokenUtil() TokenUtil {
+	return &tokenUtil{}
+}
+
 // GenToken generates a jwt.token
-func GenToken(userID, tokenType string, exp int64) (string, error) {
+func (tu *tokenUtil) GenToken(userID, tokenType string, exp int64) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
 		"type":    tokenType,
@@ -23,7 +38,7 @@ func GenToken(userID, tokenType string, exp int64) (string, error) {
 }
 
 // GetAndValidateAccessToken gets the access token from echo.Context and verifies its signature
-func GetAndValidateAccessToken(ctx echo.Context) (auth.TokenMetadata, error) {
+func (tu *tokenUtil) GetAndValidateAccessToken(ctx echo.Context) (auth.TokenMetadata, error) {
 	bearToken := ctx.Request().Header.Get("Authorization")
 	tokenArr := strings.Split(bearToken, " ")
 	if len(tokenArr) != 2 {
@@ -42,7 +57,7 @@ func GetAndValidateAccessToken(ctx echo.Context) (auth.TokenMetadata, error) {
 		return auth.TokenMetadata{}, errors.New("invalid token")
 	}
 
-	tokenMetadata, err := extractTokenMetadata(token)
+	tokenMetadata, err := tu.extractTokenMetadata(token)
 	if err != nil {
 		return auth.TokenMetadata{}, errors.New("invalid token")
 	}
@@ -50,7 +65,7 @@ func GetAndValidateAccessToken(ctx echo.Context) (auth.TokenMetadata, error) {
 }
 
 // GetAndValidateRefreshToken gets the refresh token from echo.Context and verifies its signature
-func GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetadata, error) {
+func (tu *tokenUtil) GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetadata, error) {
 	refreshTokenCookie, err := ctx.Request().Cookie("REFRESH_TOKEN")
 	if err != nil {
 		return auth.TokenMetadata{}, errors.New("refresh token not found")
@@ -68,7 +83,7 @@ func GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetadata, error) {
 		return auth.TokenMetadata{}, errors.New("invalid refresh token")
 	}
 
-	tokenMetadata, err := extractTokenMetadata(token)
+	tokenMetadata, err := tu.extractTokenMetadata(token)
 	if err != nil {
 		return auth.TokenMetadata{}, errors.New("invalid refresh token")
 	}
@@ -76,7 +91,7 @@ func GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetadata, error) {
 }
 
 // extractTokenMetadata  extracts metadata of *jwt.Token
-func extractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
+func (tu *tokenUtil) extractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
 		return auth.TokenMetadata{}, errors.New("invalid token data")

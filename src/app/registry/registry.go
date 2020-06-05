@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/sarulabs/di"
 	"sherman/src/app/database"
+	"sherman/src/app/utils/security"
 	"sherman/src/delivery/handler"
 	"sherman/src/domain/auth"
 	"sherman/src/repository/mysqlds"
@@ -26,11 +27,17 @@ var (
 			},
 		},
 		{
-			Name:  "mysql-user-repository",
+			Name:  "password-util",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
-				db := ctn.Get("mysql-db").(*sql.DB)
-				return mysqlds.NewUserRepository(db), nil
+				return security.NewPasswordUtil(), nil
+			},
+		},
+		{
+			Name:  "token-util",
+			Scope: di.App,
+			Build: func(ctn di.Container) (interface{}, error) {
+				return security.NewTokenUtil(), nil
 			},
 		},
 		{
@@ -42,11 +49,20 @@ var (
 			},
 		},
 		{
+			Name:  "mysql-user-repository",
+			Scope: di.App,
+			Build: func(ctn di.Container) (interface{}, error) {
+				db := ctn.Get("mysql-db").(*sql.DB)
+				return mysqlds.NewUserRepository(db), nil
+			},
+		},
+		{
 			Name:  "security-token-usecase",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
 				securityTokenRepo := ctn.Get("mysql-security-token-repository").(auth.SecurityTokenRepository)
-				return usecase.NewSecurityTokenUseCase(securityTokenRepo), nil
+				tokenUtil := ctn.Get("token-util").(security.TokenUtil)
+				return usecase.NewSecurityTokenUseCase(securityTokenRepo, tokenUtil), nil
 			},
 		},
 		{
@@ -54,7 +70,8 @@ var (
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
 				userRepo := ctn.Get("mysql-user-repository").(auth.UserRepository)
-				return usecase.NewUserUseCase(userRepo), nil
+				password := ctn.Get("password-util").(security.PasswordUtil)
+				return usecase.NewUserUseCase(userRepo, password), nil
 			},
 		},
 		{
@@ -63,7 +80,8 @@ var (
 			Build: func(ctn di.Container) (interface{}, error) {
 				userUseCase := ctn.Get("user-usecase").(auth.UserUseCase)
 				securityTokenUseCase := ctn.Get("security-token-usecase").(auth.SecurityTokenUseCase)
-				return handler.NewUserHandler(userUseCase, securityTokenUseCase), nil
+				tokenUtil := ctn.Get("token-util").(security.TokenUtil)
+				return handler.NewUserHandler(userUseCase, securityTokenUseCase, tokenUtil), nil
 			},
 		},
 	}
