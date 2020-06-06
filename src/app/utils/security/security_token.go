@@ -10,6 +10,29 @@ import (
 	"time"
 )
 
+func extractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return auth.TokenMetadata{}, errors.New("invalid token data")
+	}
+
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		return auth.TokenMetadata{}, errors.New("invalid token data")
+	}
+
+	tokenType, ok := claims["type"].(string)
+	if !ok {
+		return auth.TokenMetadata{}, errors.New("invalid token data")
+	}
+
+	return auth.TokenMetadata{
+		UserID: userID,
+		Type:   tokenType,
+		Token:  token.Raw,
+	}, nil
+}
+
 // GenToken generates a jwt.token
 func (s *service) GenToken(userID, tokenType string, exp int64) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -42,7 +65,7 @@ func (s *service) GetAndValidateAccessToken(ctx echo.Context) (auth.TokenMetadat
 		return auth.TokenMetadata{}, errors.New("invalid token")
 	}
 
-	tokenMetadata, err := s.extractTokenMetadata(token)
+	tokenMetadata, err := extractTokenMetadata(token)
 	if err != nil {
 		return auth.TokenMetadata{}, errors.New("invalid token")
 	}
@@ -68,33 +91,9 @@ func (s *service) GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetada
 		return auth.TokenMetadata{}, errors.New("invalid refresh token")
 	}
 
-	tokenMetadata, err := s.extractTokenMetadata(token)
+	tokenMetadata, err := extractTokenMetadata(token)
 	if err != nil {
 		return auth.TokenMetadata{}, errors.New("invalid refresh token")
 	}
 	return tokenMetadata, nil
-}
-
-// extractTokenMetadata  extracts metadata of *jwt.Token
-func (s *service) extractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		return auth.TokenMetadata{}, errors.New("invalid token data")
-	}
-
-	userID, ok := claims["user_id"].(string)
-	if !ok {
-		return auth.TokenMetadata{}, errors.New("invalid token data")
-	}
-
-	tokenType, ok := claims["type"].(string)
-	if !ok {
-		return auth.TokenMetadata{}, errors.New("invalid token data")
-	}
-
-	return auth.TokenMetadata{
-		UserID: userID,
-		Type:   tokenType,
-		Token:  token.Raw,
-	}, nil
 }

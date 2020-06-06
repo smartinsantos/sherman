@@ -46,7 +46,7 @@ func Serve() {
 			"X-Requested-With"},
 		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
 	}))
-	router.Use(cmw.ZeroLog())
+	router.Use(cmw.Get().ZeroLog())
 
 	// root routes : /
 	router.GET("/", func(ctx echo.Context) error {
@@ -62,8 +62,8 @@ func Serve() {
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
 		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
-		userRouter.GET("/:id", userHandler.GetUser, cmw.UserAuthMiddleware())
-		userRouter.GET("/logout", userHandler.Logout, cmw.UserAuthMiddleware())
+		userRouter.GET("/:id", userHandler.GetUser, cmw.Get().UserAuthMiddleware())
+		userRouter.GET("/logout", userHandler.Logout, cmw.Get().UserAuthMiddleware())
 	}
 
 	// run the server

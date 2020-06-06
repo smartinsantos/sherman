@@ -178,6 +178,6 @@ func zeroLogWithConfig(cfg *zeroLogConfig) echo.MiddlewareFunc {
 }
 
 // ZeroLog returns a middleware that logs HTTP requests.
-func ZeroLog() echo.MiddlewareFunc {
+func (*service) ZeroLog() echo.MiddlewareFunc {
 	return zeroLogWithConfig(&defaultZeroLogConfig)
 }

@@ -162,7 +162,7 @@ func (h *userHandler) GetUser(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, response.D{"user": presenter.PresentUser(&user)})
+	res.SetData(http.StatusOK, response.D{"user": presenter.Get().PresentUser(&user)})
 	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 

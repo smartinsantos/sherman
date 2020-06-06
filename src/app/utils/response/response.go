@@ -7,11 +7,19 @@ import (
 var internalServerError = "internal server error"
 
 type (
-
-	// D Response Data type
+	// Service response.Service interface definition
+	Response interface {
+		GetStatus() int
+		GetBody() map[string]interface{}
+		SetInternalServerError()
+		SetError(status int, err string)
+		SetErrors(status int, errs map[string]string)
+		SetData(status int, data map[string]interface{})
+	}
+	// D response Data type
 	D map[string]interface{}
-	// Response struct for response shape
-	Response struct {
+	// response struct for response shape
+	response struct {
 		Status int
 		Error  string
 		Errors map[string]string
@@ -19,21 +27,21 @@ type (
 	}
 )
 
-// NewResponse Response constructor defaults to { Status: 500, error: "internal server error" }
+// NewResponse response constructor defaults to { Status: 500, error: "internal server error" }
 func NewResponse() Response {
-	return Response{
+	return &response{
 		Status: http.StatusInternalServerError,
 		Error:  internalServerError,
 	}
 }
 
 // GetStatus returns the status of the response
-func (res *Response) GetStatus() int {
+func (res *response) GetStatus() int {
 	return res.Status
 }
 
 // GetBody returns the body of the response contains status key, and one of the following keys: error, errors, data
-func (res *Response) GetBody() map[string]interface{} {
+func (res *response) GetBody() map[string]interface{} {
 	response := make(map[string]interface{})
 
 	if len(res.Error) > 0 {
@@ -48,7 +56,7 @@ func (res *Response) GetBody() map[string]interface{} {
 }
 
 // SetInternalServerError sets the response to internal server error { Status: 500, error: "internal server error" }
-func (res *Response) SetInternalServerError() {
+func (res *response) SetInternalServerError() {
 	res.Status = http.StatusInternalServerError
 	res.Error = internalServerError
 	res.Errors = nil
@@ -56,7 +64,7 @@ func (res *Response) SetInternalServerError() {
 }
 
 // SetError sets with an error { Status: [status], Error: [error], Errors: nil, Data: nil }
-func (res *Response) SetError(status int, err string) {
+func (res *response) SetError(status int, err string) {
 	res.Status = status
 	res.Error = err
 	res.Errors = nil
@@ -64,7 +72,7 @@ func (res *Response) SetError(status int, err string) {
 }
 
 // SetErrors sets a response with multiple errors { Status: [status], Errors: [errors], Error: "", Data: nil }
-func (res *Response) SetErrors(status int, errs map[string]string) {
+func (res *response) SetErrors(status int, errs map[string]string) {
 	res.Status = status
 	res.Errors = errs
 	res.Error = ""
@@ -72,7 +80,7 @@ func (res *Response) SetErrors(status int, errs map[string]string) {
 }
 
 // SetData sets a response with data { Status: [status], Data: [data], Errors: nil, Error: "" }
-func (res *Response) SetData(status int, data map[string]interface{}) {
+func (res *response) SetData(status int, data map[string]interface{}) {
 	res.Status = status
 	res.Data = data
 	res.Error = ""
