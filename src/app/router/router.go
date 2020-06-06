@@ -11,7 +11,6 @@ import (
 	"sherman/src/app/config"
 	"sherman/src/app/registry"
 	cmw "sherman/src/app/utils/middleware"
-	"sherman/src/app/utils/security"
 	"sherman/src/delivery/handler"
 )
 
@@ -59,13 +58,12 @@ func Serve() {
 	userRouter := v1Router.Group("/users")
 	{
 		userHandler := diContainer.Get("user-handler").(handler.UserHandler)
-		tokenUtil := diContainer.Get("token-util").(security.TokenUtil)
 
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
 		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
-		userRouter.GET("/:id", userHandler.GetUser, cmw.UserAuthMiddleware(tokenUtil))
-		userRouter.GET("/logout", userHandler.Logout, cmw.UserAuthMiddleware(tokenUtil))
+		userRouter.GET("/:id", userHandler.GetUser, cmw.UserAuthMiddleware())
+		userRouter.GET("/logout", userHandler.Logout, cmw.UserAuthMiddleware())
 	}
 
 	// run the server

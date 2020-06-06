@@ -8,10 +8,10 @@ import (
 )
 
 // UserAuthMiddleware returns echo.HandlerFunc middleware to handle user auth
-func UserAuthMiddleware(tokenUtil security.TokenUtil) echo.MiddlewareFunc {
+func UserAuthMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
-			if _, err := tokenUtil.GetAndValidateAccessToken(ctx); err != nil {
+			if _, err := security.Get().GetAndValidateAccessToken(ctx); err != nil {
 				res := response.NewResponse()
 				res.SetError(http.StatusUnauthorized, "invalid token")
 				return ctx.JSON(http.StatusUnauthorized, res.GetBody())

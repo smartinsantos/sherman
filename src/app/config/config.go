@@ -55,7 +55,7 @@ var (
 	once   sync.Once
 )
 
-// Get returns Config instance
+// Get returns an instance of Config
 func Get() *Config {
 	once.Do(func() {
 		envMap, err := godotenv.Read(".env")

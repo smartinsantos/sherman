@@ -10,15 +10,13 @@ import (
 
 // UserUseCase implementation of auth.UserUseCase
 type userUseCase struct {
-	userRepo     auth.UserRepository
-	passwordUtil security.PasswordUtil
+	userRepo auth.UserRepository
 }
 
 // NewUserUseCase constructor
-func NewUserUseCase(ur auth.UserRepository, p security.PasswordUtil) auth.UserUseCase {
+func NewUserUseCase(ur auth.UserRepository) auth.UserUseCase {
 	return &userUseCase{
-		userRepo:     ur,
-		passwordUtil: p,
+		userRepo: ur,
 	}
 }
 
@@ -29,7 +27,7 @@ func (uc *userUseCase) Register(user *auth.User) error {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	hashPassword, err := uc.passwordUtil.Hash(user.Password)
+	hashPassword, err := security.Get().Hash(user.Password)
 	if err != nil {
 		return err
 	}
@@ -45,7 +43,7 @@ func (uc *userUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
 		return auth.User{}, err
 	}
 
-	if err := uc.passwordUtil.VerifyPassword(userRecord.Password, user.Password); err != nil {
+	if err := security.Get().VerifyPassword(userRecord.Password, user.Password); err != nil {
 		return auth.User{}, exception.NewUnAuthorizedError("password doesn't match")
 	}
 

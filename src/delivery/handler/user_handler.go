@@ -24,16 +24,14 @@ type (
 	userHandler struct {
 		userUseCase          auth.UserUseCase
 		securityTokenUseCase auth.SecurityTokenUseCase
-		tokenUtil            security.TokenUtil
 	}
 )
 
 // NewUserHandler constructor
-func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase, tu security.TokenUtil) UserHandler {
+func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase) UserHandler {
 	return &userHandler{
 		userUseCase:          uuc,
 		securityTokenUseCase: stuc,
-		tokenUtil:            tu,
 	}
 }
 
@@ -126,7 +124,7 @@ func (h *userHandler) Login(ctx echo.Context) error {
 func (h *userHandler) RefreshAccessToken(ctx echo.Context) error {
 	res := response.NewResponse()
 
-	refreshTokenMetadata, err := h.tokenUtil.GetAndValidateRefreshToken(ctx)
+	refreshTokenMetadata, err := security.Get().GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, "invalid refresh token")
 		return ctx.JSON(res.GetStatus(), res.GetBody())
@@ -172,7 +170,7 @@ func (h *userHandler) GetUser(ctx echo.Context) error {
 func (h *userHandler) Logout(ctx echo.Context) error {
 	res := response.NewResponse()
 
-	refreshTokenMetadata, err := h.tokenUtil.GetAndValidateRefreshToken(ctx)
+	refreshTokenMetadata, err := security.Get().GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, err.Error())
 		return ctx.JSON(res.GetStatus(), res.GetBody())

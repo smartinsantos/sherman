@@ -7,6 +7,7 @@ import (
 var internalServerError = "internal server error"
 
 type (
+
 	// D Response Data type
 	D map[string]interface{}
 	// Response struct for response shape
