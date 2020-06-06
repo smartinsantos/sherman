@@ -7,8 +7,8 @@ import (
 var internalServerError = "internal server error"
 
 type (
-	// Service response.Service interface definition
-	Response interface {
+	// Service response.ResponseService interface definition
+	ResponseService interface {
 		GetStatus() int
 		GetBody() map[string]interface{}
 		SetInternalServerError()
@@ -18,7 +18,7 @@ type (
 	}
 	// D response Data type
 	D map[string]interface{}
-	// response struct for response shape
+
 	response struct {
 		Status int
 		Error  string
@@ -28,7 +28,7 @@ type (
 )
 
 // NewResponse response constructor defaults to { Status: 500, error: "internal server error" }
-func NewResponse() Response {
+func NewResponse() ResponseService {
 	return &response{
 		Status: http.StatusInternalServerError,
 		Error:  internalServerError,

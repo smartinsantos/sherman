@@ -45,7 +45,7 @@ func (h *userHandler) Register(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	errors := validator.ValidateUserParams(&user, "register")
+	errors := validator.Get().ValidateUserParams(&user, "register")
 	if len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		return ctx.JSON(res.GetStatus(), res.GetBody())
@@ -75,7 +75,7 @@ func (h *userHandler) Login(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	if errors := validator.ValidateUserParams(&user, "login"); len(errors) > 0 {
+	if errors := validator.Get().ValidateUserParams(&user, "login"); len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}

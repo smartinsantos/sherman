@@ -6,7 +6,8 @@ import (
 )
 
 type (
-	Service interface {
+	// PresenterService presenter.PresenterService interface definition
+	PresenterService interface {
 		PresentUser(user *auth.User) auth.PresentedUser
 	}
 
@@ -14,28 +15,15 @@ type (
 )
 
 var (
-	instance Service
+	instance PresenterService
 	once     sync.Once
 )
 
-// Get returns an instance of presenter.Service
-func Get() Service {
+// Get returns an instance of presenter.PresenterService
+func Get() PresenterService {
 	once.Do(func() {
 		instance = &service{}
 	})
 
 	return instance
-}
-
-// PresentUser returns a map of public auth.User keys, values
-func (s *service) PresentUser(user *auth.User) auth.PresentedUser {
-	return auth.PresentedUser{
-		ID:           user.ID,
-		FirstName:    user.FirstName,
-		LastName:     user.LastName,
-		EmailAddress: user.EmailAddress,
-		Active:       user.Active,
-		CreatedAt:    user.CreatedAt,
-		UpdatedAt:    user.UpdatedAt,
-	}
 }

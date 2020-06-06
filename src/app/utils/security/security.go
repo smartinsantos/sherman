@@ -7,8 +7,8 @@ import (
 )
 
 type (
-	// Service security.Service interface definition
-	Service interface {
+	// SecurityService security.SecurityService interface definition
+	SecurityService interface {
 		// password
 		Hash(password string) ([]byte, error)
 		VerifyPassword(hashedPassword, password string) error
@@ -22,12 +22,12 @@ type (
 )
 
 var (
-	instance Service
+	instance SecurityService
 	once     sync.Once
 )
 
-// Get returns an instance of security.Service
-func Get() Service {
+// Get returns an instance of security.SecurityService
+func Get() SecurityService {
 	once.Do(func() {
 		instance = &service{}
 	})

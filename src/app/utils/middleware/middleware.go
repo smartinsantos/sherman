@@ -6,8 +6,8 @@ import (
 )
 
 type (
-	// Service middleware.Service interface definition
-	Service interface {
+	// MiddlewareService middleware.MiddlewareService interface definition
+	MiddlewareService interface {
 		UserAuthMiddleware() echo.MiddlewareFunc
 		ZeroLog() echo.MiddlewareFunc
 	}
@@ -16,12 +16,12 @@ type (
 )
 
 var (
-	instance Service
+	instance MiddlewareService
 	once     sync.Once
 )
 
-// Get returns an instance of middleware.Service
-func Get() Service {
+// Get returns an instance of middleware.MiddlewareService
+func Get() MiddlewareService {
 	once.Do(func() {
 		instance = &service{}
 	})
