@@ -8,6 +8,10 @@ import (
 	"sherman/src/delivery/handler"
 	"sherman/src/domain/auth"
 	"sherman/src/repository/mysqlds"
+	"sherman/src/services/middleware"
+	"sherman/src/services/presenter"
+	"sherman/src/services/security"
+	"sherman/src/services/validator"
 	"sherman/src/usecase"
 	"sync"
 )
@@ -23,6 +27,35 @@ var (
 			},
 			Close: func(obj interface{}) error {
 				return obj.(*sql.DB).Close()
+			},
+		},
+		{
+			Name:  "middleware-service",
+			Scope: di.App,
+			Build: func(ctn di.Container) (interface{}, error) {
+				securityService := ctn.Get("security-service").(security.Security)
+				return middleware.New(securityService), nil
+			},
+		},
+		{
+			Name:  "presenter-service",
+			Scope: di.App,
+			Build: func(ctn di.Container) (interface{}, error) {
+				return presenter.New(), nil
+			},
+		},
+		{
+			Name:  "security-service",
+			Scope: di.App,
+			Build: func(ctn di.Container) (interface{}, error) {
+				return security.New(), nil
+			},
+		},
+		{
+			Name:  "validator-service",
+			Scope: di.App,
+			Build: func(ctn di.Container) (interface{}, error) {
+				return validator.New(), nil
 			},
 		},
 		{
@@ -46,7 +79,8 @@ var (
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
 				securityTokenRepo := ctn.Get("mysql-security-token-repository").(auth.SecurityTokenRepository)
-				return usecase.NewSecurityTokenUseCase(securityTokenRepo), nil
+				securityService := ctn.Get("security-service").(security.Security)
+				return usecase.NewSecurityTokenUseCase(securityTokenRepo, securityService), nil
 			},
 		},
 		{
@@ -54,7 +88,8 @@ var (
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
 				userRepo := ctn.Get("mysql-user-repository").(auth.UserRepository)
-				return usecase.NewUserUseCase(userRepo), nil
+				securityService := ctn.Get("security-service").(security.Security)
+				return usecase.NewUserUseCase(userRepo, securityService), nil
 			},
 		},
 		{
@@ -63,7 +98,16 @@ var (
 			Build: func(ctn di.Container) (interface{}, error) {
 				userUseCase := ctn.Get("user-usecase").(auth.UserUseCase)
 				securityTokenUseCase := ctn.Get("security-token-usecase").(auth.SecurityTokenUseCase)
-				return handler.NewUserHandler(userUseCase, securityTokenUseCase), nil
+				validatorService := ctn.Get("validator-service").(validator.Validator)
+				securityService := ctn.Get("security-service").(security.Security)
+				presenterService := ctn.Get("presenter-service").(presenter.Presenter)
+				return handler.NewUserHandler(
+					userUseCase,
+					securityTokenUseCase,
+					validatorService,
+					securityService,
+					presenterService,
+				), nil
 			},
 		},
 	}

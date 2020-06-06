@@ -7,19 +7,11 @@ import (
 var internalServerError = "internal server error"
 
 type (
-	// Service response.ResponseService interface definition
-	ResponseService interface {
-		GetStatus() int
-		GetBody() map[string]interface{}
-		SetInternalServerError()
-		SetError(status int, err string)
-		SetErrors(status int, errs map[string]string)
-		SetData(status int, data map[string]interface{})
-	}
-	// D response Data type
+	// D Response Data type
 	D map[string]interface{}
 
-	response struct {
+	// Response Response.Response struct definition
+	Response struct {
 		Status int
 		Error  string
 		Errors map[string]string
@@ -27,36 +19,36 @@ type (
 	}
 )
 
-// NewResponse response constructor defaults to { Status: 500, error: "internal server error" }
-func NewResponse() ResponseService {
-	return &response{
+// NewResponse Response constructor defaults to { Status: 500, error: "internal server error" }
+func NewResponse() Response {
+	return Response{
 		Status: http.StatusInternalServerError,
 		Error:  internalServerError,
 	}
 }
 
-// GetStatus returns the status of the response
-func (res *response) GetStatus() int {
+// GetStatus returns the status of the Response
+func (res *Response) GetStatus() int {
 	return res.Status
 }
 
-// GetBody returns the body of the response contains status key, and one of the following keys: error, errors, data
-func (res *response) GetBody() map[string]interface{} {
-	response := make(map[string]interface{})
+// GetBody returns the body of the Response contains status key, and one of the following keys: error, errors, data
+func (res *Response) GetBody() map[string]interface{} {
+	Response := make(map[string]interface{})
 
 	if len(res.Error) > 0 {
-		response["error"] = res.Error
+		Response["error"] = res.Error
 	}
 	if len(res.Errors) > 0 {
-		response["errors"] = res.Errors
+		Response["errors"] = res.Errors
 	}
 
-	response["data"] = res.Data
-	return response
+	Response["data"] = res.Data
+	return Response
 }
 
-// SetInternalServerError sets the response to internal server error { Status: 500, error: "internal server error" }
-func (res *response) SetInternalServerError() {
+// SetInternalServerError sets the Response to internal server error { Status: 500, error: "internal server error" }
+func (res *Response) SetInternalServerError() {
 	res.Status = http.StatusInternalServerError
 	res.Error = internalServerError
 	res.Errors = nil
@@ -64,23 +56,23 @@ func (res *response) SetInternalServerError() {
 }
 
 // SetError sets with an error { Status: [status], Error: [error], Errors: nil, Data: nil }
-func (res *response) SetError(status int, err string) {
+func (res *Response) SetError(status int, err string) {
 	res.Status = status
 	res.Error = err
 	res.Errors = nil
 	res.Data = nil
 }
 
-// SetErrors sets a response with multiple errors { Status: [status], Errors: [errors], Error: "", Data: nil }
-func (res *response) SetErrors(status int, errs map[string]string) {
+// SetErrors sets a Response with multiple errors { Status: [status], Errors: [errors], Error: "", Data: nil }
+func (res *Response) SetErrors(status int, errs map[string]string) {
 	res.Status = status
 	res.Errors = errs
 	res.Error = ""
 	res.Data = nil
 }
 
-// SetData sets a response with data { Status: [status], Data: [data], Errors: nil, Error: "" }
-func (res *response) SetData(status int, data map[string]interface{}) {
+// SetData sets a Response with data { Status: [status], Data: [data], Errors: nil, Error: "" }
+func (res *Response) SetData(status int, data map[string]interface{}) {
 	res.Status = status
 	res.Data = data
 	res.Error = ""

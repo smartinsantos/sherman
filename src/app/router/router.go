@@ -10,8 +10,8 @@ import (
 	"os"
 	"sherman/src/app/config"
 	"sherman/src/app/registry"
-	cmw "sherman/src/app/utils/middleware"
 	"sherman/src/delivery/handler"
+	cmw "sherman/src/services/middleware"
 )
 
 // Serve mounts the base application router
@@ -46,7 +46,10 @@ func Serve() {
 			"X-Requested-With"},
 		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
 	}))
-	router.Use(cmw.Get().ZeroLog())
+
+	cmws := diContainer.Get("middleware-service").(cmw.Middleware)
+
+	router.Use(cmws.ZeroLog())
 
 	// root routes : /
 	router.GET("/", func(ctx echo.Context) error {
@@ -62,8 +65,8 @@ func Serve() {
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
 		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
-		userRouter.GET("/:id", userHandler.GetUser, cmw.Get().UserAuthMiddleware())
-		userRouter.GET("/logout", userHandler.Logout, cmw.Get().UserAuthMiddleware())
+		userRouter.GET("/:id", userHandler.GetUser, cmws.UserAuthMiddleware())
+		userRouter.GET("/logout", userHandler.Logout, cmws.UserAuthMiddleware())
 	}
 
 	// run the server

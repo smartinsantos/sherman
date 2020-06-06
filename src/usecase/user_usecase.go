@@ -3,20 +3,22 @@ package usecase
 import (
 	"github.com/google/uuid"
 	"sherman/src/app/utils/exception"
-	"sherman/src/app/utils/security"
 	"sherman/src/domain/auth"
+	"sherman/src/services/security"
 	"time"
 )
 
 // UserUseCase implementation of auth.UserUseCase
 type userUseCase struct {
 	userRepo auth.UserRepository
+	security security.Security
 }
 
 // NewUserUseCase constructor
-func NewUserUseCase(ur auth.UserRepository) auth.UserUseCase {
+func NewUserUseCase(ur auth.UserRepository, ss security.Security) auth.UserUseCase {
 	return &userUseCase{
 		userRepo: ur,
+		security: ss,
 	}
 }
 
@@ -27,7 +29,7 @@ func (uc *userUseCase) Register(user *auth.User) error {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	hashPassword, err := security.Get().Hash(user.Password)
+	hashPassword, err := uc.security.Hash(user.Password)
 	if err != nil {
 		return err
 	}
@@ -43,7 +45,7 @@ func (uc *userUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
 		return auth.User{}, err
 	}
 
-	if err := security.Get().VerifyPassword(userRecord.Password, user.Password); err != nil {
+	if err := uc.security.VerifyPassword(userRecord.Password, user.Password); err != nil {
 		return auth.User{}, exception.NewUnAuthorizedError("password doesn't match")
 	}
 

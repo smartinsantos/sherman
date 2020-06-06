@@ -3,12 +3,11 @@ package security
 import (
 	"github.com/labstack/echo/v4"
 	"sherman/src/domain/auth"
-	"sync"
 )
 
 type (
-	// SecurityService security.SecurityService interface definition
-	SecurityService interface {
+	// Security security.Security interface definition
+	Security interface {
 		// password
 		Hash(password string) ([]byte, error)
 		VerifyPassword(hashedPassword, password string) error
@@ -21,16 +20,7 @@ type (
 	service struct{}
 )
 
-var (
-	instance SecurityService
-	once     sync.Once
-)
-
-// Get returns an instance of security.SecurityService
-func Get() SecurityService {
-	once.Do(func() {
-		instance = &service{}
-	})
-
-	return instance
+// New returns an instance of security.Security
+func New() Security {
+	return &service{}
 }

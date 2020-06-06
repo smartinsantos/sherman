@@ -4,11 +4,11 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"sherman/src/app/utils/exception"
-	"sherman/src/app/utils/presenter"
 	"sherman/src/app/utils/response"
-	"sherman/src/app/utils/security"
-	"sherman/src/app/utils/validator"
 	"sherman/src/domain/auth"
+	"sherman/src/services/presenter"
+	"sherman/src/services/security"
+	"sherman/src/services/validator"
 )
 
 type (
@@ -24,14 +24,26 @@ type (
 	userHandler struct {
 		userUseCase          auth.UserUseCase
 		securityTokenUseCase auth.SecurityTokenUseCase
+		validator            validator.Validator
+		security             security.Security
+		presenter            presenter.Presenter
 	}
 )
 
 // NewUserHandler constructor
-func NewUserHandler(uuc auth.UserUseCase, stuc auth.SecurityTokenUseCase) UserHandler {
+func NewUserHandler(
+	uuc auth.UserUseCase,
+	stuc auth.SecurityTokenUseCase,
+	vs validator.Validator,
+	ss security.Security,
+	ps presenter.Presenter,
+) UserHandler {
 	return &userHandler{
 		userUseCase:          uuc,
 		securityTokenUseCase: stuc,
+		validator:            vs,
+		security:             ss,
+		presenter:            ps,
 	}
 }
 
@@ -45,7 +57,7 @@ func (h *userHandler) Register(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	errors := validator.Get().ValidateUserParams(&user, "register")
+	errors := h.validator.ValidateUserParams(&user, "register")
 	if len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		return ctx.JSON(res.GetStatus(), res.GetBody())
@@ -75,7 +87,7 @@ func (h *userHandler) Login(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	if errors := validator.Get().ValidateUserParams(&user, "login"); len(errors) > 0 {
+	if errors := h.validator.ValidateUserParams(&user, "login"); len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
@@ -124,7 +136,7 @@ func (h *userHandler) Login(ctx echo.Context) error {
 func (h *userHandler) RefreshAccessToken(ctx echo.Context) error {
 	res := response.NewResponse()
 
-	refreshTokenMetadata, err := security.Get().GetAndValidateRefreshToken(ctx)
+	refreshTokenMetadata, err := h.security.GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, "invalid refresh token")
 		return ctx.JSON(res.GetStatus(), res.GetBody())
@@ -162,7 +174,7 @@ func (h *userHandler) GetUser(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, response.D{"user": presenter.Get().PresentUser(&user)})
+	res.SetData(http.StatusOK, response.D{"user": h.presenter.PresentUser(&user)})
 	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
@@ -170,7 +182,7 @@ func (h *userHandler) GetUser(ctx echo.Context) error {
 func (h *userHandler) Logout(ctx echo.Context) error {
 	res := response.NewResponse()
 
-	refreshTokenMetadata, err := security.Get().GetAndValidateRefreshToken(ctx)
+	refreshTokenMetadata, err := h.security.GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, err.Error())
 		return ctx.JSON(res.GetStatus(), res.GetBody())

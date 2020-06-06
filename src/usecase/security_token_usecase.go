@@ -3,27 +3,29 @@ package usecase
 import (
 	"errors"
 	"github.com/google/uuid"
-	"sherman/src/app/utils/security"
 	"sherman/src/domain/auth"
+	"sherman/src/services/security"
 	"time"
 )
 
 // SecurityTokenUseCase implementation of auth.SecurityTokenUseCase
 type securityTokenUseCase struct {
 	securityTokenRepo auth.SecurityTokenRepository
+	security          security.Security
 }
 
 // NewSecurityTokenUseCase constructor
-func NewSecurityTokenUseCase(str auth.SecurityTokenRepository) auth.SecurityTokenUseCase {
+func NewSecurityTokenUseCase(str auth.SecurityTokenRepository, ss security.Security) auth.SecurityTokenUseCase {
 	return &securityTokenUseCase{
 		securityTokenRepo: str,
+		security:          ss,
 	}
 }
 
 // GenRefreshToken generates a new refresh token and stores it
 func (uc *securityTokenUseCase) GenRefreshToken(userID string) (auth.SecurityToken, error) {
 	duration := time.Hour * time.Duration(48)
-	token, err := security.Get().GenToken(userID, auth.RefreshTokenType, time.Now().Add(duration).Unix())
+	token, err := uc.security.GenToken(userID, auth.RefreshTokenType, time.Now().Add(duration).Unix())
 	if err != nil {
 		return auth.SecurityToken{}, errors.New("could not generate refresh token")
 	}
@@ -46,7 +48,7 @@ func (uc *securityTokenUseCase) GenRefreshToken(userID string) (auth.SecurityTok
 // GenAccessToken generates a new access token
 func (uc *securityTokenUseCase) GenAccessToken(userID string) (auth.SecurityToken, error) {
 	duration := time.Minute * time.Duration(15)
-	token, err := security.Get().GenToken(userID, auth.AccessTokenType, time.Now().Add(duration).Unix())
+	token, err := uc.security.GenToken(userID, auth.AccessTokenType, time.Now().Add(duration).Unix())
 	if err != nil {
 		return auth.SecurityToken{}, errors.New("could not generate access token")
 	}
