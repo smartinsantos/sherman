@@ -2,7 +2,7 @@ package registry
 
 import (
 	"database/sql"
-	"errors"
+	"github.com/rs/zerolog/log"
 	"github.com/sarulabs/di"
 	"sherman/src/app/database"
 	"sherman/src/delivery/handler"
@@ -23,7 +23,11 @@ var (
 			Name:  "mysql-db",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
-				return database.NewConnection()
+				db, err := database.NewConnection()
+				if err != nil {
+					log.Error().Msg(err.Error())
+				}
+				return db, err
 			},
 			Close: func(obj interface{}) error {
 				return obj.(*sql.DB).Close()
@@ -130,10 +134,6 @@ func GetAppContainer() (di.Container, error) {
 		}
 		container = builder.Build()
 	})
-
-	if container == nil {
-		return nil, errors.New("could not create container")
-	}
 
 	return container, nil
 }

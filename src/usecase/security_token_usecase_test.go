@@ -19,13 +19,13 @@ func TestGenRefreshToken(t *testing.T) {
 		mockSecurityTokenRepo.On("CreateOrUpdateToken", mock.Anything).Return(nil)
 		mockSecurityService := new(mocks.Security)
 		mockSecurityService.
-		On(
-			"GenToken",
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("int64"),
-		).
-		Return(mockToken, nil)
+			On(
+				"GenToken",
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("int64"),
+			).
+			Return(mockToken, nil)
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
@@ -45,13 +45,13 @@ func TestGenRefreshToken(t *testing.T) {
 		mockSecurityService := new(mocks.Security)
 		mockError := errors.New("some error")
 		mockSecurityService.
-		On(
-			"GenToken",
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("int64"),
-		).
-		Return("", mockError)
+			On(
+				"GenToken",
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("int64"),
+			).
+			Return("", mockError)
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
@@ -68,13 +68,13 @@ func TestGenRefreshToken(t *testing.T) {
 		mockSecurityTokenRepo.On("CreateOrUpdateToken", mock.Anything).Return(mockError)
 		mockSecurityService := new(mocks.Security)
 		mockSecurityService.
-		On(
-			"GenToken",
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("int64"),
-		).
-		Return(mockToken, nil)
+			On(
+				"GenToken",
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("int64"),
+			).
+			Return(mockToken, nil)
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
@@ -95,13 +95,13 @@ func TestGenAccessToken(t *testing.T) {
 		mockSecurityTokenRepo.On("CreateOrUpdateToken", mock.Anything).Return(nil)
 		mockSecurityService := new(mocks.Security)
 		mockSecurityService.
-		On(
-			"GenToken",
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("int64"),
-		).
-		Return(mockToken, nil)
+			On(
+				"GenToken",
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("int64"),
+			).
+			Return(mockToken, nil)
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
@@ -121,13 +121,13 @@ func TestGenAccessToken(t *testing.T) {
 		mockSecurityService := new(mocks.Security)
 		mockError := errors.New("some error")
 		mockSecurityService.
-		On(
-			"GenToken",
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("string"),
-			mock.AnythingOfType("int64"),
-		).
-		Return("", mockError)
+			On(
+				"GenToken",
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("string"),
+				mock.AnythingOfType("int64"),
+			).
+			Return("", mockError)
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 

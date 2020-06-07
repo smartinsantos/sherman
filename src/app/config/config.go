@@ -62,7 +62,7 @@ func Get() *Config {
 		envMap, err := godotenv.Read(".env")
 
 		if err != nil {
-			log.Fatal().Msg("couldn't read contents of .env file")
+			log.Error().Msg("config error: couldn't read contents of .env file, using defaults")
 		}
 
 		config = &Config{
