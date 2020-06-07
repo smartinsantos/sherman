@@ -1,4 +1,4 @@
-package test_mysqlds
+package mysqlds
 
 import (
 	"errors"
@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"sherman/src/app/utils/exception"
 	"sherman/src/domain/auth"
-	"sherman/src/repository/mysqlds"
 	"testing"
 	"time"
 )
@@ -31,7 +30,7 @@ func TestCreateUser(t *testing.T) {
 		}
 		defer db.Close()
 
-		userRepo := mysqlds.NewUserRepository(db)
+		userRepo := NewUserRepository(db)
 
 		mock.
 			ExpectExec("INSERT users SET").
@@ -50,7 +49,7 @@ func TestCreateUser(t *testing.T) {
 		}
 		defer db.Close()
 
-		userRepo := mysqlds.NewUserRepository(db)
+		userRepo := NewUserRepository(db)
 
 		returnError := exception.NewDuplicateEntryError("duplicate")
 		mock.
@@ -86,7 +85,7 @@ func TestGetUserByID(t *testing.T) {
 		}
 		defer db.Close()
 
-		userRepo := mysqlds.NewUserRepository(db)
+		userRepo := NewUserRepository(db)
 
 		rows := sqlmock.
 			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
@@ -110,7 +109,7 @@ func TestGetUserByID(t *testing.T) {
 		}
 		defer db.Close()
 
-		userRepo := mysqlds.NewUserRepository(db)
+		userRepo := NewUserRepository(db)
 		wrongID := "some-wrong-user-id"
 
 		returnError := errors.New("no rows")
@@ -147,7 +146,7 @@ func TestGetUserByEmail(t *testing.T) {
 		}
 		defer db.Close()
 
-		userRepo := mysqlds.NewUserRepository(db)
+		userRepo := NewUserRepository(db)
 
 		rows := sqlmock.
 			NewRows([]string{"id", "first_name", "last_name", "email_address", "password", "active", "created_at", "updated_at"}).
@@ -171,7 +170,7 @@ func TestGetUserByEmail(t *testing.T) {
 		}
 		defer db.Close()
 
-		userRepo := mysqlds.NewUserRepository(db)
+		userRepo := NewUserRepository(db)
 
 		wrongEmail := "wrongg@email.com"
 

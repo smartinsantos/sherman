@@ -1,4 +1,4 @@
-package test_usecase
+package usecase
 
 import (
 	"errors"
@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"sherman/mocks"
 	"sherman/src/domain/auth"
-	"sherman/src/usecase"
 	"testing"
 	"time"
 )
@@ -28,7 +27,7 @@ func TestGenRefreshToken(t *testing.T) {
 		).
 		Return(mockToken, nil)
 
-		securityTokenUseCase := usecase.NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
+		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
 		refreshToken, err := securityTokenUseCase.GenRefreshToken(mockUserId)
 
@@ -54,7 +53,7 @@ func TestGenRefreshToken(t *testing.T) {
 		).
 		Return("", mockError)
 
-		securityTokenUseCase := usecase.NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
+		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
 		_, err := securityTokenUseCase.GenRefreshToken(mockUserId)
 
@@ -77,7 +76,7 @@ func TestGenRefreshToken(t *testing.T) {
 		).
 		Return(mockToken, nil)
 
-		securityTokenUseCase := usecase.NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
+		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
 		_, err := securityTokenUseCase.GenRefreshToken(mockUserId)
 
@@ -104,7 +103,7 @@ func TestGenAccessToken(t *testing.T) {
 		).
 		Return(mockToken, nil)
 
-		securityTokenUseCase := usecase.NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
+		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
 		refreshToken, err := securityTokenUseCase.GenAccessToken(mockUserId)
 
@@ -130,7 +129,7 @@ func TestGenAccessToken(t *testing.T) {
 		).
 		Return("", mockError)
 
-		securityTokenUseCase := usecase.NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
+		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
 		_, err := securityTokenUseCase.GenAccessToken(mockUserId)
 
@@ -162,7 +161,7 @@ func TestIsRefreshTokenStored(t *testing.T) {
 		mockSecurityTokenRepo.On("GetTokenByMetadata", mock.Anything).Return(mockSecurityToken, nil)
 		mockSecurityService := new(mocks.Security)
 
-		securityTokenUseCase := usecase.NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
+		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
 		tokenStored := securityTokenUseCase.IsRefreshTokenStored(mockRefreshTokenMetaData)
 
@@ -176,7 +175,7 @@ func TestIsRefreshTokenStored(t *testing.T) {
 			Return(auth.SecurityToken{}, errors.New("some error"))
 		mockSecurityService := new(mocks.Security)
 
-		securityTokenUseCase := usecase.NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
+		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
 		tokenStored := securityTokenUseCase.IsRefreshTokenStored(mockRefreshTokenMetaData)
 
@@ -196,7 +195,7 @@ func TestRemoveRefreshToken(t *testing.T) {
 		mockSecurityTokenRepo.On("RemoveTokenByMetadata", mock.Anything).Return(nil)
 		mockSecurityService := new(mocks.Security)
 
-		securityTokenUseCase := usecase.NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
+		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
 		err := securityTokenUseCase.RemoveRefreshToken(mockRefreshTokenMetaData)
 
@@ -209,7 +208,7 @@ func TestRemoveRefreshToken(t *testing.T) {
 		mockSecurityTokenRepo.On("RemoveTokenByMetadata", mock.Anything).Return(mockError)
 		mockSecurityService := new(mocks.Security)
 
-		securityTokenUseCase := usecase.NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
+		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
 		err := securityTokenUseCase.RemoveRefreshToken(mockRefreshTokenMetaData)
 

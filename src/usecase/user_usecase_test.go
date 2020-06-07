@@ -1,4 +1,4 @@
-package test_usecase
+package usecase
 
 import (
 	"errors"
@@ -8,7 +8,6 @@ import (
 	"sherman/src/app/utils/exception"
 	"sherman/src/domain/auth"
 	"sherman/src/service/security"
-	"sherman/src/usecase"
 	"testing"
 )
 
@@ -25,7 +24,7 @@ func TestRegister(t *testing.T) {
 		mockUserRepo.On("CreateUser", mock.Anything).Return(nil)
 		muCopy := mockUser
 		securityService := security.New()
-		userUseCase := usecase.NewUserUseCase(mockUserRepo, securityService)
+		userUseCase := NewUserUseCase(mockUserRepo, securityService)
 
 		err := userUseCase.Register(&muCopy)
 
@@ -46,7 +45,7 @@ func TestRegister(t *testing.T) {
 		muCopy := mockUser
 		mockError := errors.New("TestRegister Error")
 		mockSecurityService := new(mocks.Security)
-		userUseCase := usecase.NewUserUseCase(mockUserRepo, mockSecurityService)
+		userUseCase := NewUserUseCase(mockUserRepo, mockSecurityService)
 
 		mockUserRepo.On("CreateUser", mock.Anything).Return(nil)
 		mockSecurityService.On("Hash", mock.AnythingOfType("string")).Return(nil, mockError)
@@ -62,7 +61,7 @@ func TestRegister(t *testing.T) {
 		muCopy := mockUser
 		mockError := errors.New("TestRegister Error")
 		securityService := security.New()
-		userUseCase := usecase.NewUserUseCase(mockUserRepo, securityService)
+		userUseCase := NewUserUseCase(mockUserRepo, securityService)
 
 		mockUserRepo.On("CreateUser", mock.Anything).Return(mockError)
 
@@ -93,7 +92,7 @@ func TestVerifyCredentials(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
 
-		userUseCase := usecase.NewUserUseCase(mockUserRepo, securityService)
+		userUseCase := NewUserUseCase(mockUserRepo, securityService)
 		userRecord, err := userUseCase.VerifyCredentials(&mockUser)
 
 		assert.NoError(t, err)
@@ -105,7 +104,7 @@ func TestVerifyCredentials(t *testing.T) {
 		mockError := errors.New("GetUserByEmail Error")
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(auth.User{}, mockError)
 		securityService := security.New()
-		userUseCase := usecase.NewUserUseCase(mockUserRepo, securityService)
+		userUseCase := NewUserUseCase(mockUserRepo, securityService)
 		_, err := userUseCase.VerifyCredentials(&mockUser)
 
 		if assert.Error(t, err) {
@@ -121,7 +120,7 @@ func TestVerifyCredentials(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
 		securityService := security.New()
-		userUseCase := usecase.NewUserUseCase(mockUserRepo, securityService)
+		userUseCase := NewUserUseCase(mockUserRepo, securityService)
 		_, err := userUseCase.VerifyCredentials(&mockUserWithWrongPassword)
 
 		if assert.Error(t, err) {
@@ -142,7 +141,7 @@ func TestGetUserByID(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByID", mock.AnythingOfType("string")).Return(mockUser, nil)
 		securityService := security.New()
-		userUseCase := usecase.NewUserUseCase(mockUserRepo, securityService)
+		userUseCase := NewUserUseCase(mockUserRepo, securityService)
 		userRecord, err := userUseCase.GetUserByID("some-id")
 
 		assert.NoError(t, err)
@@ -154,7 +153,7 @@ func TestGetUserByID(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByID", mock.Anything).Return(auth.User{}, mockError)
 		securityService := security.New()
-		userUseCase := usecase.NewUserUseCase(mockUserRepo, securityService)
+		userUseCase := NewUserUseCase(mockUserRepo, securityService)
 		_, err := userUseCase.GetUserByID("some-id")
 
 		if assert.Error(t, err) {
