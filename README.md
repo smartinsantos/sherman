@@ -1,9 +1,44 @@
 # Sherman Starter Kit
-A Go microservice implementation following Robert "Uncle Bob" Clean Architecture
+Sherman is a Golang starter kit to develop API microservices. It is designed to help kickstart a project, avoiding the boilerplate overhead.
+
+It follows SOLID principles, inspired by Robert "Uncle Bob" Clean Architecture. 
+
+## Features
+- Fully "Dockerized" application.
+- Endpoints for user authentication.
+- JWT authentication and refresh token based session.
+- Request marshaling and data validation.
+- Mysql Database with Migrations support.
+- Application configuration thru .env file.
+- Dependency injection container to handle inversion of control with ease.
+- Tests
+    - Interface mocks generator.
+    - Mocked database query tests.
+    - Coverage reports.
+    - Complete test coverage.
+- Linter setup/configuration featuring golangci-lint.
+- Development
+    - Watcher rebuilds application on file changes
+    - Pretty logs
 
 ### Application dependencies
-- Docker: https://docs.docker.com/get-docker/ (Development)
+- Docker: https://docs.docker.com/get-docker/
+- Go SqlMock: https://github.com/DATA-DOG/go-sqlmock  
+- JWT tokens: https://github.com/dgrijalva/jwt-go
+- MYSQL Driver: https://github.com/go-sql-driver/mysql
+- UUIDs: github.com/go-sql-driver/mysql
+- DotEnv: github.com/joho/godotenv
+- Echo web framework: https://echo.labstack.com/guide
+- Logger: https://github.com/rs/zerolog
+- Dependency injection container: https://github.com/sarulabs/di
+- Testify: https://github.com/stretchr/testify
+- Linter: https://github.com/golangci/golangci-lint
+- Watcher: https://github.com/cosmtrek/air
+- Migrations: https://github.com/pressly/goose
+- Mockery: https://github.com/vektra/mockery
 
+
+## Getting Started
 ### Set up application for the first time
 - run ```bin/init```
 
@@ -19,14 +54,14 @@ DB_HOST=localhost
 DB_PORT=5001 * Mapped host 5001:3306 container
 ```
     
-### Bin command reference
+### /bin scripts reference
 - ```bin/init```                            : Initialize/Reset containers && database
 - ```bin/up```                              : Builds and/or spins up docker containers https://docs.docker.com/compose/reference/up/  
 - ```bin/down```                            : Stops docker containers https://docs.docker.com/compose/reference/down/
-- ```bin/go```                              : Run go commands in the app container
+- ```bin/go```                              : Run go commands in the app container (container must be running)
 - ```bin/mockery```                         : Generates mocks for every interface in the project under ./src/mocks
 - ```bin/lint```                            : Finds lint errors in the application
-- ```bin/exec```
+- ```bin/exec```                            : Execs the following commands (container must be running)
     - ```setup```                           : Install all project dependencies
     - ```gofmt```                           : Formats .go files in /src folder
     - ```lint```                            : Finds lint errors in the application
@@ -43,16 +78,3 @@ DB_PORT=5001 * Mapped host 5001:3306 container
         - ```reset```                       : Roll back all migrations
         - ```status```                      : Dump the migration status for the current DB
         - ```version```                     : Print the current version of the database
-
-## Go Packages reference
-- Linter: https://github.com/golangci/golangci-lint
-- Watcher: https://github.com/cosmtrek/air
-- MYSQL Driver: https://github.com/go-sql-driver/mysql
-- Migrations: https://github.com/pressly/goose
-- Dependency injection container: https://github.com/sarulabs/di
-- Echo web framework: https://echo.labstack.com/guide
-- JWT tokens: https://github.com/dgrijalva/jwt-go
-- Logger: https://github.com/rs/zerolog
-- Testify: https://github.com/stretchr/testify
-- Mockery: https://github.com/vektra/mockery
-- Go SqlMock: https://github.com/DATA-DOG/go-sqlmock  
