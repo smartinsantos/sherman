@@ -5,4 +5,10 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/../.. || exit
 
 echo "Running Tests ..."
-go test -v ./test/...
+TEST_DIR="./src/..."
+COVERAGE_DIR="./coverage"
+
+mkdir -p "$COVERAGE_DIR"
+
+go test "$TEST_DIR" -v -covermode=atomic -coverpkg="$TEST_DIR" -coverprofile "$COVERAGE_DIR/coverage.out" && go tool cover -html="$COVERAGE_DIR/coverage.out" -o "$COVERAGE_DIR/coverage.html"
+
