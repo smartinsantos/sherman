@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"sherman/src/domain/auth"
-	"sherman/src/services/security"
+	"sherman/src/service/security"
 	"time"
 )
 

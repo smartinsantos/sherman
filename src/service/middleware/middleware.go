@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
-	"sherman/src/services/security"
+	"sherman/src/service/security"
 )
 
 type (

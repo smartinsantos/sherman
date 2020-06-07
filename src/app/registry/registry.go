@@ -8,16 +8,16 @@ import (
 	"sherman/src/delivery/handler"
 	"sherman/src/domain/auth"
 	"sherman/src/repository/mysqlds"
-	"sherman/src/services/middleware"
-	"sherman/src/services/presenter"
-	"sherman/src/services/security"
-	"sherman/src/services/validator"
+	"sherman/src/service/middleware"
+	"sherman/src/service/presenter"
+	"sherman/src/service/security"
+	"sherman/src/service/validator"
 	"sherman/src/usecase"
 	"sync"
 )
 
 var (
-	// definitions of the application services.
+	// definitions of the application service.
 	registry = []di.Def{
 		{
 			Name:  "mysql-db",
@@ -115,7 +115,7 @@ var (
 	once      sync.Once
 )
 
-// GetAppContainer retrieves an instance of app container with dependency injected services
+// GetAppContainer retrieves an instance of app container with dependency injected service
 func GetAppContainer() (di.Container, error) {
 	once.Do(func() {
 		builder, err := di.NewBuilder()

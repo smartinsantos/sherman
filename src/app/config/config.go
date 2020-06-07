@@ -24,6 +24,7 @@ type (
 	jwtConfig struct {
 		Secret string
 	}
+
 	// Config Wrapper for all configurations
 	Config struct {
 		App appConfig
@@ -99,7 +100,6 @@ func getKeyAsBool(env map[string]string, key string, defaultValue bool) bool {
 	return defaultValue
 }
 
-/*
 func getKeyAsInt(env map[string]string, key string, defaultValue int) int {
 	valueStr := getKey(env, key, "")
 	if value, err := strconv.Atoi(valueStr); err == nil {
@@ -107,4 +107,3 @@ func getKeyAsInt(env map[string]string, key string, defaultValue int) int {
 	}
 	return defaultValue
 }
-*/

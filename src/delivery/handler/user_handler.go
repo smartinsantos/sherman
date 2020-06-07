@@ -6,9 +6,9 @@ import (
 	"sherman/src/app/utils/exception"
 	"sherman/src/app/utils/response"
 	"sherman/src/domain/auth"
-	"sherman/src/services/presenter"
-	"sherman/src/services/security"
-	"sherman/src/services/validator"
+	"sherman/src/service/presenter"
+	"sherman/src/service/security"
+	"sherman/src/service/validator"
 )
 
 type (
