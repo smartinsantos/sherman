@@ -11,6 +11,10 @@ linters:
 
 issues:
   exclude-use-default: false
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - dupl
   exclude:
     # should have a package comment, unless it's in another file for this package (golint)
     - 'in another file for this package'
@@ -57,7 +61,10 @@ service:
   prepare:
     - echo "here I can run custom commands, but no preparation needed for this repo"
 
-# TODO: Modify this
-run:
-  skip-dirs:
-    - test/
+#run:
+#  skip-dirs:
+#    - bin/
+#    - coverage/
+#    - mocks/
+#    - tmp/
+#    - vendor/

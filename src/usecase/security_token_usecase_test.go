@@ -11,7 +11,7 @@ import (
 )
 
 func TestGenRefreshToken(t *testing.T) {
-	mockUserId := "some-user-id"
+	mockUserID := "some-user-id"
 	mockToken := "some-token"
 
 	t.Run("it should succeed", func(t *testing.T) {
@@ -29,11 +29,11 @@ func TestGenRefreshToken(t *testing.T) {
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
-		refreshToken, err := securityTokenUseCase.GenRefreshToken(mockUserId)
+		refreshToken, err := securityTokenUseCase.GenRefreshToken(mockUserID)
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, refreshToken.ID)
-		assert.EqualValues(t, mockUserId, refreshToken.UserID)
+		assert.EqualValues(t, mockUserID, refreshToken.UserID)
 		assert.EqualValues(t, auth.RefreshTokenType, refreshToken.Type)
 		assert.NotEmpty(t, refreshToken.CreatedAt)
 		assert.NotEmpty(t, refreshToken.UpdatedAt)
@@ -55,7 +55,7 @@ func TestGenRefreshToken(t *testing.T) {
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
-		_, err := securityTokenUseCase.GenRefreshToken(mockUserId)
+		_, err := securityTokenUseCase.GenRefreshToken(mockUserID)
 
 		if assert.Error(t, err) {
 			assert.Equal(t, "could not generate refresh token", err.Error())
@@ -78,7 +78,7 @@ func TestGenRefreshToken(t *testing.T) {
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
-		_, err := securityTokenUseCase.GenRefreshToken(mockUserId)
+		_, err := securityTokenUseCase.GenRefreshToken(mockUserID)
 
 		if assert.Error(t, err) {
 			assert.Equal(t, "could not create or update refresh token", err.Error())
@@ -87,7 +87,7 @@ func TestGenRefreshToken(t *testing.T) {
 }
 
 func TestGenAccessToken(t *testing.T) {
-	mockUserId := "some-user-id"
+	mockUserID := "some-user-id"
 	mockToken := "some-token"
 
 	t.Run("it should succeed", func(t *testing.T) {
@@ -105,11 +105,11 @@ func TestGenAccessToken(t *testing.T) {
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
-		refreshToken, err := securityTokenUseCase.GenAccessToken(mockUserId)
+		refreshToken, err := securityTokenUseCase.GenAccessToken(mockUserID)
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, refreshToken.ID)
-		assert.EqualValues(t, mockUserId, refreshToken.UserID)
+		assert.EqualValues(t, mockUserID, refreshToken.UserID)
 		assert.EqualValues(t, auth.AccessTokenType, refreshToken.Type)
 		assert.NotEmpty(t, refreshToken.CreatedAt)
 		assert.NotEmpty(t, refreshToken.UpdatedAt)
@@ -131,7 +131,7 @@ func TestGenAccessToken(t *testing.T) {
 
 		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
 
-		_, err := securityTokenUseCase.GenAccessToken(mockUserId)
+		_, err := securityTokenUseCase.GenAccessToken(mockUserID)
 
 		if assert.Error(t, err) {
 			assert.Equal(t, "could not generate access token", err.Error())

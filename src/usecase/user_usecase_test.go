@@ -43,7 +43,7 @@ func TestRegister(t *testing.T) {
 	t.Run("it should return an error", func(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		muCopy := mockUser
-		mockError := errors.New("TestRegister Error")
+		mockError := errors.New("test register error")
 		mockSecurityService := new(mocks.Security)
 		userUseCase := NewUserUseCase(mockUserRepo, mockSecurityService)
 
@@ -59,7 +59,7 @@ func TestRegister(t *testing.T) {
 	t.Run("it should return an error", func(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
 		muCopy := mockUser
-		mockError := errors.New("TestRegister Error")
+		mockError := errors.New("test register error")
 		securityService := security.New()
 		userUseCase := NewUserUseCase(mockUserRepo, securityService)
 
@@ -101,7 +101,7 @@ func TestVerifyCredentials(t *testing.T) {
 
 	t.Run("it should return an error", func(t *testing.T) {
 		mockUserRepo := new(mocks.UserRepository)
-		mockError := errors.New("GetUserByEmail Error")
+		mockError := errors.New("get user by email error")
 		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(auth.User{}, mockError)
 		securityService := security.New()
 		userUseCase := NewUserUseCase(mockUserRepo, securityService)
@@ -149,7 +149,7 @@ func TestGetUserByID(t *testing.T) {
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		mockError := errors.New("GetUserByID error")
+		mockError := errors.New("get user by id error")
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("GetUserByID", mock.Anything).Return(auth.User{}, mockError)
 		securityService := security.New()
