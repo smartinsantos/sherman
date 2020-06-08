@@ -10,15 +10,33 @@ import (
 	"time"
 )
 
+type securityTokenUseCaseMockDeps struct {
+	securityTokenRepository *mocks.SecurityTokenRepository
+	securityService         *mocks.Security
+}
+
+func genSecurityTokenUseCase() (auth.SecurityTokenUseCase, securityTokenUseCaseMockDeps) {
+	stucDeps := securityTokenUseCaseMockDeps{
+		securityTokenRepository: new(mocks.SecurityTokenRepository),
+		securityService:         new(mocks.Security),
+	}
+
+	stuc := NewSecurityTokenUseCase(
+		stucDeps.securityTokenRepository,
+		stucDeps.securityService,
+	)
+
+	return stuc, stucDeps
+}
+
 func TestGenRefreshToken(t *testing.T) {
 	mockUserID := "some-user-id"
 	mockToken := "some-token"
 
 	t.Run("it should succeed", func(t *testing.T) {
-		mockSecurityTokenRepo := new(mocks.SecurityTokenRepository)
-		mockSecurityTokenRepo.On("CreateOrUpdateToken", mock.Anything).Return(nil)
-		mockSecurityService := new(mocks.Security)
-		mockSecurityService.
+		stuc, stucDeps := genSecurityTokenUseCase()
+		stucDeps.securityTokenRepository.On("CreateOrUpdateToken", mock.Anything).Return(nil)
+		stucDeps.securityService.
 			On(
 				"GenToken",
 				mock.AnythingOfType("string"),
@@ -27,9 +45,7 @@ func TestGenRefreshToken(t *testing.T) {
 			).
 			Return(mockToken, nil)
 
-		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
-
-		refreshToken, err := securityTokenUseCase.GenRefreshToken(mockUserID)
+		refreshToken, err := stuc.GenRefreshToken(mockUserID)
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, refreshToken.ID)
@@ -40,11 +56,10 @@ func TestGenRefreshToken(t *testing.T) {
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		mockSecurityTokenRepo := new(mocks.SecurityTokenRepository)
-		mockSecurityTokenRepo.On("CreateOrUpdateToken", mock.Anything).Return(nil)
-		mockSecurityService := new(mocks.Security)
+		stuc, stucDeps := genSecurityTokenUseCase()
+		stucDeps.securityTokenRepository.On("CreateOrUpdateToken", mock.Anything).Return(nil)
 		mockError := errors.New("some error")
-		mockSecurityService.
+		stucDeps.securityService.
 			On(
 				"GenToken",
 				mock.AnythingOfType("string"),
@@ -53,9 +68,7 @@ func TestGenRefreshToken(t *testing.T) {
 			).
 			Return("", mockError)
 
-		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
-
-		_, err := securityTokenUseCase.GenRefreshToken(mockUserID)
+		_, err := stuc.GenRefreshToken(mockUserID)
 
 		if assert.Error(t, err) {
 			assert.Equal(t, "could not generate refresh token", err.Error())
@@ -63,11 +76,10 @@ func TestGenRefreshToken(t *testing.T) {
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		mockSecurityTokenRepo := new(mocks.SecurityTokenRepository)
+		stuc, stucDeps := genSecurityTokenUseCase()
 		mockError := errors.New("some error")
-		mockSecurityTokenRepo.On("CreateOrUpdateToken", mock.Anything).Return(mockError)
-		mockSecurityService := new(mocks.Security)
-		mockSecurityService.
+		stucDeps.securityTokenRepository.On("CreateOrUpdateToken", mock.Anything).Return(mockError)
+		stucDeps.securityService.
 			On(
 				"GenToken",
 				mock.AnythingOfType("string"),
@@ -76,9 +88,7 @@ func TestGenRefreshToken(t *testing.T) {
 			).
 			Return(mockToken, nil)
 
-		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
-
-		_, err := securityTokenUseCase.GenRefreshToken(mockUserID)
+		_, err := stuc.GenRefreshToken(mockUserID)
 
 		if assert.Error(t, err) {
 			assert.Equal(t, "could not create or update refresh token", err.Error())
@@ -91,10 +101,9 @@ func TestGenAccessToken(t *testing.T) {
 	mockToken := "some-token"
 
 	t.Run("it should succeed", func(t *testing.T) {
-		mockSecurityTokenRepo := new(mocks.SecurityTokenRepository)
-		mockSecurityTokenRepo.On("CreateOrUpdateToken", mock.Anything).Return(nil)
-		mockSecurityService := new(mocks.Security)
-		mockSecurityService.
+		stuc, stucDeps := genSecurityTokenUseCase()
+		stucDeps.securityTokenRepository.On("CreateOrUpdateToken", mock.Anything).Return(nil)
+		stucDeps.securityService.
 			On(
 				"GenToken",
 				mock.AnythingOfType("string"),
@@ -103,9 +112,7 @@ func TestGenAccessToken(t *testing.T) {
 			).
 			Return(mockToken, nil)
 
-		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
-
-		refreshToken, err := securityTokenUseCase.GenAccessToken(mockUserID)
+		refreshToken, err := stuc.GenAccessToken(mockUserID)
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, refreshToken.ID)
@@ -116,11 +123,11 @@ func TestGenAccessToken(t *testing.T) {
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		mockSecurityTokenRepo := new(mocks.SecurityTokenRepository)
-		mockSecurityTokenRepo.On("CreateOrUpdateToken", mock.Anything).Return(nil)
-		mockSecurityService := new(mocks.Security)
+		stuc, stucDeps := genSecurityTokenUseCase()
+
+		stucDeps.securityTokenRepository.On("CreateOrUpdateToken", mock.Anything).Return(nil)
 		mockError := errors.New("some error")
-		mockSecurityService.
+		stucDeps.securityService.
 			On(
 				"GenToken",
 				mock.AnythingOfType("string"),
@@ -129,9 +136,7 @@ func TestGenAccessToken(t *testing.T) {
 			).
 			Return("", mockError)
 
-		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
-
-		_, err := securityTokenUseCase.GenAccessToken(mockUserID)
+		_, err := stuc.GenAccessToken(mockUserID)
 
 		if assert.Error(t, err) {
 			assert.Equal(t, "could not generate access token", err.Error())
@@ -157,27 +162,21 @@ func TestIsRefreshTokenStored(t *testing.T) {
 	}
 
 	t.Run("it should succeed", func(t *testing.T) {
-		mockSecurityTokenRepo := new(mocks.SecurityTokenRepository)
-		mockSecurityTokenRepo.On("GetTokenByMetadata", mock.Anything).Return(mockSecurityToken, nil)
-		mockSecurityService := new(mocks.Security)
+		stuc, stucDeps := genSecurityTokenUseCase()
+		stucDeps.securityTokenRepository.On("GetTokenByMetadata", mock.Anything).Return(mockSecurityToken, nil)
 
-		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
-
-		tokenStored := securityTokenUseCase.IsRefreshTokenStored(mockRefreshTokenMetaData)
+		tokenStored := stuc.IsRefreshTokenStored(mockRefreshTokenMetaData)
 
 		assert.EqualValues(t, true, tokenStored)
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		mockSecurityTokenRepo := new(mocks.SecurityTokenRepository)
-		mockSecurityTokenRepo.
+		stuc, stucDeps := genSecurityTokenUseCase()
+		stucDeps.securityTokenRepository.
 			On("GetTokenByMetadata", mock.Anything).
 			Return(auth.SecurityToken{}, errors.New("some error"))
-		mockSecurityService := new(mocks.Security)
 
-		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
-
-		tokenStored := securityTokenUseCase.IsRefreshTokenStored(mockRefreshTokenMetaData)
+		tokenStored := stuc.IsRefreshTokenStored(mockRefreshTokenMetaData)
 
 		assert.EqualValues(t, false, tokenStored)
 	})
@@ -191,26 +190,20 @@ func TestRemoveRefreshToken(t *testing.T) {
 	}
 
 	t.Run("it should succeed", func(t *testing.T) {
-		mockSecurityTokenRepo := new(mocks.SecurityTokenRepository)
-		mockSecurityTokenRepo.On("RemoveTokenByMetadata", mock.Anything).Return(nil)
-		mockSecurityService := new(mocks.Security)
+		stuc, stucDeps := genSecurityTokenUseCase()
+		stucDeps.securityTokenRepository.On("RemoveTokenByMetadata", mock.Anything).Return(nil)
 
-		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
-
-		err := securityTokenUseCase.RemoveRefreshToken(mockRefreshTokenMetaData)
+		err := stuc.RemoveRefreshToken(mockRefreshTokenMetaData)
 
 		assert.NoError(t, err)
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		mockSecurityTokenRepo := new(mocks.SecurityTokenRepository)
+		stuc, stucDeps := genSecurityTokenUseCase()
 		mockError := errors.New("some error")
-		mockSecurityTokenRepo.On("RemoveTokenByMetadata", mock.Anything).Return(mockError)
-		mockSecurityService := new(mocks.Security)
+		stucDeps.securityTokenRepository.On("RemoveTokenByMetadata", mock.Anything).Return(mockError)
 
-		securityTokenUseCase := NewSecurityTokenUseCase(mockSecurityTokenRepo, mockSecurityService)
-
-		err := securityTokenUseCase.RemoveRefreshToken(mockRefreshTokenMetaData)
+		err := stuc.RemoveRefreshToken(mockRefreshTokenMetaData)
 
 		if assert.Error(t, err) {
 			assert.EqualValues(t, mockError, err)

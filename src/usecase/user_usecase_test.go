@@ -11,6 +11,25 @@ import (
 	"testing"
 )
 
+type userUseCaseMockDeps struct {
+	userRepository  *mocks.UserRepository
+	securityService *mocks.Security
+}
+
+func genUserUseCase() (auth.UserUseCase, userUseCaseMockDeps) {
+	uucDeps := userUseCaseMockDeps{
+		userRepository:  new(mocks.UserRepository),
+		securityService: new(mocks.Security),
+	}
+
+	uuc := NewUserUseCase(
+		uucDeps.userRepository,
+		uucDeps.securityService,
+	)
+
+	return uuc, uucDeps
+}
+
 func TestRegister(t *testing.T) {
 	mockUser := auth.User{
 		FirstName:    "first",
@@ -20,6 +39,8 @@ func TestRegister(t *testing.T) {
 	}
 
 	t.Run("it should succeed", func(t *testing.T) {
+		// uuc, uucDeps := genUserUseCase()
+
 		mockUserRepo := new(mocks.UserRepository)
 		mockUserRepo.On("CreateUser", mock.Anything).Return(nil)
 		muCopy := mockUser

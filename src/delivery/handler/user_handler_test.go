@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-type mockDependencies struct {
+type userHandlerMockDeps struct {
 	userUseCase          *mocks.UserUseCase
 	securityTokenUseCase *mocks.SecurityTokenUseCase
 	validatorService     *mocks.Validator
@@ -23,8 +23,8 @@ type mockDependencies struct {
 	presenterService     *mocks.Presenter
 }
 
-func generateUserHandler() (UserHandler, mockDependencies) {
-	uhDeps := mockDependencies{
+func genMockUserHandler() (UserHandler, userHandlerMockDeps) {
+	uhDeps := userHandlerMockDeps{
 		userUseCase:          new(mocks.UserUseCase),
 		securityTokenUseCase: new(mocks.SecurityTokenUseCase),
 		validatorService:     new(mocks.Validator),
@@ -52,7 +52,7 @@ func TestRegister(t *testing.T) {
 	}
 
 	t.Run("it should succeed", func(t *testing.T) {
-		uh, uhDeps := generateUserHandler()
+		uh, uhDeps := genMockUserHandler()
 		uhDeps.userUseCase.On("Register", mock.Anything).Return(nil)
 		uhDeps.validatorService.
 			On("ValidateUserParams", mock.Anything, mock.AnythingOfType("string")).
@@ -75,7 +75,7 @@ func TestRegister(t *testing.T) {
 	})
 
 	t.Run("it should return error", func(t *testing.T) {
-		uh, _ := generateUserHandler()
+		uh, _ := genMockUserHandler()
 		userJSON, err := json.Marshal("wrong-params")
 		assert.NoError(t, err)
 
@@ -93,7 +93,7 @@ func TestRegister(t *testing.T) {
 	})
 
 	t.Run("it should return error", func(t *testing.T) {
-		uh, uhDeps := generateUserHandler()
+		uh, uhDeps := genMockUserHandler()
 		mockErrorMessages := make(map[string]string)
 		mockErrorMessages["some-error"] = "some error"
 		uhDeps.validatorService.
@@ -117,7 +117,7 @@ func TestRegister(t *testing.T) {
 	})
 
 	t.Run("it should return error", func(t *testing.T) {
-		uh, uhDeps := generateUserHandler()
+		uh, uhDeps := genMockUserHandler()
 		mockError := exception.NewDuplicateEntryError("register error")
 		uhDeps.validatorService.
 			On("ValidateUserParams", mock.Anything, mock.AnythingOfType("string")).
@@ -141,7 +141,7 @@ func TestRegister(t *testing.T) {
 	})
 
 	t.Run("it should return error", func(t *testing.T) {
-		uh, uhDeps := generateUserHandler()
+		uh, uhDeps := genMockUserHandler()
 		mockError := errors.New("some-error")
 		uhDeps.validatorService.
 			On("ValidateUserParams", mock.Anything, mock.AnythingOfType("string")).
