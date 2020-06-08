@@ -57,6 +57,7 @@ service:
   prepare:
     - echo "here I can run custom commands, but no preparation needed for this repo"
 
+# TODO: Modify this
 run:
   skip-dirs:
     - test/
