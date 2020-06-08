@@ -34,17 +34,17 @@ func (res *Response) GetStatus() int {
 
 // GetBody returns the body of the Response contains status key, and one of the following keys: error, errors, data
 func (res *Response) GetBody() map[string]interface{} {
-	Response := make(map[string]interface{})
+	body := make(map[string]interface{})
 
 	if len(res.Error) > 0 {
-		Response["error"] = res.Error
+		body["error"] = res.Error
 	}
 	if len(res.Errors) > 0 {
-		Response["errors"] = res.Errors
+		body["errors"] = res.Errors
 	}
 
-	Response["data"] = res.Data
-	return Response
+	body["data"] = res.Data
+	return body
 }
 
 // SetInternalServerError sets the Response to internal server error { Status: 500, error: "internal server error" }
