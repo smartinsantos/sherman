@@ -21,7 +21,7 @@ It follows SOLID principles, inspired by Robert "Uncle Bob" Clean Architecture.
     - Watcher rebuilds application on file changes
     - Pretty logs
 
-### Application dependencies
+## Application dependencies
 - Docker: https://docs.docker.com/get-docker/
 - Go SqlMock: https://github.com/DATA-DOG/go-sqlmock  
 - JWT tokens: https://github.com/dgrijalva/jwt-go
@@ -36,7 +36,6 @@ It follows SOLID principles, inspired by Robert "Uncle Bob" Clean Architecture.
 - Watcher: https://github.com/cosmtrek/air
 - Migrations: https://github.com/pressly/goose
 - Mockery: https://github.com/vektra/mockery
-
 
 ## Getting Started
 ### Set up application for the first time
