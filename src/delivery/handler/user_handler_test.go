@@ -71,7 +71,8 @@ func TestRegister(t *testing.T) {
 		ctx := e.NewContext(req, rec)
 
 		if assert.NoError(t, uh.Register(ctx)) {
-			assert.EqualValues(t, http.StatusCreated, rec.Code)
+			assert.Equal(t, http.StatusCreated, rec.Code)
+			assert.Equal(t, "{\"data\":null}\n", rec.Body.String())
 		}
 	})
 
@@ -89,8 +90,8 @@ func TestRegister(t *testing.T) {
 		ctx := e.NewContext(req, rec)
 
 		if assert.NoError(t, uh.Register(ctx)) {
-			assert.EqualValues(t, http.StatusUnprocessableEntity, rec.Code)
-
+			assert.Equal(t, http.StatusInternalServerError, rec.Code)
+			assert.Equal(t, "{\"data\":null,\"error\":\"internal server error\"}\n", rec.Body.String())
 		}
 	})
 
@@ -115,7 +116,7 @@ func TestRegister(t *testing.T) {
 
 		if assert.NoError(t, uh.Register(ctx)) {
 			assert.EqualValues(t, http.StatusUnprocessableEntity, rec.Code)
-
+			assert.Equal(t, "{\"data\":null,\"errors\":{\"some-error\":\"some error\"}}\n", rec.Body.String())
 		}
 	})
 
@@ -140,6 +141,7 @@ func TestRegister(t *testing.T) {
 
 		if assert.NoError(t, uh.Register(ctx)) {
 			assert.EqualValues(t, http.StatusForbidden, rec.Code)
+			assert.Equal(t, "{\"data\":null,\"error\":\"register error\"}\n", rec.Body.String())
 		}
 	})
 
@@ -164,6 +166,7 @@ func TestRegister(t *testing.T) {
 
 		if assert.NoError(t, uh.Register(ctx)) {
 			assert.Equal(t, http.StatusInternalServerError, rec.Code)
+			assert.Equal(t, "{\"data\":null,\"error\":\"internal server error\"}\n", rec.Body.String())
 		}
 	})
 }
