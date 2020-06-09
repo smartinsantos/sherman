@@ -164,3 +164,45 @@ func TestRegister(t *testing.T) {
 		assert.EqualValues(t, http.StatusInternalServerError, rec.Code)
 	})
 }
+
+func TestLogin(t *testing.T) {
+	mockUser := auth.User{
+		FirstName:    "first",
+		LastName:     "last",
+		EmailAddress: "some@email.com",
+		Password:     "some_password",
+	}
+
+	mockToken := "some-token"
+
+	t.Run("it should succeed", func(t *testing.T) {
+		uh, uhDeps := genMockUserHandler()
+		uhDeps.validatorService.
+			On("ValidateUserParams", mock.Anything, mock.AnythingOfType("string")).
+			Return(make(map[string]string))
+		uhDeps.userUseCase.
+			On("VerifyCredentials", mock.Anything).
+			Return(mockUser)
+		uhDeps.securityTokenUseCase.
+			On("GenAccessToken", mock.AnythingOfType("string")).
+			Return(mockToken)
+		uhDeps.securityTokenUseCase.
+			On("GenRefreshToken", mock.AnythingOfType("string")).
+			Return(mockToken)
+
+		userJSON, err := json.Marshal(mockUser)
+		assert.NoError(t, err)
+
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/api/v1/users/login", strings.NewReader(string(userJSON)))
+		assert.NoError(t, err)
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		err = uh.Login(ctx)
+		assert.NoError(t, err)
+		assert.EqualValues(t, http.StatusOK, rec.Code)
+	})
+}
