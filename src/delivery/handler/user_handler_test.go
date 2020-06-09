@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -13,6 +14,7 @@ import (
 	"sherman/src/domain/auth"
 	"strings"
 	"testing"
+	"time"
 )
 
 type userHandlerMockDeps struct {
@@ -69,9 +71,9 @@ func TestRegister(t *testing.T) {
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
 
-		err = uh.Register(ctx)
-		assert.NoError(t, err)
-		assert.EqualValues(t, http.StatusCreated, rec.Code)
+		if assert.NoError(t, uh.Register(ctx)) {
+			assert.EqualValues(t, http.StatusCreated, rec.Code)
+		}
 	})
 
 	t.Run("it should return error", func(t *testing.T) {
@@ -87,9 +89,10 @@ func TestRegister(t *testing.T) {
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
 
-		err = uh.Register(ctx)
-		assert.NoError(t, err)
-		assert.EqualValues(t, http.StatusUnprocessableEntity, rec.Code)
+		if assert.NoError(t, uh.Register(ctx)) {
+			assert.EqualValues(t, http.StatusUnprocessableEntity, rec.Code)
+
+		}
 	})
 
 	t.Run("it should return error", func(t *testing.T) {
@@ -111,9 +114,10 @@ func TestRegister(t *testing.T) {
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
 
-		err = uh.Register(ctx)
-		assert.NoError(t, err)
-		assert.EqualValues(t, http.StatusUnprocessableEntity, rec.Code)
+		if assert.NoError(t, uh.Register(ctx)) {
+			assert.EqualValues(t, http.StatusUnprocessableEntity, rec.Code)
+
+		}
 	})
 
 	t.Run("it should return error", func(t *testing.T) {
@@ -135,9 +139,9 @@ func TestRegister(t *testing.T) {
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
 
-		err = uh.Register(ctx)
-		assert.NoError(t, err)
-		assert.EqualValues(t, http.StatusForbidden, rec.Code)
+		if assert.NoError(t, uh.Register(ctx)) {
+			assert.EqualValues(t, http.StatusForbidden, rec.Code)
+		}
 	})
 
 	t.Run("it should return error", func(t *testing.T) {
@@ -159,9 +163,9 @@ func TestRegister(t *testing.T) {
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
 
-		err = uh.Register(ctx)
-		assert.NoError(t, err)
-		assert.EqualValues(t, http.StatusInternalServerError, rec.Code)
+		if assert.NoError(t, uh.Register(ctx)) {
+			assert.Equal(t, http.StatusInternalServerError, rec.Code)
+		}
 	})
 }
 
@@ -173,7 +177,14 @@ func TestLogin(t *testing.T) {
 		Password:     "some_password",
 	}
 
-	mockToken := "some-token"
+	mockToken := auth.SecurityToken{
+		ID:        "some-id",
+		UserID:    "some-user-id",
+		Token:     "some-token",
+		Type:      "some-token-type",
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
+	}
 
 	t.Run("it should succeed", func(t *testing.T) {
 		uh, uhDeps := genMockUserHandler()
@@ -182,13 +193,13 @@ func TestLogin(t *testing.T) {
 			Return(make(map[string]string))
 		uhDeps.userUseCase.
 			On("VerifyCredentials", mock.Anything).
-			Return(mockUser)
+			Return(mockUser, nil)
 		uhDeps.securityTokenUseCase.
 			On("GenAccessToken", mock.AnythingOfType("string")).
-			Return(mockToken)
+			Return(mockToken, nil)
 		uhDeps.securityTokenUseCase.
 			On("GenRefreshToken", mock.AnythingOfType("string")).
-			Return(mockToken)
+			Return(mockToken, nil)
 
 		userJSON, err := json.Marshal(mockUser)
 		assert.NoError(t, err)
@@ -202,6 +213,7 @@ func TestLogin(t *testing.T) {
 		ctx := e.NewContext(req, rec)
 
 		err = uh.Login(ctx)
+
 		assert.NoError(t, err)
 		assert.EqualValues(t, http.StatusOK, rec.Code)
 	})
