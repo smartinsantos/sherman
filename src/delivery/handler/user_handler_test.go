@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -212,9 +211,10 @@ func TestLogin(t *testing.T) {
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
 
-		err = uh.Login(ctx)
-
-		assert.NoError(t, err)
-		assert.EqualValues(t, http.StatusOK, rec.Code)
+		if assert.NoError(t, uh.Login(ctx)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+			assert.Equal(t, "REFRESH_TOKEN=some-token; Path=/; Max-Age=3600; HttpOnly", rec.Header().Get("Set-Cookie"))
+			assert.Equal(t, "{\"data\":{\"access_token\":\"some-token\"}}\n", rec.Body.String())
+		}
 	})
 }
