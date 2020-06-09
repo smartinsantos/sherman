@@ -7,7 +7,6 @@ import (
 	"sherman/mocks"
 	"sherman/src/app/utils/exception"
 	"sherman/src/domain/auth"
-	"sherman/src/service/security"
 	"testing"
 )
 
@@ -37,56 +36,54 @@ func TestRegister(t *testing.T) {
 		EmailAddress: "some@email.com",
 		Password:     "some-password",
 	}
+	mockHashPassword := []byte("some-hashed-password")
 
 	t.Run("it should succeed", func(t *testing.T) {
-		// uuc, uucDeps := genUserUseCase()
-
-		mockUserRepo := new(mocks.UserRepository)
-		mockUserRepo.On("CreateUser", mock.Anything).Return(nil)
+		uuc, uucDeps := genUserUseCase()
 		muCopy := mockUser
-		securityService := security.New()
-		userUseCase := NewUserUseCase(mockUserRepo, securityService)
+		uucDeps.userRepository.On("CreateUser", mock.Anything).Return(nil)
+		uucDeps.securityService.
+			On("Hash", mock.AnythingOfType("string")).
+			Return(mockHashPassword, nil)
 
-		err := userUseCase.Register(&muCopy)
+		err := uuc.Register(&muCopy)
 
 		assert.NoError(t, err)
 		assert.NotEmpty(t, muCopy.ID)
 		assert.NotEmpty(t, muCopy.CreatedAt)
 		assert.NotEmpty(t, muCopy.UpdatedAt)
+		assert.EqualValues(t, string(mockHashPassword), muCopy.Password)
 		assert.EqualValues(t, true, muCopy.Active)
 		assert.EqualValues(t, mockUser.FirstName, muCopy.FirstName)
 		assert.EqualValues(t, mockUser.LastName, muCopy.LastName)
 		assert.EqualValues(t, mockUser.EmailAddress, muCopy.EmailAddress)
-		err = securityService.VerifyPassword(muCopy.Password, mockUser.Password)
-		assert.NoError(t, err)
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		mockUserRepo := new(mocks.UserRepository)
+		uuc, uucDeps := genUserUseCase()
 		muCopy := mockUser
 		mockError := errors.New("test register error")
-		mockSecurityService := new(mocks.Security)
-		userUseCase := NewUserUseCase(mockUserRepo, mockSecurityService)
+		uucDeps.userRepository.On("CreateUser", mock.Anything).Return(nil)
+		uucDeps.securityService.On("Hash", mock.AnythingOfType("string")).Return(nil, mockError)
 
-		mockUserRepo.On("CreateUser", mock.Anything).Return(nil)
-		mockSecurityService.On("Hash", mock.AnythingOfType("string")).Return(nil, mockError)
-
-		err := userUseCase.Register(&muCopy)
+		err := uuc.Register(&muCopy)
 		if assert.Error(t, err) {
 			assert.Equal(t, mockError, err)
 		}
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		mockUserRepo := new(mocks.UserRepository)
+		uuc, uucDeps := genUserUseCase()
 		muCopy := mockUser
 		mockError := errors.New("test register error")
-		securityService := security.New()
-		userUseCase := NewUserUseCase(mockUserRepo, securityService)
+		uucDeps.securityService.
+			On("Hash", mock.AnythingOfType("string")).
+			Return(mockHashPassword, nil)
+		uucDeps.userRepository.
+			On("CreateUser", mock.Anything).
+			Return(mockError)
 
-		mockUserRepo.On("CreateUser", mock.Anything).Return(mockError)
-
-		err := userUseCase.Register(&muCopy)
+		err := uuc.Register(&muCopy)
 		if assert.Error(t, err) {
 			assert.Equal(t, mockError, err)
 		}
@@ -94,39 +91,34 @@ func TestRegister(t *testing.T) {
 }
 
 func TestVerifyCredentials(t *testing.T) {
-	securityService := security.New()
 	mockPassword := "some-password"
-	hashPassword, err := securityService.Hash(mockPassword)
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected", err)
-	}
-	mockHashedPassword := string(hashPassword)
+	mockHashedPassword := "some-hashed-password"
 	mockUserRecord := auth.User{
 		Password: mockHashedPassword,
 	}
-
 	mockUser := auth.User{
 		Password: mockPassword,
 	}
 
 	t.Run("it should succeed", func(t *testing.T) {
-		mockUserRepo := new(mocks.UserRepository)
-		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
+		uuc, uucDeps := genUserUseCase()
+		uucDeps.userRepository.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
+		uucDeps.securityService.
+			On("VerifyPassword", mock.AnythingOfType("string"), mock.AnythingOfType("string")).
+			Return(nil)
 
-		userUseCase := NewUserUseCase(mockUserRepo, securityService)
-		userRecord, err := userUseCase.VerifyCredentials(&mockUser)
+		userRecord, err := uuc.VerifyCredentials(&mockUser)
 
 		assert.NoError(t, err)
 		assert.EqualValues(t, mockUserRecord, userRecord)
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		mockUserRepo := new(mocks.UserRepository)
+		uuc, uucDeps := genUserUseCase()
 		mockError := errors.New("get user by email error")
-		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(auth.User{}, mockError)
-		securityService := security.New()
-		userUseCase := NewUserUseCase(mockUserRepo, securityService)
-		_, err := userUseCase.VerifyCredentials(&mockUser)
+		uucDeps.userRepository.On("GetUserByEmail", mock.Anything).Return(auth.User{}, mockError)
+
+		_, err := uuc.VerifyCredentials(&mockUser)
 
 		if assert.Error(t, err) {
 			assert.Equal(t, mockError, err)
@@ -134,15 +126,14 @@ func TestVerifyCredentials(t *testing.T) {
 	})
 
 	t.Run("it should return an un-authorized error", func(t *testing.T) {
+		uuc, uucDeps := genUserUseCase()
 		mockError := exception.NewUnAuthorizedError("password doesn't match")
-		mockUserWithWrongPassword := auth.User{
-			Password: "wrong-password",
-		}
-		mockUserRepo := new(mocks.UserRepository)
-		mockUserRepo.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
-		securityService := security.New()
-		userUseCase := NewUserUseCase(mockUserRepo, securityService)
-		_, err := userUseCase.VerifyCredentials(&mockUserWithWrongPassword)
+		uucDeps.securityService.
+			On("VerifyPassword", mock.AnythingOfType("string"), mock.AnythingOfType("string")).
+			Return(errors.New("some-error"))
+		uucDeps.userRepository.On("GetUserByEmail", mock.Anything).Return(mockUserRecord, nil)
+
+		_, err := uuc.VerifyCredentials(&mockUser)
 
 		if assert.Error(t, err) {
 			assert.Equal(t, mockError, err)
@@ -151,31 +142,33 @@ func TestVerifyCredentials(t *testing.T) {
 }
 
 func TestGetUserByID(t *testing.T) {
-	t.Run("it should succeed", func(t *testing.T) {
-		mockUser := auth.User{
-			FirstName:    "first",
-			LastName:     "last",
-			EmailAddress: "some@email.com",
-			Password:     "some-password",
-		}
+	mockUser := auth.User{
+		FirstName:    "first",
+		LastName:     "last",
+		EmailAddress: "some@email.com",
+		Password:     "some-password",
+	}
 
-		mockUserRepo := new(mocks.UserRepository)
-		mockUserRepo.On("GetUserByID", mock.AnythingOfType("string")).Return(mockUser, nil)
-		securityService := security.New()
-		userUseCase := NewUserUseCase(mockUserRepo, securityService)
-		userRecord, err := userUseCase.GetUserByID("some-id")
+	t.Run("it should succeed", func(t *testing.T) {
+		uuc, uucDeps := genUserUseCase()
+		uucDeps.userRepository.
+			On("GetUserByID", mock.AnythingOfType("string")).
+			Return(mockUser, nil)
+
+		userRecord, err := uuc.GetUserByID("some-id")
 
 		assert.NoError(t, err)
 		assert.EqualValues(t, mockUser, userRecord)
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
+		uuc, uucDeps := genUserUseCase()
 		mockError := errors.New("get user by id error")
-		mockUserRepo := new(mocks.UserRepository)
-		mockUserRepo.On("GetUserByID", mock.Anything).Return(auth.User{}, mockError)
-		securityService := security.New()
-		userUseCase := NewUserUseCase(mockUserRepo, securityService)
-		_, err := userUseCase.GetUserByID("some-id")
+		uucDeps.userRepository.
+			On("GetUserByID", mock.Anything).
+			Return(auth.User{}, mockError)
+
+		_, err := uuc.GetUserByID("some-id")
 
 		if assert.Error(t, err) {
 			assert.Equal(t, mockError, err)
