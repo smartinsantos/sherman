@@ -83,7 +83,7 @@ func (h *userHandler) Login(ctx echo.Context) error {
 	res := response.NewResponse()
 
 	if err := ctx.Bind(&user); err != nil {
-		res.SetError(http.StatusUnprocessableEntity, err.Error())
+		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
