@@ -519,3 +519,108 @@ func TestRefreshAccessToken(t *testing.T) {
 		}
 	})
 }
+
+func TestGetUser(t *testing.T) {
+	mockUser := auth.User{
+		ID:           "some-id",
+		FirstName:    "first",
+		LastName:     "last",
+		EmailAddress: "some@email.com",
+		Password:     "some-password",
+		Active:       true,
+		CreatedAt:    time.Unix(0, 0),
+		UpdatedAt:    time.Unix(0, 0),
+	}
+
+	t.Run("it should succeed", func(t *testing.T) {
+		uh, uhDeps := genMockUserHandler()
+		uhDeps.userUseCase.
+			On("GetUserByID", mock.Anything).
+			Return(mockUser, nil)
+		uhDeps.presenterService.
+			On("PresentUser", mock.Anything).
+			Return(auth.PresentedUser{
+				ID:           mockUser.ID,
+				FirstName:    mockUser.FirstName,
+				LastName:     mockUser.LastName,
+				EmailAddress: mockUser.EmailAddress,
+				Active:       mockUser.Active,
+				CreatedAt:    mockUser.CreatedAt,
+				UpdatedAt:    mockUser.UpdatedAt,
+			})
+
+		e := echo.New()
+		req, err := http.NewRequest(
+			echo.GET, "/some-url/"+mockUser.ID,
+			strings.NewReader(""),
+		)
+		assert.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+		ctx.SetPath("some-url/:id")
+		ctx.SetParamNames("id")
+		ctx.SetParamValues(mockUser.ID)
+
+		if assert.NoError(t, uh.GetUser(ctx)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+			assert.Equal(
+				t,
+				"{\"data\":{\"user\":{\"id\":\"some-id\",\"first_name\":\"first\",\"last_name\":\"last\",\"email_address\":\"some@email.com\",\"active\":true,\"created_at\":\"1969-12-31T18:00:00-06:00\",\"updated_at\":\"1969-12-31T18:00:00-06:00\"}}}\n",
+				rec.Body.String(),
+			)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		uh, uhDeps := genMockUserHandler()
+		mockError := exception.NewNotFoundError("get user by id not found error")
+		uhDeps.userUseCase.
+			On("GetUserByID", mock.Anything).
+			Return(auth.User{}, mockError)
+
+		e := echo.New()
+		req, err := http.NewRequest(
+			echo.GET, "/some-url/"+mockUser.ID,
+			strings.NewReader(""),
+		)
+		assert.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+		ctx.SetPath("some-url/:id")
+		ctx.SetParamNames("id")
+		ctx.SetParamValues(mockUser.ID)
+
+		if assert.NoError(t, uh.GetUser(ctx)) {
+			assert.Equal(t, http.StatusNotFound, rec.Code)
+			assert.Equal(t, "{\"data\":null,\"error\":\"get user by id not found error\"}\n", rec.Body.String())
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		uh, uhDeps := genMockUserHandler()
+		mockError := errors.New("any get user by id error")
+		uhDeps.userUseCase.
+			On("GetUserByID", mock.Anything).
+			Return(auth.User{}, mockError)
+
+		e := echo.New()
+		req, err := http.NewRequest(
+			echo.GET, "/some-url/"+mockUser.ID,
+			strings.NewReader(""),
+		)
+		assert.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+		ctx.SetPath("some-url/:id")
+		ctx.SetParamNames("id")
+		ctx.SetParamValues(mockUser.ID)
+
+		if assert.NoError(t, uh.GetUser(ctx)) {
+			assert.Equal(t, http.StatusInternalServerError, rec.Code)
+			assert.Equal(t, "{\"data\":null,\"error\":\"internal server error\"}\n", rec.Body.String())
+		}
+	})
+}

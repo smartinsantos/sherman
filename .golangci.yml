@@ -15,6 +15,7 @@ issues:
     - path: _test\.go
       linters:
         - dupl
+        - lll
   exclude:
     # should have a package comment, unless it's in another file for this package (golint)
     - 'in another file for this package'

@@ -163,7 +163,6 @@ func (h *userHandler) GetUser(ctx echo.Context) error {
 	userID := ctx.Param("id")
 
 	user, err := h.userUseCase.GetUserByID(userID)
-
 	if err != nil {
 		switch err.(type) {
 		case *exception.NotFoundError:
