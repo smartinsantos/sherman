@@ -10,10 +10,10 @@ func (s *service) ValidateUserParams(user *auth.User, action string) map[string]
 	var errorMessages = make(map[string]string)
 
 	const (
-		firstNameRequired = "First name is required"
-		lastNameRequired  = "Last name is required"
-		passwordRequired  = "Password is required"
-		emailRequired     = "Email Address is required"
+		firstNameRequired = "first_name is required"
+		lastNameRequired  = "last_name is required"
+		passwordRequired  = "password is required"
+		emailRequired     = "email_address is required"
 	)
 
 	switch strings.ToLower(action) {

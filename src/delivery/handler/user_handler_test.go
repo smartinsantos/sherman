@@ -632,15 +632,6 @@ func TestLogout(t *testing.T) {
 		Token:  "some-token",
 	}
 
-	// mockToken := auth.SecurityToken{
-	// 	ID:        "some-id",
-	// 	UserID:    "some-user-id",
-	// 	Token:     "some-token",
-	// 	Type:      "some-token-type",
-	// 	CreatedAt: time.Time{},
-	// 	UpdatedAt: time.Time{},
-	// }
-
 	t.Run("it should succeed", func(t *testing.T) {
 		uh, uhDeps := genMockUserHandler()
 		uhDeps.securityService.
