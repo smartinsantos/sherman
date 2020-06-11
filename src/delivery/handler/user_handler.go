@@ -187,8 +187,7 @@ func (h *userHandler) Logout(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	err = h.securityTokenUseCase.RemoveRefreshToken(&refreshTokenMetadata)
-	if err != nil {
+	if err := h.securityTokenUseCase.RemoveRefreshToken(&refreshTokenMetadata); err != nil {
 		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}

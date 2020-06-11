@@ -64,9 +64,9 @@ func Serve() {
 
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
-		userRouter.GET("/refresh-token", userHandler.RefreshAccessToken)
+		userRouter.PATCH("/refresh-token", userHandler.RefreshAccessToken)
 		userRouter.GET("/:id", userHandler.GetUser, cmws.UserAuthMiddleware())
-		userRouter.GET("/logout", userHandler.Logout, cmws.UserAuthMiddleware())
+		userRouter.DELETE("/logout", userHandler.Logout, cmws.UserAuthMiddleware())
 	}
 
 	// run the server

@@ -439,7 +439,7 @@ func TestRefreshAccessToken(t *testing.T) {
 			Return(mockToken, nil)
 
 		e := echo.New()
-		req, err := http.NewRequest(echo.GET, "/some-url", strings.NewReader(""))
+		req, err := http.NewRequest(echo.PATCH, "/some-url", strings.NewReader(""))
 		assert.NoError(t, err)
 
 		rec := httptest.NewRecorder()
@@ -459,7 +459,7 @@ func TestRefreshAccessToken(t *testing.T) {
 			Return(auth.TokenMetadata{}, mockError)
 
 		e := echo.New()
-		req, err := http.NewRequest(echo.GET, "/some-url", strings.NewReader(""))
+		req, err := http.NewRequest(echo.PATCH, "/some-url", strings.NewReader(""))
 		assert.NoError(t, err)
 
 		rec := httptest.NewRecorder()
@@ -481,7 +481,7 @@ func TestRefreshAccessToken(t *testing.T) {
 			Return(false)
 
 		e := echo.New()
-		req, err := http.NewRequest(echo.GET, "/some-url", strings.NewReader(""))
+		req, err := http.NewRequest(echo.PATCH, "/some-url", strings.NewReader(""))
 		assert.NoError(t, err)
 
 		rec := httptest.NewRecorder()
@@ -507,7 +507,7 @@ func TestRefreshAccessToken(t *testing.T) {
 			Return(auth.SecurityToken{}, mockError)
 
 		e := echo.New()
-		req, err := http.NewRequest(echo.GET, "/some-url", strings.NewReader(""))
+		req, err := http.NewRequest(echo.PATCH, "/some-url", strings.NewReader(""))
 		assert.NoError(t, err)
 
 		rec := httptest.NewRecorder()
@@ -619,6 +619,88 @@ func TestGetUser(t *testing.T) {
 		ctx.SetParamValues(mockUser.ID)
 
 		if assert.NoError(t, uh.GetUser(ctx)) {
+			assert.Equal(t, http.StatusInternalServerError, rec.Code)
+			assert.Equal(t, "{\"data\":null,\"error\":\"internal server error\"}\n", rec.Body.String())
+		}
+	})
+}
+
+func TestLogout(t *testing.T) {
+	mockTokenMeta := auth.TokenMetadata{
+		UserID: "some-user-id",
+		Type:   "some-token-type",
+		Token:  "some-token",
+	}
+
+	// mockToken := auth.SecurityToken{
+	// 	ID:        "some-id",
+	// 	UserID:    "some-user-id",
+	// 	Token:     "some-token",
+	// 	Type:      "some-token-type",
+	// 	CreatedAt: time.Time{},
+	// 	UpdatedAt: time.Time{},
+	// }
+
+	t.Run("it should succeed", func(t *testing.T) {
+		uh, uhDeps := genMockUserHandler()
+		uhDeps.securityService.
+			On("GetAndValidateRefreshToken", mock.Anything).
+			Return(mockTokenMeta, nil)
+		uhDeps.securityTokenUseCase.
+			On("RemoveRefreshToken", mock.Anything).
+			Return(nil)
+
+		e := echo.New()
+		req, err := http.NewRequest(echo.DELETE, "/some-url", strings.NewReader(""))
+		assert.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		if assert.NoError(t, uh.Logout(ctx)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+			assert.Equal(t, "REFRESH_TOKEN=; Path=/; HttpOnly", rec.Header().Get("Set-Cookie"))
+			assert.Equal(t, "{\"data\":null}\n", rec.Body.String())
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		uh, uhDeps := genMockUserHandler()
+		mockError := errors.New("get and validate refresh token error")
+		uhDeps.securityService.
+			On("GetAndValidateRefreshToken", mock.Anything).
+			Return(auth.TokenMetadata{}, mockError)
+
+		e := echo.New()
+		req, err := http.NewRequest(echo.PATCH, "/some-url", strings.NewReader(""))
+		assert.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		if assert.NoError(t, uh.Logout(ctx)) {
+			assert.Equal(t, http.StatusUnauthorized, rec.Code)
+			assert.Equal(t, "{\"data\":null,\"error\":\"get and validate refresh token error\"}\n", rec.Body.String())
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		uh, uhDeps := genMockUserHandler()
+		uhDeps.securityService.
+			On("GetAndValidateRefreshToken", mock.Anything).
+			Return(mockTokenMeta, nil)
+		uhDeps.securityTokenUseCase.
+			On("RemoveRefreshToken", mock.Anything).
+			Return(errors.New("remove refresh token error"))
+
+		e := echo.New()
+		req, err := http.NewRequest(echo.PATCH, "/some-url", strings.NewReader(""))
+		assert.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		if assert.NoError(t, uh.Logout(ctx)) {
 			assert.Equal(t, http.StatusInternalServerError, rec.Code)
 			assert.Equal(t, "{\"data\":null,\"error\":\"internal server error\"}\n", rec.Body.String())
 		}
