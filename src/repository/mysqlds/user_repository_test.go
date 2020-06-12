@@ -26,7 +26,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("should insert", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -45,7 +45,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("should return an error", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -81,7 +81,7 @@ func TestGetUserByID(t *testing.T) {
 	t.Run("should return a user", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -105,7 +105,7 @@ func TestGetUserByID(t *testing.T) {
 	t.Run("should return an error", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -142,7 +142,7 @@ func TestGetUserByEmail(t *testing.T) {
 	t.Run("should return a user", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -166,7 +166,7 @@ func TestGetUserByEmail(t *testing.T) {
 	t.Run("should return an error", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 

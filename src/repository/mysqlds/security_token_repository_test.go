@@ -24,7 +24,7 @@ func TestCreateOrUpdateToken(t *testing.T) {
 	t.Run("should insert", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -48,7 +48,7 @@ func TestCreateOrUpdateToken(t *testing.T) {
 	t.Run("should update", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -74,7 +74,7 @@ func TestCreateOrUpdateToken(t *testing.T) {
 	t.Run("should return an error", func(t *testing.T) {
 		db, _, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -108,7 +108,7 @@ func TestGetTokenByMetadata(t *testing.T) {
 	t.Run("should return a token", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -131,7 +131,7 @@ func TestGetTokenByMetadata(t *testing.T) {
 	t.Run("should return an error", func(t *testing.T) {
 		db, mock, err := sqlmock.New()
 		if err != nil {
-			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			t.Fatalf("an error '%s' was not expected", err)
 		}
 		defer db.Close()
 
@@ -160,7 +160,7 @@ func TestRemoveTokenMetadata(t *testing.T) {
 
 	db, mock, err := sqlmock.New()
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatalf("an error '%s' was not expected", err)
 	}
 	defer db.Close()
 
