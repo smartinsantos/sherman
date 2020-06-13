@@ -1,11 +1,19 @@
 package security
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
+	"net/http/httptest"
 	"sherman/src/app/config"
+	"sherman/src/domain/auth"
+	"strings"
 	"testing"
 	"time"
 )
@@ -62,4 +70,398 @@ func TestGenToken(t *testing.T) {
 	assert.EqualValues(t, claims["type"], mockTokenType)
 	assert.EqualValues(t, claims["iat"], mockIat)
 	assert.EqualValues(t, claims["exp"], mockExp)
+}
+
+func TestGetAndValidateAccessToken(t *testing.T) {
+	ss := New()
+	mockUserID := "some-user-id"
+	mockTokenType := "some-token-type"
+	mockIat := time.Now().Unix()
+	mockExp := time.Now().Add(time.Minute * time.Duration(15)).Unix()
+
+	t.Run("it should succeed", func(t *testing.T) {
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		mockTokenStr, err := New().GenToken(mockUserID, mockTokenType, mockIat, mockExp)
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+		mockTokenMeta := auth.TokenMetadata{
+			UserID: mockUserID,
+			Type:   mockTokenType,
+			Token:  mockTokenStr,
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set("Authorization", "Bearer "+mockTokenStr)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateAccessToken(ctx)
+		if assert.NoError(t, err) {
+			assert.Equal(t, mockTokenMeta, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateAccessToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "access token not found", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		// wrong signing method
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
+			"user_id": mockUserID,
+			"type":    mockTokenType,
+			"iat":     mockIat,
+			"exp":     mockExp,
+		})
+		key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+		tokenStr, err := token.SignedString(key)
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set("Authorization", "Bearer "+tokenStr)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateAccessToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "invalid token", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		// wrong secret
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"user_id": mockUserID,
+			"type":    mockTokenType,
+			"iat":     mockIat,
+			"exp":     mockExp,
+		})
+		tokenStr, err := token.SignedString([]byte("some-other-secret"))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set("Authorization", "Bearer "+tokenStr)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateAccessToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "invalid token", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		// expired token
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"user_id": mockUserID,
+			"type":    mockTokenType,
+			"iat":     time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC).Unix(),
+			"exp":     time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC).Unix(),
+		})
+		tokenStr, err := token.SignedString([]byte(config.Get().Jwt.Secret))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set("Authorization", "Bearer "+tokenStr)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateAccessToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "invalid token", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		// no claims
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{})
+		tokenStr, err := token.SignedString([]byte(config.Get().Jwt.Secret))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set("Authorization", "Bearer "+tokenStr)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateAccessToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "invalid token", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
+}
+
+func TestGetAndValidateRefreshToken(t *testing.T) {
+	ss := New()
+	mockUserID := "some-user-id"
+	mockTokenType := "some-token-type"
+	mockIat := time.Now().Unix()
+	mockExp := time.Now().Add(time.Minute * time.Duration(15)).Unix()
+
+	t.Run("it should succeed", func(t *testing.T) {
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		mockTokenStr, err := New().GenToken(mockUserID, mockTokenType, mockIat, mockExp)
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+		mockTokenMeta := auth.TokenMetadata{
+			UserID: mockUserID,
+			Type:   mockTokenType,
+			Token:  mockTokenStr,
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.AddCookie(&http.Cookie{
+			Name:     "REFRESH_TOKEN",
+			Value:    mockTokenMeta.Token,
+			MaxAge:   3600,
+			Path:     "/",
+			Domain:   "/",
+			Secure:   false,
+			HttpOnly: true,
+		})
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateRefreshToken(ctx)
+		if assert.NoError(t, err) {
+			assert.Equal(t, mockTokenMeta, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateRefreshToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "refresh token not found", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		// wrong signing method
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
+			"user_id": mockUserID,
+			"type":    mockTokenType,
+			"iat":     mockIat,
+			"exp":     mockExp,
+		})
+		key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+		tokenStr, err := token.SignedString(key)
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.AddCookie(&http.Cookie{
+			Name:     "REFRESH_TOKEN",
+			Value:    tokenStr,
+			MaxAge:   3600,
+			Path:     "/",
+			Domain:   "/",
+			Secure:   false,
+			HttpOnly: true,
+		})
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateRefreshToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "invalid refresh token", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		// wrong secret
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"user_id": mockUserID,
+			"type":    mockTokenType,
+			"iat":     mockIat,
+			"exp":     mockExp,
+		})
+		tokenStr, err := token.SignedString([]byte("some-other-secret"))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.AddCookie(&http.Cookie{
+			Name:     "REFRESH_TOKEN",
+			Value:    tokenStr,
+			MaxAge:   3600,
+			Path:     "/",
+			Domain:   "/",
+			Secure:   false,
+			HttpOnly: true,
+		})
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateRefreshToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "invalid refresh token", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		// expired token
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"user_id": mockUserID,
+			"type":    mockTokenType,
+			"iat":     time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC).Unix(),
+			"exp":     time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC).Unix(),
+		})
+		tokenStr, err := token.SignedString([]byte(config.Get().Jwt.Secret))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.AddCookie(&http.Cookie{
+			Name:     "REFRESH_TOKEN",
+			Value:    tokenStr,
+			MaxAge:   3600,
+			Path:     "/",
+			Domain:   "/",
+			Secure:   false,
+			HttpOnly: true,
+		})
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateRefreshToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "invalid refresh token", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		// no claims
+		e := echo.New()
+		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{})
+		tokenStr, err := token.SignedString([]byte(config.Get().Jwt.Secret))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.AddCookie(&http.Cookie{
+			Name:     "REFRESH_TOKEN",
+			Value:    tokenStr,
+			MaxAge:   3600,
+			Path:     "/",
+			Domain:   "/",
+			Secure:   false,
+			HttpOnly: true,
+		})
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		tokenMeta, err := ss.GetAndValidateRefreshToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "invalid refresh token", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+	})
 }
