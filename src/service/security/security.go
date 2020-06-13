@@ -12,7 +12,7 @@ type (
 		Hash(password string) ([]byte, error)
 		VerifyPassword(hashedPassword, password string) error
 		// token
-		GenToken(userID, tokenType string, exp int64) (string, error)
+		GenToken(userID, tokenType string, iat, exp int64) (string, error)
 		GetAndValidateAccessToken(ctx echo.Context) (auth.TokenMetadata, error)
 		GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetadata, error)
 	}

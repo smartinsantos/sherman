@@ -42,6 +42,7 @@ func TestGenRefreshToken(t *testing.T) {
 				mock.AnythingOfType("string"),
 				mock.AnythingOfType("string"),
 				mock.AnythingOfType("int64"),
+				mock.AnythingOfType("int64"),
 			).
 			Return(mockToken, nil)
 
@@ -65,6 +66,7 @@ func TestGenRefreshToken(t *testing.T) {
 				mock.AnythingOfType("string"),
 				mock.AnythingOfType("string"),
 				mock.AnythingOfType("int64"),
+				mock.AnythingOfType("int64"),
 			).
 			Return("", mockError)
 
@@ -84,6 +86,7 @@ func TestGenRefreshToken(t *testing.T) {
 				"GenToken",
 				mock.AnythingOfType("string"),
 				mock.AnythingOfType("string"),
+				mock.AnythingOfType("int64"),
 				mock.AnythingOfType("int64"),
 			).
 			Return(mockToken, nil)
@@ -109,6 +112,7 @@ func TestGenAccessToken(t *testing.T) {
 				mock.AnythingOfType("string"),
 				mock.AnythingOfType("string"),
 				mock.AnythingOfType("int64"),
+				mock.AnythingOfType("int64"),
 			).
 			Return(mockToken, nil)
 
@@ -132,6 +136,7 @@ func TestGenAccessToken(t *testing.T) {
 				"GenToken",
 				mock.AnythingOfType("string"),
 				mock.AnythingOfType("string"),
+				mock.AnythingOfType("int64"),
 				mock.AnythingOfType("int64"),
 			).
 			Return("", mockError)

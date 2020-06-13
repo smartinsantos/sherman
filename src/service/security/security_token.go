@@ -7,7 +7,6 @@ import (
 	"sherman/src/app/config"
 	"sherman/src/domain/auth"
 	"strings"
-	"time"
 )
 
 func extractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
@@ -34,11 +33,11 @@ func extractTokenMetadata(token *jwt.Token) (auth.TokenMetadata, error) {
 }
 
 // GenToken generates a jwt.token
-func (s *service) GenToken(userID, tokenType string, exp int64) (string, error) {
+func (s *service) GenToken(userID, tokenType string, iat, exp int64) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
 		"type":    tokenType,
-		"iat":     time.Now().Unix(),
+		"iat":     iat,
 		"exp":     exp,
 	})
 

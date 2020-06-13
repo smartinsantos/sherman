@@ -15,20 +15,20 @@ type Security struct {
 	mock.Mock
 }
 
-// GenToken provides a mock function with given fields: userID, tokenType, exp
-func (_m *Security) GenToken(userID string, tokenType string, exp int64) (string, error) {
-	ret := _m.Called(userID, tokenType, exp)
+// GenToken provides a mock function with given fields: userID, tokenType, iat, exp
+func (_m *Security) GenToken(userID string, tokenType string, iat int64, exp int64) (string, error) {
+	ret := _m.Called(userID, tokenType, iat, exp)
 
 	var r0 string
-	if rf, ok := ret.Get(0).(func(string, string, int64) string); ok {
-		r0 = rf(userID, tokenType, exp)
+	if rf, ok := ret.Get(0).(func(string, string, int64, int64) string); ok {
+		r0 = rf(userID, tokenType, iat, exp)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string, int64) error); ok {
-		r1 = rf(userID, tokenType, exp)
+	if rf, ok := ret.Get(1).(func(string, string, int64, int64) error); ok {
+		r1 = rf(userID, tokenType, iat, exp)
 	} else {
 		r1 = ret.Error(1)
 	}
