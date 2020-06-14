@@ -1,4 +1,4 @@
-package router
+package app
 
 import (
 	"fmt"
@@ -14,8 +14,8 @@ import (
 	cmw "sherman/src/service/middleware"
 )
 
-// Serve mounts the base application router
-func Serve() {
+// Run mounts the base application router
+func Run() {
 	cfg := config.Get()
 	if cfg.App.Debug {
 		// pretty logger

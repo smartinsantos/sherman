@@ -11,6 +11,7 @@ type (
 	appConfig struct {
 		Env   string
 		Debug bool
+		Port  int
 		Addr  string
 	}
 	dbConfig struct {
@@ -38,7 +39,8 @@ var (
 		App: appConfig{
 			Env:   "local",
 			Debug: true,
-			Addr:  ":8080",
+			Port:  5000,
+			Addr:  ":5000",
 		},
 		DB: dbConfig{
 			Driver: "mysql",
@@ -69,6 +71,7 @@ func Get() *Config {
 			App: appConfig{
 				Env:   getKey(envMap, "APP_ENV", defaultConfig.App.Env),
 				Debug: getKeyAsBool(envMap, "APP_DEBUG", defaultConfig.App.Debug),
+				Port:  getKeyAsInt(envMap, "APP_PORT", defaultConfig.App.Port),
 				Addr:  getKey(envMap, "APP_ADDR", defaultConfig.App.Addr),
 			},
 			DB: dbConfig{
