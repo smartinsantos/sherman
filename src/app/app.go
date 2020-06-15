@@ -65,8 +65,8 @@ func Run() {
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
 		userRouter.PATCH("/refresh-token", userHandler.RefreshAccessToken)
-		userRouter.GET("/:id", userHandler.GetUser, cmws.UserAuthMiddleware())
-		userRouter.DELETE("/logout", userHandler.Logout, cmws.UserAuthMiddleware())
+		userRouter.GET("/:id", userHandler.GetUser, cmws.JWT())
+		userRouter.DELETE("/logout", userHandler.Logout, cmws.JWT())
 	}
 
 	// run the server

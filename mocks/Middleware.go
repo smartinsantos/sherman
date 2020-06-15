@@ -13,8 +13,8 @@ type Middleware struct {
 	mock.Mock
 }
 
-// UserAuthMiddleware provides a mock function with given fields:
-func (_m *Middleware) UserAuthMiddleware() echo.MiddlewareFunc {
+// JWT provides a mock function with given fields:
+func (_m *Middleware) JWT() echo.MiddlewareFunc {
 	ret := _m.Called()
 
 	var r0 echo.MiddlewareFunc

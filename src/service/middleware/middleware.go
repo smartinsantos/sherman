@@ -8,7 +8,7 @@ import (
 type (
 	// Middleware middleware.Middleware interface definition
 	Middleware interface {
-		UserAuthMiddleware() echo.MiddlewareFunc
+		JWT() echo.MiddlewareFunc
 		ZeroLog() echo.MiddlewareFunc
 	}
 

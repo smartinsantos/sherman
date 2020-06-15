@@ -7,7 +7,7 @@ import (
 )
 
 // UserAuthMiddleware returns echo.HandlerFunc middleware to handle user auth
-func (s *service) UserAuthMiddleware() echo.MiddlewareFunc {
+func (s *service) JWT() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			if _, err := s.securityService.GetAndValidateAccessToken(ctx); err != nil {
