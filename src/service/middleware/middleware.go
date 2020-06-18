@@ -9,7 +9,7 @@ type (
 	// Middleware middleware.Middleware interface definition
 	Middleware interface {
 		JWT() echo.MiddlewareFunc
-		ZeroLog() echo.MiddlewareFunc
+		ZeroLog(config interface{}) echo.MiddlewareFunc
 	}
 
 	service struct {

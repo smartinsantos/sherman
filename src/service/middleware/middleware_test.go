@@ -1,14 +1,19 @@
 package middleware
 
 import (
+	"bytes"
 	"errors"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"sherman/mocks"
 	"sherman/src/domain/auth"
+	"strings"
 	"testing"
 )
 
@@ -24,7 +29,7 @@ func genMockMiddleware() (Middleware, middlewareMockDeps) {
 	return m, mDeps
 }
 
-func TestUserAuthMiddleware(t *testing.T) {
+func TestJWT(t *testing.T) {
 	t.Run("request should go thru", func(t *testing.T) {
 		m, mDeps := genMockMiddleware()
 		mDeps.securityService.
@@ -35,15 +40,13 @@ func TestUserAuthMiddleware(t *testing.T) {
 		handler := func(c echo.Context) error {
 			return c.String(http.StatusOK, "test")
 		}
-
 		h := m.JWT()(handler)
-
 		req := httptest.NewRequest(echo.GET, "/", nil)
-		res := httptest.NewRecorder()
-		ctx := e.NewContext(req, res)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
 		if assert.NoError(t, h(ctx)) {
-			assert.Equal(t, http.StatusOK, res.Code)
-			assert.Equal(t, "test", res.Body.String())
+			assert.Equal(t, http.StatusOK, rec.Code)
+			assert.Equal(t, "test", rec.Body.String())
 		}
 	})
 
@@ -57,15 +60,181 @@ func TestUserAuthMiddleware(t *testing.T) {
 		handler := func(c echo.Context) error {
 			return c.String(http.StatusOK, "test")
 		}
-
 		h := m.JWT()(handler)
-
 		req := httptest.NewRequest(echo.GET, "/", nil)
-		res := httptest.NewRecorder()
-		ctx := e.NewContext(req, res)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
 		if assert.NoError(t, h(ctx)) {
-			assert.Equal(t, http.StatusUnauthorized, res.Code)
-			assert.Equal(t, "{\"data\":null,\"error\":\"invalid token\"}\n", res.Body.String())
+			assert.Equal(t, http.StatusUnauthorized, rec.Code)
+			assert.Equal(t, "{\"data\":null,\"error\":\"invalid token\"}\n", rec.Body.String())
+		}
+	})
+}
+
+func TestZeroLog(t *testing.T) {
+	t.Run("Zerolog with not config", func(t *testing.T) {
+		m, _ := genMockMiddleware()
+		e := echo.New()
+		handler := func(c echo.Context) error {
+			return c.String(http.StatusOK, "test")
+		}
+		h := m.ZeroLog(nil)(handler)
+		req := httptest.NewRequest(echo.GET, "/some", nil)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+		if assert.NoError(t, h(ctx)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+		}
+	})
+
+	t.Run("Zerolog with config", func(t *testing.T) {
+		m, _ := genMockMiddleware()
+		e := echo.New()
+
+		handler := func(c echo.Context) error {
+			return c.String(http.StatusOK, "test")
+		}
+		b := new(bytes.Buffer)
+		logger := log.Output(zerolog.ConsoleWriter{Out: b, NoColor: true})
+		fields := DefaultZeroLogConfig.FieldMap
+		fields["empty"] = ""
+		fields["id"] = "@id"
+		fields["path"] = "@path"
+		fields["protocol"] = "@protocol"
+		fields["referer"] = "@referer"
+		fields["user_agent"] = "@user_agent"
+		fields["store"] = "@header:store"
+		fields["filter_name"] = "@query:name"
+		fields["username"] = "@form:username"
+		fields["session"] = "@cookie:session"
+		fields["latency_human"] = "@latency_human"
+		fields["bytes_in"] = "@bytes_in"
+		fields["bytes_out"] = "@bytes_out"
+		fields["referer"] = "@referer"
+		fields["user"] = "@header:user"
+		config := ZeroLogConfig{
+			Logger:   logger,
+			FieldMap: fields,
+		}
+		h := m.ZeroLog(&config)(handler)
+
+		form := url.Values{}
+		form.Add("username", "doejohn")
+
+		req := httptest.NewRequest(echo.POST, "http://some?name=john", strings.NewReader(form.Encode()))
+		req.Header.Add(echo.HeaderContentType, echo.MIMEApplicationForm)
+		req.Header.Add("Referer", "http://foo.bar")
+		req.Header.Add("User-Agent", "cli-agent")
+		req.Header.Add(echo.HeaderXForwardedFor, "http://foo.bar")
+		req.Header.Add("user", "admin")
+		req.AddCookie(&http.Cookie{
+			Name:  "session",
+			Value: "A1B2C3",
+		})
+
+		rec := httptest.NewRecorder()
+		rec.Header().Add(echo.HeaderXRequestID, "123")
+
+		ctx := e.NewContext(req, rec)
+
+		if assert.NoError(t, h(ctx)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+			res := b.String()
+
+			tests := []struct {
+				str string
+				err string
+			}{
+				{"handle request", "invalid log: handle request info not found"},
+				{"id=123", "invalid log: request id not found"},
+				{`remote_ip=http://foo.bar`, "invalid log: remote ip not found"},
+				{`uri=http://some?name=john`, "invalid log: uri not found"},
+				{"host=some", "invalid log: host not found"},
+				{"method=POST", "invalid log: method not found"},
+				{"status=200", "invalid log: status not found"},
+				{"latency=", "invalid log: latency not found"},
+				{"latency_human=", "invalid log: latency_human not found"},
+				{"bytes_in=0", "invalid log: bytes_in not found"},
+				{"bytes_out=4", "invalid log: bytes_out not found"},
+				{"path=/", "invalid log: path not found"},
+				{"protocol=HTTP/1.1", "invalid log: protocol not found"},
+				{`referer=http://foo.bar`, "invalid log: referer not found"},
+				{"user_agent=cli-agent", "invalid log: user_agent not found"},
+				{"user=admin", "invalid log: header user not found"},
+				{"filter_name=john", "invalid log: query filter_name not found"},
+				{"username=doejohn", "invalid log: form field username not found"},
+				{"session=A1B2C3", "invalid log: cookie session not found"},
+			}
+
+			for _, test := range tests {
+				if !strings.Contains(res, test.str) {
+					t.Error(test.err)
+				}
+			}
+		}
+	})
+
+	t.Run("Zerolog with empty config", func(t *testing.T) {
+		m, _ := genMockMiddleware()
+		e := echo.New()
+		handler := func(c echo.Context) error {
+			return c.String(http.StatusOK, "test")
+		}
+		h := m.ZeroLog(&ZeroLogConfig{})(handler)
+		req := httptest.NewRequest(echo.GET, "/some", nil)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+		if assert.NoError(t, h(ctx)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+		}
+	})
+
+	t.Run("Zerolog with skipper", func(t *testing.T) {
+		m, _ := genMockMiddleware()
+		e := echo.New()
+		config := DefaultZeroLogConfig
+		config.Skipper = func(c echo.Context) bool {
+			return true
+		}
+		handler := func(c echo.Context) error {
+			return c.String(http.StatusOK, "test")
+		}
+		h := m.ZeroLog(&config)(handler)
+		req := httptest.NewRequest(echo.GET, "/some", nil)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+		if assert.NoError(t, h(ctx)) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+		}
+	})
+
+	t.Run("Zerolog retrieves an error", func(t *testing.T) {
+		m, _ := genMockMiddleware()
+		e := echo.New()
+		b := new(bytes.Buffer)
+		logger := log.Output(zerolog.ConsoleWriter{Out: b, NoColor: true})
+		config := ZeroLogConfig{
+			Logger: logger,
+		}
+		handler := func(c echo.Context) error {
+			return errors.New("error")
+		}
+		h := m.ZeroLog(&config)(handler)
+		req := httptest.NewRequest(echo.GET, "/some", nil)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		if assert.Error(t, h(ctx)) {
+			assert.Equal(t, http.StatusInternalServerError, rec.Code)
+			res := b.String()
+
+			if !strings.Contains(res, "status=500") {
+				t.Errorf("invalid log: wrong status code")
+			}
+
+			if !strings.Contains(res, `error=error`) {
+				t.Errorf("invalid log: error not found")
+			}
 		}
 	})
 }

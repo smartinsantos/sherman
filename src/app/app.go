@@ -49,7 +49,7 @@ func Run() {
 
 	cmws := diContainer.Get("middleware-service").(cmw.Middleware)
 
-	router.Use(cmws.ZeroLog())
+	router.Use(cmws.ZeroLog(nil))
 
 	// root routes : /
 	router.GET("/", func(ctx echo.Context) error {

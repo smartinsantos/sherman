@@ -29,13 +29,13 @@ func (_m *Middleware) JWT() echo.MiddlewareFunc {
 	return r0
 }
 
-// ZeroLog provides a mock function with given fields:
-func (_m *Middleware) ZeroLog() echo.MiddlewareFunc {
-	ret := _m.Called()
+// ZeroLog provides a mock function with given fields: config
+func (_m *Middleware) ZeroLog(config interface{}) echo.MiddlewareFunc {
+	ret := _m.Called(config)
 
 	var r0 echo.MiddlewareFunc
-	if rf, ok := ret.Get(0).(func() echo.MiddlewareFunc); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(interface{}) echo.MiddlewareFunc); ok {
+		r0 = rf(config)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(echo.MiddlewareFunc)

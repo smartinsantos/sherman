@@ -12,8 +12,8 @@ import (
 	"time"
 )
 
-// zeroLogConfig defines the config for ZeroLog middleware.
-type zeroLogConfig struct {
+// ZeroLogConfig defines the config for ZeroLog middleware.
+type ZeroLogConfig struct {
 	// FieldMap set a list of fields with tags
 	//
 	// Tags to constructed the .go fields.
@@ -38,16 +38,14 @@ type zeroLogConfig struct {
 	// - @form:<NAME>
 	// - @cookie:<NAME>
 	FieldMap map[string]string
-
-	// Logger it is a zerolog .go
+	// Logger it is a zerolog logger
 	Logger zerolog.Logger
-
 	// Skipper defines a function to skip middleware.
 	Skipper emw.Skipper
 }
 
-// defaultZeroLogConfig is the default ZeroLog middleware config.
-var defaultZeroLogConfig = zeroLogConfig{
+// DefaultZeroLogConfig is the default ZeroLog middleware config.
+var DefaultZeroLogConfig = ZeroLogConfig{
 	FieldMap: map[string]string{
 		"remote_ip": "@remote_ip",
 		"uri":       "@uri",
@@ -68,15 +66,27 @@ var defaultZeroLogConfig = zeroLogConfig{
 	Skipper: emw.DefaultSkipper,
 }
 
-// zeroLogWithConfig returns a ZeroLog middleware with config.
-func zeroLogWithConfig(cfg *zeroLogConfig) echo.MiddlewareFunc {
+// ZeroLog returns a middleware that logs HTTP requests.
+func (s *service) ZeroLog(cfg interface{}) echo.MiddlewareFunc {
+
+	switch cfg := cfg.(type) {
+	case *ZeroLogConfig:
+		return zeroLogWithConfig(cfg)
+	default:
+		DefaultZeroLogConfig.Logger.Info().Msg("Zerolog: using default config")
+		return zeroLogWithConfig(&DefaultZeroLogConfig)
+	}
+}
+
+// ZeroLogWithConfig returns a ZeroLog middleware with config.
+func zeroLogWithConfig(cfg *ZeroLogConfig) echo.MiddlewareFunc {
 	// Defaults
 	if cfg.Skipper == nil {
-		cfg.Skipper = defaultZeroLogConfig.Skipper
+		cfg.Skipper = DefaultZeroLogConfig.Skipper
 	}
 
 	if len(cfg.FieldMap) == 0 {
-		cfg.FieldMap = defaultZeroLogConfig.FieldMap
+		cfg.FieldMap = DefaultZeroLogConfig.FieldMap
 	}
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -175,9 +185,4 @@ func zeroLogWithConfig(cfg *zeroLogConfig) echo.MiddlewareFunc {
 			return
 		}
 	}
-}
-
-// ZeroLog returns a middleware that logs HTTP requests.
-func (*service) ZeroLog() echo.MiddlewareFunc {
-	return zeroLogWithConfig(&defaultZeroLogConfig)
 }
