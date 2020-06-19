@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// DefaultCorsConfig is the default ZeroLog middleware config.
+// CustomCorsConfig is the application custom CORS echo middleware config.
 var CustomCorsConfig = emw.CORSConfig{
 	AllowOrigins:     []string{"*"},
 	AllowCredentials: true,

@@ -4,31 +4,38 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"sherman/src/app/config"
 )
 
-// NewConnection creates a db connection
-func NewConnection() (*sql.DB, error) {
-	cfg := config.Get()
+// ConnectionConfig is the definition of the database cfg param
+type ConnectionConfig struct {
+	Driver string
+	User   string
+	Pass   string
+	Host   string
+	Port   string
+	Name   string
+}
 
+// NewConnection creates a db connection
+func NewConnection(cfg *ConnectionConfig) (*sql.DB, error) {
 	var connectionURL string
 
-	switch cfg.DB.Driver {
+	switch cfg.Driver {
 	case "mysql":
 		connectionURL = fmt.Sprintf(
 			"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-			cfg.DB.User,
-			cfg.DB.Pass,
-			cfg.DB.Host,
-			cfg.DB.Port,
-			cfg.DB.Name,
+			cfg.User,
+			cfg.Pass,
+			cfg.Host,
+			cfg.Port,
+			cfg.Name,
 		)
 	default:
-		errorMessage := fmt.Sprintf("DB_DRIVER: %s, not supported", cfg.DB.Driver)
+		errorMessage := fmt.Sprintf("DB_DRIVER: %s, not supported", cfg.Driver)
 		return nil, errors.New(errorMessage)
 	}
 
-	db, err := sql.Open(cfg.DB.Driver, connectionURL)
+	db, err := sql.Open(cfg.Driver, connectionURL)
 	if err != nil {
 		return nil, err
 	}

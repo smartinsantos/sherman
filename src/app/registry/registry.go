@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/rs/zerolog/log"
 	"github.com/sarulabs/di"
+	"sherman/src/app/config"
 	"sherman/src/app/database"
 	"sherman/src/delivery/handler"
 	"sherman/src/domain/auth"
@@ -23,7 +24,15 @@ var (
 			Name:  "mysql-db",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
-				db, err := database.NewConnection()
+				cfg := config.Get()
+				db, err := database.NewConnection(&database.ConnectionConfig{
+					Driver: cfg.DB.Driver,
+					User:   cfg.DB.User,
+					Pass:   cfg.DB.Pass,
+					Host:   cfg.DB.Host,
+					Port:   cfg.DB.Port,
+					Name:   cfg.DB.Name,
+				})
 				if err != nil {
 					log.Error().Msg(err.Error())
 				}
