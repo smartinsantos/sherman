@@ -12,6 +12,7 @@ import (
 	"sherman/src/app/registry"
 	"sherman/src/delivery/handler"
 	cmw "sherman/src/service/middleware"
+	cmc "sherman/src/service/middleware/config"
 )
 
 // Run mounts the base application router
@@ -31,25 +32,10 @@ func Run() {
 
 	router := echo.New()
 	router.Use(emw.Recover())
-	router.Use(emw.CORSWithConfig(emw.CORSConfig{
-		AllowOrigins:     []string{"*"},
-		AllowCredentials: true,
-		AllowHeaders: []string{
-			"Content-Type",
-			"Content-Length",
-			"Accept-Encoding",
-			"X-CSRF-Token",
-			"Authorization",
-			"accept",
-			"origin",
-			"Cache-Control",
-			"X-Requested-With"},
-		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
-	}))
+	router.Use(emw.CORSWithConfig(cmc.CustomCorsConfig))
 
 	cmws := diContainer.Get("middleware-service").(cmw.Middleware)
-
-	router.Use(cmws.ZeroLog(nil))
+	router.Use(cmws.ZeroLog())
 
 	// root routes : /
 	router.GET("/", func(ctx echo.Context) error {

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
+	cmc "sherman/src/service/middleware/config"
 	"sherman/src/service/security"
 )
 
@@ -9,7 +10,8 @@ type (
 	// Middleware middleware.Middleware interface definition
 	Middleware interface {
 		JWT() echo.MiddlewareFunc
-		ZeroLog(config interface{}) echo.MiddlewareFunc
+		ZeroLog() echo.MiddlewareFunc
+		ZeroLogWithConfig(cfg *cmc.ZeroLogConfig) echo.MiddlewareFunc
 	}
 
 	service struct {

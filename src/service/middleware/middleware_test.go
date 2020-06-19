@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"sherman/mocks"
 	"sherman/src/domain/auth"
+	cmc "sherman/src/service/middleware/config"
 	"strings"
 	"testing"
 )
@@ -72,13 +73,13 @@ func TestJWT(t *testing.T) {
 }
 
 func TestZeroLog(t *testing.T) {
-	t.Run("Zerolog with not config", func(t *testing.T) {
+	t.Run("ZeroLog with default config", func(t *testing.T) {
 		m, _ := genMockMiddleware()
 		e := echo.New()
 		handler := func(c echo.Context) error {
 			return c.String(http.StatusOK, "test")
 		}
-		h := m.ZeroLog(nil)(handler)
+		h := m.ZeroLog()(handler)
 		req := httptest.NewRequest(echo.GET, "/some", nil)
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
@@ -87,7 +88,7 @@ func TestZeroLog(t *testing.T) {
 		}
 	})
 
-	t.Run("Zerolog with config", func(t *testing.T) {
+	t.Run("ZeroLogWithConfig custom config", func(t *testing.T) {
 		m, _ := genMockMiddleware()
 		e := echo.New()
 
@@ -96,7 +97,7 @@ func TestZeroLog(t *testing.T) {
 		}
 		b := new(bytes.Buffer)
 		logger := log.Output(zerolog.ConsoleWriter{Out: b, NoColor: true})
-		fields := DefaultZeroLogConfig.FieldMap
+		fields := cmc.DefaultZeroLogConfig.FieldMap
 		fields["empty"] = ""
 		fields["id"] = "@id"
 		fields["path"] = "@path"
@@ -112,11 +113,11 @@ func TestZeroLog(t *testing.T) {
 		fields["bytes_out"] = "@bytes_out"
 		fields["referer"] = "@referer"
 		fields["user"] = "@header:user"
-		config := ZeroLogConfig{
+		config := cmc.ZeroLogConfig{
 			Logger:   logger,
 			FieldMap: fields,
 		}
-		h := m.ZeroLog(&config)(handler)
+		h := m.ZeroLogWithConfig(&config)(handler)
 
 		form := url.Values{}
 		form.Add("username", "doejohn")
@@ -174,13 +175,13 @@ func TestZeroLog(t *testing.T) {
 		}
 	})
 
-	t.Run("Zerolog with empty config", func(t *testing.T) {
+	t.Run("ZeroLogWithConfig empty config", func(t *testing.T) {
 		m, _ := genMockMiddleware()
 		e := echo.New()
 		handler := func(c echo.Context) error {
 			return c.String(http.StatusOK, "test")
 		}
-		h := m.ZeroLog(&ZeroLogConfig{})(handler)
+		h := m.ZeroLogWithConfig(&cmc.ZeroLogConfig{})(handler)
 		req := httptest.NewRequest(echo.GET, "/some", nil)
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
@@ -189,17 +190,17 @@ func TestZeroLog(t *testing.T) {
 		}
 	})
 
-	t.Run("Zerolog with skipper", func(t *testing.T) {
+	t.Run("ZeroLogWithConfig with skipper", func(t *testing.T) {
 		m, _ := genMockMiddleware()
 		e := echo.New()
-		config := DefaultZeroLogConfig
+		config := cmc.DefaultZeroLogConfig
 		config.Skipper = func(c echo.Context) bool {
 			return true
 		}
 		handler := func(c echo.Context) error {
 			return c.String(http.StatusOK, "test")
 		}
-		h := m.ZeroLog(&config)(handler)
+		h := m.ZeroLogWithConfig(&config)(handler)
 		req := httptest.NewRequest(echo.GET, "/some", nil)
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)
@@ -208,18 +209,18 @@ func TestZeroLog(t *testing.T) {
 		}
 	})
 
-	t.Run("Zerolog retrieves an error", func(t *testing.T) {
+	t.Run("ZeroLogWithConfig retrieves an error", func(t *testing.T) {
 		m, _ := genMockMiddleware()
 		e := echo.New()
 		b := new(bytes.Buffer)
 		logger := log.Output(zerolog.ConsoleWriter{Out: b, NoColor: true})
-		config := ZeroLogConfig{
+		config := cmc.ZeroLogConfig{
 			Logger: logger,
 		}
 		handler := func(c echo.Context) error {
 			return errors.New("error")
 		}
-		h := m.ZeroLog(&config)(handler)
+		h := m.ZeroLogWithConfig(&config)(handler)
 		req := httptest.NewRequest(echo.GET, "/some", nil)
 		rec := httptest.NewRecorder()
 		ctx := e.NewContext(req, rec)

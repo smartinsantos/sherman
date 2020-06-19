@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	config "sherman/src/service/middleware/config"
+
 	echo "github.com/labstack/echo/v4"
 
 	mock "github.com/stretchr/testify/mock"
@@ -29,13 +31,29 @@ func (_m *Middleware) JWT() echo.MiddlewareFunc {
 	return r0
 }
 
-// ZeroLog provides a mock function with given fields: config
-func (_m *Middleware) ZeroLog(config interface{}) echo.MiddlewareFunc {
-	ret := _m.Called(config)
+// ZeroLog provides a mock function with given fields:
+func (_m *Middleware) ZeroLog() echo.MiddlewareFunc {
+	ret := _m.Called()
 
 	var r0 echo.MiddlewareFunc
-	if rf, ok := ret.Get(0).(func(interface{}) echo.MiddlewareFunc); ok {
-		r0 = rf(config)
+	if rf, ok := ret.Get(0).(func() echo.MiddlewareFunc); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(echo.MiddlewareFunc)
+		}
+	}
+
+	return r0
+}
+
+// ZeroLogWithConfig provides a mock function with given fields: cfg
+func (_m *Middleware) ZeroLogWithConfig(cfg *config.ZeroLogConfig) echo.MiddlewareFunc {
+	ret := _m.Called(cfg)
+
+	var r0 echo.MiddlewareFunc
+	if rf, ok := ret.Get(0).(func(*config.ZeroLogConfig) echo.MiddlewareFunc); ok {
+		r0 = rf(cfg)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(echo.MiddlewareFunc)
