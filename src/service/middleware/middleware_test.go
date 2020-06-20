@@ -12,6 +12,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"sherman/mocks"
+	_ "sherman/src/app/testing"
 	"sherman/src/domain/auth"
 	cmc "sherman/src/service/middleware/config"
 	"strings"

@@ -5,6 +5,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	_ "sherman/src/app/testing"
 	"sherman/src/app/utils/exception"
 	"sherman/src/domain/auth"
 	"testing"

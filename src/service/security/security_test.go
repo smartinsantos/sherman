@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sherman/src/app/config"
+	_ "sherman/src/app/testing"
 	"sherman/src/domain/auth"
 	"strings"
 	"testing"

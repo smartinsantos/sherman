@@ -51,16 +51,21 @@ DB_USER=[your-user-name]
 DB_PASS=[your-user-password]
 DB_HOST=localhost
 DB_PORT=5001 * Mapped host 5001:3306 container
-```
+```   
+
+### Tests
+- running `bin/exec test` will automatically run all test files in the project
+- when creating new tests files include testing package on every test file. this will change the test working dir to the specified ROOT_DIR ```import _ "[module]/src/app/testing"```
+- when running tests "manually" the ROOT_DIR of the project needs to be specifed like so ```ROOT_DIR=[root_dir] go test [test_dir]```
     
 ### /bin scripts reference
 - ```bin/init```                            : Initialize/Reset containers && database
 - ```bin/up```                              : Builds and/or spins up docker containers https://docs.docker.com/compose/reference/up/  
 - ```bin/down```                            : Stops docker containers https://docs.docker.com/compose/reference/down/
-- ```bin/go```                              : Run go commands in the app container (container must be running)
+- ```bin/go```                              : Run go commands in the app container (**docker container must be running)
 - ```bin/mockery```                         : Generates mocks for every interface in the project under ./src/mocks
 - ```bin/lint```                            : Finds lint errors in the application
-- ```bin/exec```                            : Execs the following commands (container must be running)
+- ```bin/exec```                            : Execs the following commands (**docker containers must be running)
     - ```setup```                           : Install all project dependencies
     - ```gofmt```                           : Formats .go files in /src folder
     - ```lint```                            : Finds lint errors in the application

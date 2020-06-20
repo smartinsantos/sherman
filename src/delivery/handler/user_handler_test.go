@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sherman/mocks"
+	_ "sherman/src/app/testing"
 	"sherman/src/app/utils/exception"
 	"sherman/src/domain/auth"
 	"strings"

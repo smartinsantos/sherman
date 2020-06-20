@@ -10,5 +10,5 @@ COVERAGE_DIR="./coverage"
 
 mkdir -p "$COVERAGE_DIR"
 
-go test "$TEST_DIR" -v -covermode=atomic -coverpkg="$TEST_DIR" -coverprofile "$COVERAGE_DIR/coverage.out" && go tool cover -html="$COVERAGE_DIR/coverage.out" -o "$COVERAGE_DIR/coverage.html"
+ROOT_DIR="$(pwd)" go test "$TEST_DIR" -v -covermode=atomic -coverpkg="$TEST_DIR" -coverprofile "$COVERAGE_DIR/coverage.out" && go tool cover -html="$COVERAGE_DIR/coverage.out" -o "$COVERAGE_DIR/coverage.html"
 

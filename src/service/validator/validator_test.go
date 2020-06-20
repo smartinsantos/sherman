@@ -2,6 +2,7 @@ package validator
 
 import (
 	"github.com/stretchr/testify/assert"
+	_ "sherman/src/app/testing"
 	"sherman/src/domain/auth"
 	"testing"
 )
