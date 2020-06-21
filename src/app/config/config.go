@@ -15,12 +15,13 @@ type (
 		Addr  string
 	}
 	dbConfig struct {
-		Driver string
-		Name   string
-		User   string
-		Pass   string
-		Host   string
-		Port   string
+		Driver      string
+		Name        string
+		User        string
+		Pass        string
+		Host        string
+		Port        string
+		ExposedPort string
 	}
 	jwtConfig struct {
 		Secret string
@@ -43,12 +44,13 @@ var (
 			Addr:  ":5000",
 		},
 		DB: dbConfig{
-			Driver: "mysql",
-			Name:   "db_name",
-			User:   "db_user",
-			Pass:   "db_password",
-			Host:   "app-mysql",
-			Port:   "3306",
+			Driver:      "mysql",
+			Name:        "db_name",
+			User:        "db_user",
+			Pass:        "db_password",
+			Host:        "app-mysql",
+			Port:        "3306",
+			ExposedPort: "5001",
 		},
 		Jwt: jwtConfig{
 			Secret: "jwt_secret",
@@ -75,12 +77,13 @@ func Get() *Config {
 				Addr:  getKey(envMap, "APP_ADDR", defaultConfig.App.Addr),
 			},
 			DB: dbConfig{
-				Driver: getKey(envMap, "DB_DRIVER", defaultConfig.DB.Driver),
-				Name:   getKey(envMap, "DB_NAME", defaultConfig.DB.Name),
-				User:   getKey(envMap, "DB_USER", defaultConfig.DB.User),
-				Pass:   getKey(envMap, "DB_PASS", defaultConfig.DB.Pass),
-				Host:   getKey(envMap, "DB_HOST", defaultConfig.DB.Host),
-				Port:   getKey(envMap, "DB_PORT", defaultConfig.DB.Port),
+				Driver:      getKey(envMap, "DB_DRIVER", defaultConfig.DB.Driver),
+				Name:        getKey(envMap, "DB_NAME", defaultConfig.DB.Name),
+				User:        getKey(envMap, "DB_USER", defaultConfig.DB.User),
+				Pass:        getKey(envMap, "DB_PASS", defaultConfig.DB.Pass),
+				Host:        getKey(envMap, "DB_HOST", defaultConfig.DB.Host),
+				Port:        getKey(envMap, "DB_PORT", defaultConfig.DB.Port),
+				ExposedPort: getKey(envMap, "DB_EXPOSED_PORT", defaultConfig.DB.ExposedPort),
 			},
 			Jwt: jwtConfig{Secret: getKey(envMap, "JWT_SECRET", defaultConfig.Jwt.Secret)},
 		}

@@ -37,7 +37,6 @@ func (s *service) ValidateUserParams(user *auth.User, action string) map[string]
 		if user.Password == "" {
 			errorMessages["password_required"] = passwordRequired
 		}
-	default: // do nothing
 	}
 	return errorMessages
 }
