@@ -3,7 +3,6 @@ package registry
 import (
 	"database/sql"
 	"github.com/stretchr/testify/assert"
-	"sherman/src/app/config"
 	_ "sherman/src/app/testing"
 	"sherman/src/delivery/handler"
 	"sherman/src/domain/auth"
@@ -15,20 +14,16 @@ import (
 )
 
 func TestGetAppContainer(t *testing.T) {
-	cfg := config.DefaultConfig
-	cfg.DB.Host = "localhost"
-	cfg.DB.Port = "5001"
-
 	t.Run("it should return the same instance every time is called", func(t *testing.T) {
-		diContainer, err := GetAppContainer(cfg)
+		diContainer, err := GetAppContainer()
 		if assert.NoError(t, err) {
-			diContainer2, _ := GetAppContainer(cfg)
+			diContainer2, _ := GetAppContainer()
 			assert.Equal(t, diContainer, diContainer2)
 		}
 	})
 
 	t.Run("it should have all expected definitions", func(t *testing.T) {
-		diContainer, err := GetAppContainer(cfg)
+		diContainer, err := GetAppContainer()
 
 		if assert.NoError(t, err) {
 			_, ok := diContainer.Get("mysql-db").(*sql.DB)

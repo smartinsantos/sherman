@@ -4,20 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sherman/src/app/config"
 )
 
-// ConnectionConfig is the definition of the database cfg param
-type ConnectionConfig struct {
-	Driver string
-	User   string
-	Pass   string
-	Host   string
-	Port   string
-	Name   string
-}
-
 // NewConnection creates a db connection
-func NewConnection(cfg *ConnectionConfig) (*sql.DB, error) {
+func NewConnection(cfg config.DBConfig) (*sql.DB, error) {
 	var connectionURL string
 
 	switch cfg.Driver {

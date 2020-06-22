@@ -20,22 +20,13 @@ import (
 var (
 	container di.Container
 	once      sync.Once
-)
-
-func generateRegistry(cfg *config.Config) []di.Def {
-	return []di.Def{
+	registry  = []di.Def{
 		{
 			Name:  "mysql-db",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
-				db, err := database.NewConnection(&database.ConnectionConfig{
-					Driver: cfg.DB.Driver,
-					User:   cfg.DB.User,
-					Pass:   cfg.DB.Pass,
-					Host:   cfg.DB.Host,
-					Port:   cfg.DB.Port,
-					Name:   cfg.DB.Name,
-				})
+				cfg := config.Get()
+				db, err := database.NewConnection(cfg.DB)
 				if err != nil {
 					log.Error().Msg(err.Error())
 				}
@@ -127,18 +118,16 @@ func generateRegistry(cfg *config.Config) []di.Def {
 			},
 		},
 	}
-}
+)
 
 // GetAppContainer retrieves an instance of app container with dependency injected service
-func GetAppContainer(cfg *config.Config) (di.Container, error) {
+func GetAppContainer() (di.Container, error) {
 	once.Do(func() {
 		builder, err := di.NewBuilder()
 		if err != nil {
 			container = nil
 			return
 		}
-
-		registry := generateRegistry(cfg)
 
 		err = builder.Add(registry...)
 		if err != nil {

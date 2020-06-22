@@ -4,8 +4,6 @@ import (
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"os"
-	"sherman/src/app/config"
 )
 
 // ZeroLogConfig defines the config for ZeroLog middleware.
@@ -51,13 +49,6 @@ var DefaultZeroLogConfig = ZeroLogConfig{
 		"latency":   "@latency",
 		"error":     "@error",
 	},
-	Logger: func() zerolog.Logger {
-		if config.Get().App.Debug {
-			// pretty logger
-			log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-		}
-
-		return log.Logger
-	}(),
+	Logger: log.Logger,
 	Skipper: emw.DefaultSkipper,
 }

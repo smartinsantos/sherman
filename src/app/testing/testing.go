@@ -19,4 +19,9 @@ func init() {
 	if err != nil {
 		log.Fatal().Msg(fmt.Sprintf("error: can not change directory to %s", rd))
 	}
+	// fmt.Println("*******RUNNING******")
+	// fmt.Println("default test config", config.TestConfig)
+	// fmt.Println("loaded config", config.Get())
+	// config.LoadConfig(config.TestConfig)
+	// fmt.Println("loaded config after", config.Get())
 }

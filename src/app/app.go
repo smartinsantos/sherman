@@ -24,7 +24,7 @@ func Run() {
 		log.Info().Msg("Server Running on DEBUG mode")
 	}
 
-	diContainer, err := registry.GetAppContainer(cfg)
+	diContainer, err := registry.GetAppContainer()
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 		return

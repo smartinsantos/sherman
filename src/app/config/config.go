@@ -4,17 +4,18 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
 	"strconv"
-	"sync"
 )
 
 type (
-	appConfig struct {
+	// AppConfig type definition
+	AppConfig struct {
 		Env   string
 		Debug bool
 		Port  int
 		Addr  string
 	}
-	dbConfig struct {
+	// DBConfig type definition
+	DBConfig struct {
 		Driver      string
 		Name        string
 		User        string
@@ -23,28 +24,29 @@ type (
 		Port        string
 		ExposedPort string
 	}
-	jwtConfig struct {
+	// JWTConfig type definition
+	JwtConfig struct {
 		Secret string
 	}
 
-	// Config Wrapper for all configurations
-	Config struct {
-		App appConfig
-		DB  dbConfig
-		Jwt jwtConfig
+	// GlobalConfig type definition
+	GlobalConfig struct {
+		App AppConfig
+		DB  DBConfig
+		Jwt JwtConfig
 	}
 )
 
 var (
-	// DefaultConfig the default application config
-	DefaultConfig = &Config{
-		App: appConfig{
+	// DefaultConfig contains default values of global config
+	DefaultConfig = &GlobalConfig{
+		App: AppConfig{
 			Env:   "local",
-			Debug: true,
+			Debug: false,
 			Port:  5000,
 			Addr:  ":5000",
 		},
-		DB: dbConfig{
+		DB: DBConfig{
 			Driver:      "mysql",
 			Name:        "sherman",
 			User:        "db_user",
@@ -53,42 +55,70 @@ var (
 			Port:        "3306",
 			ExposedPort: "5001",
 		},
-		Jwt: jwtConfig{
+		Jwt: JwtConfig{
 			Secret: "jwt_secret",
 		},
 	}
-	config *Config
-	once   sync.Once
+	// TestConfig contains values of global config for testing
+	TestConfig = GlobalConfig{
+		App: AppConfig{
+			Env:   "test",
+			Debug: true,
+			Port:  5000,
+			Addr:  ":5000",
+		},
+		DB: DBConfig{
+			Driver:      "mysql",
+			Name:        "sherman",
+			User:        "db_user",
+			Pass:        "db_password",
+			Host:        "localhost",
+			Port:        "5001",
+			ExposedPort: "5001",
+		},
+		Jwt: JwtConfig{
+			Secret: "jwt_secret",
+		},
+	}
+	// Config loaded global config
+	config *GlobalConfig
 )
 
-// Get returns an instance of Config
-func Get() *Config {
-	once.Do(func() {
-		envMap, err := godotenv.Read(".env")
+// LoadFromEnv returns an instance of GlobalConfig
+func LoadFromEnv() {
+	envMap, err := godotenv.Read(".env")
 
-		if err != nil {
-			log.Error().Msg("config error: couldn't read contents of .env file, using defaults")
-		}
+	if err != nil {
+		log.Error().Msg("config error: couldn't read contents of .env file, using defaults")
+	}
 
-		config = &Config{
-			App: appConfig{
-				Env:   getKey(envMap, "APP_ENV", DefaultConfig.App.Env),
-				Debug: getKeyAsBool(envMap, "APP_DEBUG", DefaultConfig.App.Debug),
-				Port:  getKeyAsInt(envMap, "APP_PORT", DefaultConfig.App.Port),
-				Addr:  getKey(envMap, "APP_ADDR", DefaultConfig.App.Addr),
-			},
-			DB: dbConfig{
-				Driver:      getKey(envMap, "DB_DRIVER", DefaultConfig.DB.Driver),
-				Name:        getKey(envMap, "DB_NAME", DefaultConfig.DB.Name),
-				User:        getKey(envMap, "DB_USER", DefaultConfig.DB.User),
-				Pass:        getKey(envMap, "DB_PASS", DefaultConfig.DB.Pass),
-				Host:        getKey(envMap, "DB_HOST", DefaultConfig.DB.Host),
-				Port:        getKey(envMap, "DB_PORT", DefaultConfig.DB.Port),
-				ExposedPort: getKey(envMap, "DB_EXPOSED_PORT", DefaultConfig.DB.ExposedPort),
-			},
-			Jwt: jwtConfig{Secret: getKey(envMap, "JWT_SECRET", DefaultConfig.Jwt.Secret)},
-		}
-	})
+	config = &GlobalConfig{
+		App: AppConfig{
+			Env:   getKey(envMap, "APP_ENV", DefaultConfig.App.Env),
+			Debug: getKeyAsBool(envMap, "APP_DEBUG", DefaultConfig.App.Debug),
+			Port:  getKeyAsInt(envMap, "APP_PORT", DefaultConfig.App.Port),
+			Addr:  getKey(envMap, "APP_ADDR", DefaultConfig.App.Addr),
+		},
+		DB: DBConfig{
+			Driver:      getKey(envMap, "DB_DRIVER", DefaultConfig.DB.Driver),
+			Name:        getKey(envMap, "DB_NAME", DefaultConfig.DB.Name),
+			User:        getKey(envMap, "DB_USER", DefaultConfig.DB.User),
+			Pass:        getKey(envMap, "DB_PASS", DefaultConfig.DB.Pass),
+			Host:        getKey(envMap, "DB_HOST", DefaultConfig.DB.Host),
+			Port:        getKey(envMap, "DB_PORT", DefaultConfig.DB.Port),
+			ExposedPort: getKey(envMap, "DB_EXPOSED_PORT", DefaultConfig.DB.ExposedPort),
+		},
+		Jwt: JwtConfig{Secret: getKey(envMap, "JWT_SECRET", DefaultConfig.Jwt.Secret)},
+	}
+}
+
+// LoadConfig loads a provided GlobalConfig
+func LoadConfig(cfg *GlobalConfig) {
+	config = cfg
+}
+
+// Get returns the loaded GlobalConfig instance
+func Get() *GlobalConfig {
 	return config
 }
 
