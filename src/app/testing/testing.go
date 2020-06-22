@@ -2,6 +2,8 @@ package testing
 
 import (
 	"fmt"
+	// makes mysql driver available on test environment
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/rs/zerolog/log"
 	"os"
 )

@@ -1,7 +1,6 @@
 package database
 
 import (
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
 	"sherman/src/app/config"
 	_ "sherman/src/app/testing"
@@ -9,9 +8,8 @@ import (
 )
 
 func TestNewConnection(t *testing.T) {
+	cfg := config.Get()
 	t.Run("it should succeed", func(t *testing.T) {
-		cfg := config.Get()
-
 		_, err := NewConnection(&ConnectionConfig{
 			Driver: cfg.DB.Driver,
 			User:   cfg.DB.User,
@@ -25,8 +23,6 @@ func TestNewConnection(t *testing.T) {
 	})
 
 	t.Run("it should return an error", func(t *testing.T) {
-		cfg := config.Get()
-
 		_, err := NewConnection(&ConnectionConfig{
 			Driver: "some_unsupported_driver",
 			User:   cfg.DB.User,
