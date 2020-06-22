@@ -15,11 +15,12 @@ import (
 )
 
 func TestGetAppContainer(t *testing.T) {
-	cfg := config.Get()
+	cfg := config.DefaultConfig
 	cfg.DB.Host = "localhost"
 	cfg.DB.Port = "5001"
-	diContainer, err := GetAppContainer(cfg)
+
 	t.Run("it should return the same instance every time is called", func(t *testing.T) {
+		diContainer, err := GetAppContainer(cfg)
 		if assert.NoError(t, err) {
 			diContainer2, _ := GetAppContainer(cfg)
 			assert.Equal(t, diContainer, diContainer2)
@@ -27,6 +28,8 @@ func TestGetAppContainer(t *testing.T) {
 	})
 
 	t.Run("it should have all expected definitions", func(t *testing.T) {
+		diContainer, err := GetAppContainer(cfg)
+
 		if assert.NoError(t, err) {
 			_, ok := diContainer.Get("mysql-db").(*sql.DB)
 			assert.True(t, ok)
