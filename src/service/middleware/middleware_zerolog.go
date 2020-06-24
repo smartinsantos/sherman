@@ -2,6 +2,9 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"os"
 	cmc "sherman/src/service/middleware/config"
 	"strconv"
 	"strings"
@@ -15,7 +18,12 @@ func (s *service) ZeroLog() echo.MiddlewareFunc {
 
 // ZeroLogWithConfig returns a middleware that logs HTTP requests.
 func (s *service) ZeroLogWithConfig(cfg *cmc.ZeroLogConfig) echo.MiddlewareFunc {
-	// Defaults
+	// pretty logger
+	if s.config.App.Debug {
+		cfg.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	}
+
+	// defaults
 	if cfg.Skipper == nil {
 		cfg.Skipper = cmc.DefaultZeroLogConfig.Skipper
 	}

@@ -3,6 +3,7 @@ package security
 import (
 	"github.com/labstack/echo/v4"
 	"sherman/src/domain/auth"
+	"sherman/src/service/config"
 )
 
 type (
@@ -17,10 +18,14 @@ type (
 		GetAndValidateRefreshToken(ctx echo.Context) (auth.TokenMetadata, error)
 	}
 
-	service struct{}
+	service struct {
+		config config.GlobalConfig
+	}
 )
 
 // New returns an instance of security.Security
-func New() Security {
-	return &service{}
+func New(cfg config.GlobalConfig) Security {
+	return &service{
+		config: cfg,
+	}
 }

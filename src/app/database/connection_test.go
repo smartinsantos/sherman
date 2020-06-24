@@ -2,15 +2,14 @@ package database
 
 import (
 	"github.com/stretchr/testify/assert"
-	"sherman/src/app/config"
 	_ "sherman/src/app/testing"
+	"sherman/src/service/config"
 	"testing"
 )
 
 func TestNewConnection(t *testing.T) {
-	cfg := config.Get()
 	t.Run("it should succeed", func(t *testing.T) {
-		_, err := NewConnection(cfg.DB)
+		_, err := NewConnection(config.TestConfig.DB)
 
 		assert.NoError(t, err)
 	})

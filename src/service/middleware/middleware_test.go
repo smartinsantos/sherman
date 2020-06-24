@@ -14,20 +14,23 @@ import (
 	"sherman/mocks"
 	_ "sherman/src/app/testing"
 	"sherman/src/domain/auth"
+	"sherman/src/service/config"
 	cmc "sherman/src/service/middleware/config"
 	"strings"
 	"testing"
 )
 
 type middlewareMockDeps struct {
+	config          config.GlobalConfig
 	securityService *mocks.Security
 }
 
 func genMockMiddleware() (Middleware, middlewareMockDeps) {
 	mDeps := middlewareMockDeps{
+		config:          config.TestConfig,
 		securityService: new(mocks.Security),
 	}
-	m := New(mDeps.securityService)
+	m := New(mDeps.config, mDeps.securityService)
 	return m, mDeps
 }
 

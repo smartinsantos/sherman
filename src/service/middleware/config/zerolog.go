@@ -49,6 +49,6 @@ var DefaultZeroLogConfig = ZeroLogConfig{
 		"latency":   "@latency",
 		"error":     "@error",
 	},
-	Logger: log.Logger,
+	Logger:  log.Logger,
 	Skipper: emw.DefaultSkipper,
 }

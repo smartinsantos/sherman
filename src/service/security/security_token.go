@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
-	"sherman/src/app/config"
 	"sherman/src/domain/auth"
 	"strings"
 )
@@ -38,7 +37,7 @@ func (s *service) parseTokenString(ts string) (*jwt.Token, error) {
 			return nil, errors.New("invalid token")
 		}
 
-		return []byte(config.Get().Jwt.Secret), nil
+		return []byte(s.config.Jwt.Secret), nil
 	})
 }
 
@@ -51,7 +50,7 @@ func (s *service) GenToken(userID, tokenType string, iat, exp int64) (string, er
 		"exp":     exp,
 	})
 
-	return token.SignedString([]byte(config.Get().Jwt.Secret))
+	return token.SignedString([]byte(s.config.Jwt.Secret))
 }
 
 // GetAndValidateAccessToken gets the access token from echo.Context and verifies its signature

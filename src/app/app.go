@@ -6,35 +6,29 @@ import (
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/sarulabs/di"
 	"net/http"
 	"os"
-	"sherman/src/app/config"
-	"sherman/src/app/registry"
 	"sherman/src/delivery/handler"
+	"sherman/src/service/config"
 	cmw "sherman/src/service/middleware"
 	cmc "sherman/src/service/middleware/config"
 )
 
 // Run mounts the base application router
-func Run() {
-	cfg := config.Get()
+func Run(ctn di.Container) {
+	cfg := ctn.Get("config").(config.Config).Get()
 	if cfg.App.Debug {
 		// pretty logger
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 		log.Info().Msg("Server Running on DEBUG mode")
 	}
 
-	diContainer, err := registry.GetAppContainer()
-	if err != nil {
-		log.Fatal().Msg(err.Error())
-		return
-	}
-
 	router := echo.New()
 	router.Use(emw.Recover())
 	router.Use(emw.CORSWithConfig(cmc.CustomCorsConfig))
 
-	cmws := diContainer.Get("middleware-service").(cmw.Middleware)
+	cmws := ctn.Get("middleware-service").(cmw.Middleware)
 	router.Use(cmws.ZeroLog())
 
 	// root routes : /
@@ -46,7 +40,7 @@ func Run() {
 	// routes: /api/v1/users
 	userRouter := v1Router.Group("/users")
 	{
-		userHandler := diContainer.Get("user-handler").(handler.UserHandler)
+		userHandler := ctn.Get("user-handler").(handler.UserHandler)
 
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
