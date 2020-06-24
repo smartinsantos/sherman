@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/rs/zerolog/log"
 	"github.com/sarulabs/di"
+	"os"
 	"sherman/src/app/database"
 	"sherman/src/delivery/handler"
 	"sherman/src/domain/auth"
@@ -25,7 +26,11 @@ var (
 			Name:  "config",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
-				return config.New(), nil
+				configService := config.New()
+				if os.Getenv("TEST_ENV") == "true" {
+					configService.Load(config.TestConfig)
+				}
+				return configService, nil
 			},
 		},
 		{

@@ -65,7 +65,7 @@ var (
 	TestConfig = GlobalConfig{
 		App: AppConfig{
 			Env:   "test",
-			Debug: true,
+			Debug: false,
 			Port:  5000,
 			Addr:  ":5000",
 		},

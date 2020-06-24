@@ -53,10 +53,9 @@ DB_HOST=localhost
 DB_PORT=5001 * Mapped host 5001:3306 container
 ```   
 
-### Tests
+### Tests (docker containers must be running)
 - running `bin/exec test` will automatically run all test files in the project
 - when creating new tests files include testing package on every test file. this will change the test working dir to the specified ROOT_DIR ```import _ "[module]/src/app/testing"```
-- when running tests "manually" the ROOT_DIR of the project needs to be specifed like so ```ROOT_DIR=[root_dir] go test [test_dir]```
     
 ### /bin scripts reference
 - ```bin/init```                            : Initialize/Reset containers && database
