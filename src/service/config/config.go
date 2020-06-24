@@ -18,7 +18,7 @@ type (
 		Port        string
 		ExposedPort string
 	}
-	// JWTConfig type definition
+	// JwtConfig type definition
 	JwtConfig struct {
 		Secret string
 	}
@@ -84,6 +84,7 @@ var (
 	}
 )
 
+// New returns an instance of config.Config
 func New() Config {
 	return &service{
 		Config: loadFromEnv(),
