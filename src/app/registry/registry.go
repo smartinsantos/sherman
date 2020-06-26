@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"github.com/rs/zerolog/log"
 	"github.com/sarulabs/di"
-	"os"
 	"sherman/src/app/config"
 	"sherman/src/app/database"
 	"sherman/src/delivery/handler"
@@ -134,9 +133,6 @@ func GetAppContainer() (di.Container, error) {
 		}
 
 		cfg := config.Get()
-		if os.Getenv("TEST_ENV") == "true" {
-			cfg = &config.TestConfig
-		}
 
 		err = builder.Add(makeRegistry(cfg)...)
 		if err != nil {

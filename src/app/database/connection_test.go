@@ -9,7 +9,7 @@ import (
 
 func TestNewConnection(t *testing.T) {
 	t.Run("it should succeed", func(t *testing.T) {
-		_, err := NewConnection(&config.TestConfig)
+		_, err := NewConnection(config.Get())
 
 		assert.NoError(t, err)
 	})

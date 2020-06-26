@@ -27,7 +27,7 @@ type middlewareMockDeps struct {
 
 func genMockMiddleware() (Middleware, middlewareMockDeps) {
 	mDeps := middlewareMockDeps{
-		config:          &cfg.TestConfig,
+		config:          cfg.Get(),
 		securityService: new(mocks.Security),
 	}
 	m := New(mDeps.config, mDeps.securityService)
