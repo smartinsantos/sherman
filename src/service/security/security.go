@@ -2,8 +2,8 @@ package security
 
 import (
 	"github.com/labstack/echo/v4"
+	"sherman/src/app/config"
 	"sherman/src/domain/auth"
-	"sherman/src/service/config"
 )
 
 type (
@@ -19,12 +19,12 @@ type (
 	}
 
 	service struct {
-		config config.GlobalConfig
+		config *config.GlobalConfig
 	}
 )
 
 // New returns an instance of security.Security
-func New(cfg config.GlobalConfig) Security {
+func New(cfg *config.GlobalConfig) Security {
 	return &service{
 		config: cfg,
 	}

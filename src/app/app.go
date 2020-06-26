@@ -9,15 +9,15 @@ import (
 	"github.com/sarulabs/di"
 	"net/http"
 	"os"
+	"sherman/src/app/config"
 	"sherman/src/delivery/handler"
-	"sherman/src/service/config"
 	cmw "sherman/src/service/middleware"
 	cmc "sherman/src/service/middleware/config"
 )
 
 // Run mounts the base application router
 func Run(ctn di.Container) {
-	cfg := ctn.Get("config").(config.Config).Get()
+	cfg := config.Get()
 	if cfg.App.Debug {
 		// pretty logger
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})

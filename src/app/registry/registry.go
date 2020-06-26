@@ -5,11 +5,11 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sarulabs/di"
 	"os"
+	"sherman/src/app/config"
 	"sherman/src/app/database"
 	"sherman/src/delivery/handler"
 	"sherman/src/domain/auth"
 	"sherman/src/repository/mysqlds"
-	"sherman/src/service/config"
 	"sherman/src/service/middleware"
 	"sherman/src/service/presenter"
 	"sherman/src/service/security"
@@ -21,24 +21,16 @@ import (
 var (
 	container di.Container
 	once      sync.Once
-	registry  = []di.Def{
-		{
-			Name:  "config",
-			Scope: di.App,
-			Build: func(ctn di.Container) (interface{}, error) {
-				configService := config.New()
-				if os.Getenv("TEST_ENV") == "true" {
-					configService.Load(config.TestConfig)
-				}
-				return configService, nil
-			},
-		},
+)
+
+func makeRegistry(cfg *config.GlobalConfig) []di.Def {
+	return []di.Def{
 		{
 			Name:  "mysql-db",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
-				configService := ctn.Get("config").(config.Config)
-				db, err := database.NewConnection(configService.Get().DB)
+
+				db, err := database.NewConnection(cfg)
 				if err != nil {
 					log.Error().Msg(err.Error())
 				}
@@ -52,9 +44,8 @@ var (
 			Name:  "middleware-service",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
-				configService := ctn.Get("config").(config.Config)
 				securityService := ctn.Get("security-service").(security.Security)
-				return middleware.New(configService.Get(), securityService), nil
+				return middleware.New(cfg, securityService), nil
 			},
 		},
 		{
@@ -68,8 +59,7 @@ var (
 			Name:  "security-service",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
-				configService := ctn.Get("config").(config.Config)
-				return security.New(configService.Get()), nil
+				return security.New(cfg), nil
 			},
 		},
 		{
@@ -132,7 +122,7 @@ var (
 			},
 		},
 	}
-)
+}
 
 // GetAppContainer retrieves an instance of app container with dependency injected service
 func GetAppContainer() (di.Container, error) {
@@ -143,7 +133,12 @@ func GetAppContainer() (di.Container, error) {
 			return
 		}
 
-		err = builder.Add(registry...)
+		cfg := config.Get()
+		if os.Getenv("TEST_ENV") == "true" {
+			cfg = &config.TestConfig
+		}
+
+		err = builder.Add(makeRegistry(cfg)...)
 		if err != nil {
 			container = nil
 			return

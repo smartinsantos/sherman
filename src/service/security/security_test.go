@@ -11,9 +11,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"net/http/httptest"
+	"sherman/src/app/config"
 	_ "sherman/src/app/testing"
 	"sherman/src/domain/auth"
-	"sherman/src/service/config"
 	"strings"
 	"testing"
 	"time"
@@ -21,7 +21,7 @@ import (
 
 func TestValidateHash(t *testing.T) {
 	mockPassword := "some-password"
-	actualHash, err := New(config.TestConfig).Hash(mockPassword)
+	actualHash, err := New(&config.TestConfig).Hash(mockPassword)
 	if assert.NoError(t, err) {
 		err = bcrypt.CompareHashAndPassword(actualHash, []byte(mockPassword))
 		assert.NoError(t, err)
@@ -37,7 +37,7 @@ func TestVerifyPassword(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected", err)
 	}
 
-	ss := New(config.TestConfig)
+	ss := New(&config.TestConfig)
 	err = ss.VerifyPassword(string(hash), mockPassword)
 	assert.NoError(t, err)
 	err = ss.VerifyPassword(string(hash), "some-other-password")
@@ -50,7 +50,7 @@ func TestGenToken(t *testing.T) {
 	mockIat := time.Now().Unix()
 	mockExp := time.Now().Add(time.Minute * time.Duration(15)).Unix()
 
-	tokenStr, err := New(config.TestConfig).GenToken(mockUserID, mockTokenType, mockIat, mockExp)
+	tokenStr, err := New(&config.TestConfig).GenToken(mockUserID, mockTokenType, mockIat, mockExp)
 	if assert.NoError(t, err) {
 		assert.NotEmpty(t, tokenStr)
 	}
@@ -74,7 +74,7 @@ func TestGenToken(t *testing.T) {
 }
 
 func TestGetAndValidateAccessToken(t *testing.T) {
-	ss := New(config.TestConfig)
+	ss := New(&config.TestConfig)
 	mockUserID := "some-user-id"
 	mockTokenType := "some-token-type"
 	mockIat := time.Now().Unix()
@@ -87,7 +87,7 @@ func TestGetAndValidateAccessToken(t *testing.T) {
 			t.Fatalf("an error '%s' was not expected", err)
 		}
 
-		mockTokenStr, err := New(config.TestConfig).GenToken(mockUserID, mockTokenType, mockIat, mockExp)
+		mockTokenStr, err := New(&config.TestConfig).GenToken(mockUserID, mockTokenType, mockIat, mockExp)
 		if err != nil {
 			t.Fatalf("an error '%s' was not expected", err)
 		}
@@ -251,7 +251,7 @@ func TestGetAndValidateAccessToken(t *testing.T) {
 }
 
 func TestGetAndValidateRefreshToken(t *testing.T) {
-	ss := New(config.TestConfig)
+	ss := New(&config.TestConfig)
 	mockUserID := "some-user-id"
 	mockTokenType := "some-token-type"
 	mockIat := time.Now().Unix()
@@ -264,7 +264,7 @@ func TestGetAndValidateRefreshToken(t *testing.T) {
 			t.Fatalf("an error '%s' was not expected", err)
 		}
 
-		mockTokenStr, err := New(config.TestConfig).GenToken(mockUserID, mockTokenType, mockIat, mockExp)
+		mockTokenStr, err := New(&config.TestConfig).GenToken(mockUserID, mockTokenType, mockIat, mockExp)
 		if err != nil {
 			t.Fatalf("an error '%s' was not expected", err)
 		}
