@@ -29,7 +29,6 @@ type (
 	JwtConfig struct {
 		Secret string
 	}
-
 	// GlobalConfig type definition
 	GlobalConfig struct {
 		App AppConfig
