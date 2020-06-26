@@ -1,29 +1,17 @@
-package app
+package router
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"github.com/sarulabs/di"
 	"net/http"
-	"os"
-	"sherman/src/app/config"
 	"sherman/src/delivery/handler"
 	cmw "sherman/src/service/middleware"
 	cmc "sherman/src/service/middleware/config"
 )
 
-// Run mounts the base application router
-func Run(ctn di.Container) {
-	cfg := config.Get()
-	if cfg.App.Debug {
-		// pretty logger
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-		log.Info().Msg("Server Running on DEBUG mode")
-	}
-
+// New creates an instance of application router
+func New(ctn di.Container) *echo.Echo {
 	router := echo.New()
 	router.Use(emw.Recover())
 	router.Use(emw.CORSWithConfig(cmc.CustomCorsConfig))
@@ -49,7 +37,5 @@ func Run(ctn di.Container) {
 		userRouter.DELETE("/logout", userHandler.Logout, cmws.JWT())
 	}
 
-	// run the server
-	log.Info().Msg(fmt.Sprintf("Server Running on PORT%s", cfg.App.Addr))
-	log.Fatal().Err(router.Start(cfg.App.Addr))
+	return router
 }
