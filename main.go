@@ -28,7 +28,6 @@ func main() {
 	}
 	r := router.New(diContainer)
 
-
 	// Start server
 	go func() {
 		log.Info().Msg(fmt.Sprintf("Server Running on PORT%s", cfg.App.Addr))

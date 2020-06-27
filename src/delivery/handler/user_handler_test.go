@@ -522,6 +522,7 @@ func TestRefreshAccessToken(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
+	lo, _ := time.LoadLocation("UTC")
 	mockUser := auth.User{
 		ID:           "some-id",
 		FirstName:    "first",
@@ -529,8 +530,8 @@ func TestGetUser(t *testing.T) {
 		EmailAddress: "some@email.com",
 		Password:     "some-password",
 		Active:       true,
-		CreatedAt:    time.Unix(0, 0),
-		UpdatedAt:    time.Unix(0, 0),
+		CreatedAt:    time.Unix(0, 0).In(lo),
+		UpdatedAt:    time.Unix(0, 0).In(lo),
 	}
 
 	t.Run("it should succeed", func(t *testing.T) {

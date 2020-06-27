@@ -6,6 +6,8 @@ import (
 	"fmt"
 	// mysql driver import
 	_ "github.com/go-sql-driver/mysql"
+	// sqlite3 driver
+	_ "github.com/mattn/go-sqlite3"
 	"sherman/src/app/config"
 )
 
@@ -23,6 +25,8 @@ func NewConnection(cfg *config.GlobalConfig) (*sql.DB, error) {
 			cfg.DB.Port,
 			cfg.DB.Name,
 		)
+	case "sqlite3":
+		connectionURL = cfg.DB.Path
 	default:
 		errorMessage := fmt.Sprintf("DB_DRIVER: %s, not supported", cfg.DB.Driver)
 		return nil, errors.New(errorMessage)

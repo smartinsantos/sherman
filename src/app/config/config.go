@@ -24,6 +24,7 @@ type (
 		Host        string
 		Port        string
 		ExposedPort string
+		Path        string
 	}
 	// JwtConfig type definition
 	JwtConfig struct {
@@ -98,6 +99,7 @@ func generateConfig(envMap map[string]string) *GlobalConfig {
 			Host:        getKey(envMap, "DB_HOST", DefaultConfig.DB.Host),
 			Port:        getKey(envMap, "DB_PORT", DefaultConfig.DB.Port),
 			ExposedPort: getKey(envMap, "DB_EXPOSED_PORT", DefaultConfig.DB.ExposedPort),
+			Path:        getKey(envMap, "DB_PATH", ""),
 		},
 		Jwt: JwtConfig{Secret: getKey(envMap, "JWT_SECRET", DefaultConfig.Jwt.Secret)},
 	}

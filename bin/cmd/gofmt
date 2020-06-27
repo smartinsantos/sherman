@@ -4,6 +4,6 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/../.. || exit
 
-echo "Formatting /src ..."
+echo "=== Running gofmt ./src ==="
 gofmt -l -s -w ./src
 echo "Done!"

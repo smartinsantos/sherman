@@ -11,6 +11,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/labstack/echo/v4 v4.1.16
+	github.com/mattn/go-sqlite3 v1.14.0
 	github.com/rs/zerolog v1.18.0
 	github.com/sarulabs/di v2.0.0+incompatible
 	github.com/stretchr/testify v1.6.0
