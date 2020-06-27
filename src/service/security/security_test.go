@@ -224,7 +224,7 @@ func TestGetAndValidateAccessToken(t *testing.T) {
 	})
 
 	t.Run("it should return error", func(t *testing.T) {
-		// no claims
+		// wrong claims
 		e := echo.New()
 		req, err := http.NewRequest(echo.POST, "/some-url", strings.NewReader(""))
 		if err != nil {
@@ -243,6 +243,25 @@ func TestGetAndValidateAccessToken(t *testing.T) {
 		ctx := e.NewContext(req, rec)
 
 		tokenMeta, err := ss.GetAndValidateAccessToken(ctx)
+		if assert.Error(t, err) {
+			assert.Equal(t, "invalid token", err.Error())
+			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)
+		}
+
+		token = jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"user_id": "some-user-id",
+		})
+		tokenStr, err = token.SignedString([]byte(config.Get().Jwt.Secret))
+		if err != nil {
+			t.Fatalf("an error '%s' was not expected", err)
+		}
+
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set("Authorization", "Bearer "+tokenStr)
+		rec = httptest.NewRecorder()
+		ctx = e.NewContext(req, rec)
+
+		tokenMeta, err = ss.GetAndValidateAccessToken(ctx)
 		if assert.Error(t, err) {
 			assert.Equal(t, "invalid token", err.Error())
 			assert.Equal(t, auth.TokenMetadata{}, tokenMeta)

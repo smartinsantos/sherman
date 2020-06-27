@@ -9,14 +9,12 @@ import (
 )
 
 func init() {
-	rd := os.Getenv("ROOT_DIR")
-	if rd == "" {
+	var rd string
+	if rd = os.Getenv("ROOT_DIR"); rd == "" {
 		log.Fatal().Msg("ROOT_DIR env variable is required to run tests, use ROOT_DIR=[project_root] go test [test_directory]")
 		return
 	}
-
-	err := os.Chdir(rd)
-	if err != nil {
+	if err := os.Chdir(rd); err != nil {
 		log.Fatal().Msg(fmt.Sprintf("error: can not change directory to %s", rd))
 	}
 }
