@@ -28,13 +28,9 @@ func NewConnection(cfg *config.GlobalConfig) (*sql.DB, error) {
 		return nil, errors.New(errorMessage)
 	}
 
-	db, err := sql.Open(cfg.DB.Driver, connectionURL)
-	if err != nil {
-		return nil, err
-	}
+	db, _ := sql.Open(cfg.DB.Driver, connectionURL)
 
-	err = db.Ping()
-	if err != nil {
+	if err := db.Ping(); err != nil {
 		return nil, err
 	}
 

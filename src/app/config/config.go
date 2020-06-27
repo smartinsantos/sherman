@@ -40,7 +40,6 @@ type (
 var (
 	once   sync.Once
 	config *GlobalConfig
-	env    = os.Getenv("ENV")
 	// DefaultConfig contains default values of global config
 	DefaultConfig = GlobalConfig{
 		App: AppConfig{
@@ -65,41 +64,43 @@ var (
 
 // Get returns singleton instance of GlobalConfig
 func Get() *GlobalConfig {
-	once.Do(func() {
-		var envMap map[string]string
-		var err error
-
-		switch env {
-		case "test":
-			envMap, err = godotenv.Read(".env.test")
-		default:
-			envMap, err = godotenv.Read(".env")
-		}
-
+	if env := os.Getenv("ENV"); env == "test" {
+		envMap, err := godotenv.Read(".env.test")
 		if err != nil {
-			log.Error().Msg("config error: couldn't read env file, using defaults")
+			log.Error().Msg("config error: couldn't read env.test file, using defaults")
 		}
+		return generateConfig(envMap)
+	}
 
-		config = &GlobalConfig{
-			App: AppConfig{
-				Debug: getKeyAsBool(envMap, "APP_DEBUG", DefaultConfig.App.Debug),
-				Port:  getKeyAsInt(envMap, "APP_PORT", DefaultConfig.App.Port),
-				Addr:  getKey(envMap, "APP_ADDR", DefaultConfig.App.Addr),
-			},
-			DB: DBConfig{
-				Driver:      getKey(envMap, "DB_DRIVER", DefaultConfig.DB.Driver),
-				Name:        getKey(envMap, "DB_NAME", DefaultConfig.DB.Name),
-				User:        getKey(envMap, "DB_USER", DefaultConfig.DB.User),
-				Pass:        getKey(envMap, "DB_PASS", DefaultConfig.DB.Pass),
-				Host:        getKey(envMap, "DB_HOST", DefaultConfig.DB.Host),
-				Port:        getKey(envMap, "DB_PORT", DefaultConfig.DB.Port),
-				ExposedPort: getKey(envMap, "DB_EXPOSED_PORT", DefaultConfig.DB.ExposedPort),
-			},
-			Jwt: JwtConfig{Secret: getKey(envMap, "JWT_SECRET", DefaultConfig.Jwt.Secret)},
+	once.Do(func() {
+		envMap, err := godotenv.Read(".env")
+		if err != nil {
+			log.Error().Msg("config error: couldn't read .env file, using defaults")
 		}
+		config = generateConfig(envMap)
 	})
 
 	return config
+}
+
+func generateConfig(envMap map[string]string) *GlobalConfig {
+	return &GlobalConfig{
+		App: AppConfig{
+			Debug: getKeyAsBool(envMap, "APP_DEBUG", DefaultConfig.App.Debug),
+			Port:  getKeyAsInt(envMap, "APP_PORT", DefaultConfig.App.Port),
+			Addr:  getKey(envMap, "APP_ADDR", DefaultConfig.App.Addr),
+		},
+		DB: DBConfig{
+			Driver:      getKey(envMap, "DB_DRIVER", DefaultConfig.DB.Driver),
+			Name:        getKey(envMap, "DB_NAME", DefaultConfig.DB.Name),
+			User:        getKey(envMap, "DB_USER", DefaultConfig.DB.User),
+			Pass:        getKey(envMap, "DB_PASS", DefaultConfig.DB.Pass),
+			Host:        getKey(envMap, "DB_HOST", DefaultConfig.DB.Host),
+			Port:        getKey(envMap, "DB_PORT", DefaultConfig.DB.Port),
+			ExposedPort: getKey(envMap, "DB_EXPOSED_PORT", DefaultConfig.DB.ExposedPort),
+		},
+		Jwt: JwtConfig{Secret: getKey(envMap, "JWT_SECRET", DefaultConfig.Jwt.Secret)},
+	}
 }
 
 func getKey(env map[string]string, key, defaultValue string) string {

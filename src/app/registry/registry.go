@@ -134,8 +134,7 @@ func GetAppContainer() (di.Container, error) {
 
 		cfg := config.Get()
 
-		err = builder.Add(makeRegistry(cfg)...)
-		if err != nil {
+		if err := builder.Add(makeRegistry(cfg)...); err != nil {
 			container = nil
 			return
 		}

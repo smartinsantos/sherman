@@ -9,8 +9,8 @@ import (
 )
 
 func init() {
-	var rd string
-	if rd = os.Getenv("ROOT_DIR"); rd == "" {
+	rd := os.Getenv("ROOT_DIR")
+	if rd == "" {
 		log.Fatal().Msg("ROOT_DIR env variable is required to run tests, use ROOT_DIR=[project_root] go test [test_directory]")
 		return
 	}
