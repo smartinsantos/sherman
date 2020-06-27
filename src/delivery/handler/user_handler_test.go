@@ -567,7 +567,7 @@ func TestGetUser(t *testing.T) {
 			assert.Equal(t, http.StatusOK, rec.Code)
 			assert.Equal(
 				t,
-				"{\"data\":{\"user\":{\"id\":\"some-id\",\"first_name\":\"first\",\"last_name\":\"last\",\"email_address\":\"some@email.com\",\"active\":true,\"created_at\":\"1969-12-31T18:00:00-06:00\",\"updated_at\":\"1969-12-31T18:00:00-06:00\"}}}\n",
+				"{\"data\":{\"user\":{\"id\":\"some-id\",\"first_name\":\"first\",\"last_name\":\"last\",\"email_address\":\"some@email.com\",\"active\":true,\"created_at\":\"1970-01-01T00:00:00Z\",\"updated_at\":\"1970-01-01T00:00:00Z\"}}}\n",
 				rec.Body.String(),
 			)
 		}
