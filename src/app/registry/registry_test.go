@@ -13,18 +13,9 @@ import (
 	"testing"
 )
 
-func TestGetAppContainer(t *testing.T) {
-	t.Run("it should return the same instance every time is called", func(t *testing.T) {
-		diContainer, err := GetAppContainer()
-		if assert.NoError(t, err) {
-			diContainer2, _ := GetAppContainer()
-			assert.Equal(t, diContainer, diContainer2)
-		}
-	})
-
+func TestGet(t *testing.T) {
 	t.Run("it should have all expected definitions", func(t *testing.T) {
-		diContainer, err := GetAppContainer()
-
+		diContainer, err := Get()
 		if assert.NoError(t, err) {
 			_, ok := diContainer.Get("mysql-db").(*sql.DB)
 			assert.True(t, ok)

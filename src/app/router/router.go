@@ -4,7 +4,6 @@ import (
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/sarulabs/di"
-	"net/http"
 	"sherman/src/delivery/handler"
 	cmw "sherman/src/service/middleware"
 	cmc "sherman/src/service/middleware/config"
@@ -15,14 +14,8 @@ func New(ctn di.Container) *echo.Echo {
 	router := echo.New()
 	router.Use(emw.Recover())
 	router.Use(emw.CORSWithConfig(cmc.CustomCorsConfig))
-
 	cmws := ctn.Get("middleware-service").(cmw.Middleware)
 	router.Use(cmws.ZeroLog())
-
-	// root routes : /
-	router.GET("/", func(ctx echo.Context) error {
-		return ctx.String(http.StatusOK, "Hello from /")
-	})
 	// routes: /api/v1
 	v1Router := router.Group("/api/v1")
 	// routes: /api/v1/users

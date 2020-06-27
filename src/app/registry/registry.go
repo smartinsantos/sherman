@@ -28,15 +28,14 @@ func makeRegistry(cfg *config.GlobalConfig) []di.Def {
 			Name:  "mysql-db",
 			Scope: di.App,
 			Build: func(ctn di.Container) (interface{}, error) {
-
 				db, err := database.NewConnection(cfg)
 				if err != nil {
 					log.Error().Msg(err.Error())
 				}
 				return db, err
 			},
-			Close: func(obj interface{}) error {
-				return obj.(*sql.DB).Close()
+			Close: func(db interface{}) error {
+				return db.(*sql.DB).Close()
 			},
 		},
 		{
@@ -123,8 +122,8 @@ func makeRegistry(cfg *config.GlobalConfig) []di.Def {
 	}
 }
 
-// GetAppContainer retrieves an instance of app container with dependency injected service
-func GetAppContainer() (di.Container, error) {
+// Get retrieves an instance of app container with dependency injected service
+func Get() (di.Container, error) {
 	once.Do(func() {
 		builder, err := di.NewBuilder()
 		if err != nil {
@@ -132,9 +131,7 @@ func GetAppContainer() (di.Container, error) {
 			return
 		}
 
-		cfg := config.Get()
-
-		if err := builder.Add(makeRegistry(cfg)...); err != nil {
+		if err := builder.Add(makeRegistry(config.Get())...); err != nil {
 			container = nil
 			return
 		}
