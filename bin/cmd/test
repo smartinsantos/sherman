@@ -4,11 +4,20 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/../.. || exit
 
-echo "Running Tests ..."
-TEST_DIR="./src/..."
+echo "=== Running Tests ==="
+ROOT_DIR="$(pwd)"
 COVERAGE_DIR="./coverage"
-
 mkdir -p "$COVERAGE_DIR"
 
-ROOT_DIR="$(pwd)" TEST_ENV=true go test "$TEST_DIR" -v -covermode=atomic -coverpkg="$TEST_DIR" -coverprofile "$COVERAGE_DIR/coverage.out" && go tool cover -html="$COVERAGE_DIR/coverage.out" -o "$COVERAGE_DIR/coverage.html"
+if [ "$#" -eq  "0" ]
+  then
+    echo "Testing ./src/..."
+    TEST_DIR="./src/..."
+    ROOT_DIR="$ROOT_DIR" ENV="test" go test "$TEST_DIR" -v -covermode=atomic -coverpkg="$TEST_DIR" -coverprofile "$COVERAGE_DIR/coverage.out" && go tool cover -html="$COVERAGE_DIR/coverage.out" -o "$COVERAGE_DIR/coverage.html"
+  else
+    echo "Testing $1"
+    TEST_DIR="$1"
+    ROOT_DIR="$ROOT_DIR" ENV="test" go test "$TEST_DIR" -v
+fi
+
 
