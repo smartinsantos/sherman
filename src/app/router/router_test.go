@@ -52,8 +52,8 @@ func TestNew(t *testing.T) {
 	}
 	router := New(diContainer)
 	assert.NotEmpty(t, router)
+	
 	routes := router.Routes()
-
 	if !assert.Equal(t, len(expectedRoutes), len(routes)) {
 		t.Fatal("the number of routes present defer from expected")
 	}
