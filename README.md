@@ -53,8 +53,9 @@ DB_HOST=localhost
 DB_PORT=5001 * Mapped host 5001:3306 container
 ```   
 
-### Tests (docker containers must be running)
-- running `bin/exec test` will automatically run all test files in the project
+### Tests
+- `bin/exec test` will automatically run all test files in the project and generate coverage files under ./coverage
+- `bin/exec test [test_path]` will run tests in the provided path (no coverage will be generated) 
 - when creating new tests files include testing package on every test file. this will change the test working dir to the specified ROOT_DIR ```import _ "[module]/src/app/testing"```
     
 ### /bin scripts reference
