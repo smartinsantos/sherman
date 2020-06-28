@@ -2,7 +2,7 @@ package mysqlds
 
 import (
 	"database/sql"
-	"sherman/src/app/utils/exception"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
 )
 
@@ -94,7 +94,7 @@ func (r *securityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMe
 		&token.UpdatedAt)
 
 	if err != nil {
-		return auth.SecurityToken{}, exception.NewNotFoundError("token not found")
+		return auth.SecurityToken{}, terr.NewNotFoundError("token not found")
 	}
 
 	return token, nil

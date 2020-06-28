@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	_ "sherman/src/app/testing"
-	"sherman/src/app/utils/exception"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
 	"testing"
 	"time"
@@ -145,7 +145,7 @@ func TestGetTokenByMetadata(t *testing.T) {
 
 		_, err = securityTokenRepo.GetTokenByMetadata(tmd)
 
-		expectedError := exception.NewNotFoundError("token not found")
+		expectedError := terr.NewNotFoundError("token not found")
 		if assert.Error(t, err) {
 			assert.Equal(t, expectedError, err)
 		}

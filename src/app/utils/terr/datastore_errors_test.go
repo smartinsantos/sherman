@@ -1,4 +1,4 @@
-package exception
+package terr
 
 import (
 	"github.com/stretchr/testify/assert"

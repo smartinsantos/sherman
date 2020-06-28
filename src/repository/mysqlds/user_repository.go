@@ -2,7 +2,7 @@ package mysqlds
 
 import (
 	"database/sql"
-	"sherman/src/app/utils/exception"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
 	"strings"
 )
@@ -34,7 +34,7 @@ func (r *userRepository) scanUserRow(row *sql.Row) (auth.User, error) {
 
 	if err != nil {
 		if strings.Contains(strings.ToLower(err.Error()), "no rows") {
-			err = exception.NewNotFoundError("user not found")
+			err = terr.NewNotFoundError("user not found")
 		}
 		return auth.User{}, err
 	}
@@ -70,7 +70,7 @@ func (r *userRepository) CreateUser(user *auth.User) error {
 
 	if err != nil {
 		if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
-			err = exception.NewDuplicateEntryError("user already exist")
+			err = terr.NewDuplicateEntryError("user already exist")
 		}
 		return err
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"sherman/mocks"
 	_ "sherman/src/app/testing"
-	"sherman/src/app/utils/exception"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
 	"testing"
 )
@@ -128,7 +128,7 @@ func TestVerifyCredentials(t *testing.T) {
 
 	t.Run("it should return an un-authorized error", func(t *testing.T) {
 		uuc, uucDeps := genUserUseCase()
-		mockError := exception.NewUnAuthorizedError("password doesn't match")
+		mockError := terr.NewUnAuthorizedError("password doesn't match")
 		uucDeps.securityService.
 			On("VerifyPassword", mock.AnythingOfType("string"), mock.AnythingOfType("string")).
 			Return(errors.New("some-error"))

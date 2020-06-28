@@ -10,7 +10,7 @@ import (
 	"net/http/httptest"
 	"sherman/mocks"
 	_ "sherman/src/app/testing"
-	"sherman/src/app/utils/exception"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
 	"strings"
 	"testing"
@@ -123,7 +123,7 @@ func TestRegister(t *testing.T) {
 
 	t.Run("it should return error", func(t *testing.T) {
 		uh, uhDeps := genMockUserHandler()
-		mockError := exception.NewDuplicateEntryError("register error")
+		mockError := terr.NewDuplicateEntryError("register error")
 		uhDeps.validatorService.
 			On("ValidateUserParams", mock.Anything, mock.AnythingOfType("string")).
 			Return(make(map[string]string))
@@ -271,7 +271,7 @@ func TestLogin(t *testing.T) {
 		uhDeps.validatorService.
 			On("ValidateUserParams", mock.Anything, mock.AnythingOfType("string")).
 			Return(make(map[string]string))
-		mockError := exception.NewNotFoundError("verify credentials not found error")
+		mockError := terr.NewNotFoundError("verify credentials not found error")
 		uhDeps.userUseCase.
 			On("VerifyCredentials", mock.Anything).
 			Return(auth.User{}, mockError)
@@ -298,7 +298,7 @@ func TestLogin(t *testing.T) {
 		uhDeps.validatorService.
 			On("ValidateUserParams", mock.Anything, mock.AnythingOfType("string")).
 			Return(make(map[string]string))
-		mockError := exception.NewUnAuthorizedError("verify credentials unauthorized error")
+		mockError := terr.NewUnAuthorizedError("verify credentials unauthorized error")
 		uhDeps.userUseCase.
 			On("VerifyCredentials", mock.Anything).
 			Return(auth.User{}, mockError)
@@ -576,7 +576,7 @@ func TestGetUser(t *testing.T) {
 
 	t.Run("it should return error", func(t *testing.T) {
 		uh, uhDeps := genMockUserHandler()
-		mockError := exception.NewNotFoundError("get user by id not found error")
+		mockError := terr.NewNotFoundError("get user by id not found error")
 		uhDeps.userUseCase.
 			On("GetUserByID", mock.Anything).
 			Return(auth.User{}, mockError)

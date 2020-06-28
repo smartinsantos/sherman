@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	_ "sherman/src/app/testing"
-	"sherman/src/app/utils/exception"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
 	"testing"
 	"time"
@@ -52,7 +52,7 @@ func TestCreateUser(t *testing.T) {
 
 		userRepo := NewUserRepository(db)
 
-		returnError := exception.NewDuplicateEntryError("duplicate")
+		returnError := terr.NewDuplicateEntryError("duplicate")
 		mock.
 			ExpectExec("INSERT users SET").
 			WithArgs(u.ID, u.FirstName, u.LastName, u.EmailAddress, u.Password, u.Active, u.CreatedAt, u.UpdatedAt).
@@ -60,7 +60,7 @@ func TestCreateUser(t *testing.T) {
 
 		err = userRepo.CreateUser(u)
 
-		expectedError := exception.NewDuplicateEntryError("user already exist")
+		expectedError := terr.NewDuplicateEntryError("user already exist")
 		if assert.Error(t, err) {
 			assert.Equal(t, expectedError, err)
 		}
@@ -121,7 +121,7 @@ func TestGetUserByID(t *testing.T) {
 
 		_, err = userRepo.GetUserByID(wrongID)
 
-		expectedError := exception.NewNotFoundError("user not found")
+		expectedError := terr.NewNotFoundError("user not found")
 		if assert.Error(t, err) {
 			assert.Equal(t, expectedError, err)
 		}
@@ -183,7 +183,7 @@ func TestGetUserByEmail(t *testing.T) {
 
 		_, err = userRepo.GetUserByEmail(wrongEmail)
 
-		expectedError := exception.NewNotFoundError("user not found")
+		expectedError := terr.NewNotFoundError("user not found")
 		if assert.Error(t, err) {
 			assert.Equal(t, expectedError, err)
 		}

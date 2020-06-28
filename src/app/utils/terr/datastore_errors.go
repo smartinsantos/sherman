@@ -1,4 +1,4 @@
-package exception
+package terr
 
 // NotFoundError struct error type that should be used to indicate that the error is caused by the nonexistence of the requested resource.
 type NotFoundError struct {

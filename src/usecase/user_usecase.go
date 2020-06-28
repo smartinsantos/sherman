@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"github.com/google/uuid"
-	"sherman/src/app/utils/exception"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
 	"sherman/src/service/security"
 	"time"
@@ -46,7 +46,7 @@ func (uc *userUseCase) VerifyCredentials(user *auth.User) (auth.User, error) {
 	}
 
 	if err := uc.security.VerifyPassword(userRecord.Password, user.Password); err != nil {
-		return auth.User{}, exception.NewUnAuthorizedError("password doesn't match")
+		return auth.User{}, terr.NewUnAuthorizedError("password doesn't match")
 	}
 
 	return userRecord, nil

@@ -3,8 +3,8 @@ package handler
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"sherman/src/app/utils/exception"
 	"sherman/src/app/utils/response"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
 	"sherman/src/service/presenter"
 	"sherman/src/service/security"
@@ -65,7 +65,7 @@ func (h *userHandler) Register(ctx echo.Context) error {
 
 	if err := h.userUseCase.Register(&user); err != nil {
 		switch err.(type) {
-		case *exception.DuplicateEntryError:
+		case *terr.DuplicateEntryError:
 			res.SetError(http.StatusForbidden, err.Error())
 		default:
 			res.SetInternalServerError()
@@ -96,9 +96,9 @@ func (h *userHandler) Login(ctx echo.Context) error {
 
 	if err != nil {
 		switch err.(type) {
-		case *exception.NotFoundError:
+		case *terr.NotFoundError:
 			res.SetError(http.StatusNotFound, err.Error())
-		case *exception.UnAuthorizedError:
+		case *terr.UnAuthorizedError:
 			res.SetError(http.StatusUnauthorized, err.Error())
 		default:
 			res.SetInternalServerError()
@@ -165,7 +165,7 @@ func (h *userHandler) GetUser(ctx echo.Context) error {
 	user, err := h.userUseCase.GetUserByID(userID)
 	if err != nil {
 		switch err.(type) {
-		case *exception.NotFoundError:
+		case *terr.NotFoundError:
 			res.SetError(http.StatusNotFound, err.Error())
 		default:
 			res.SetInternalServerError()
