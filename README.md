@@ -82,7 +82,7 @@ It follows SOLID principles and attempts to follow Robert "Uncle Bob" Clean Arch
     --repository [data layer]
     --service [globally available sevices (middleware, validators, etc)]
     --usecase [use case layer]
-main.go // entry point
+main.go [entry point]
 ```
 
 ## Main application dependencies
