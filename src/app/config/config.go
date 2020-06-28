@@ -3,88 +3,109 @@ package config
 import (
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
+	"os"
 	"strconv"
 	"sync"
 )
 
 type (
-	appConfig struct {
-		Env		string
-		Debug	bool
-		Addr	string
+	// AppConfig type definition
+	AppConfig struct {
+		Debug bool
+		Port  int
+		Addr  string
 	}
-	dbConfig struct {
-		Driver string
-		Name   string
-		User   string
-		Pass   string
-		Host   string
-		Port   string
+	// DBConfig type definition
+	DBConfig struct {
+		Driver      string
+		Name        string
+		User        string
+		Pass        string
+		Host        string
+		Port        string
+		ExposedPort string
+		Path        string
 	}
-	jwtConfig struct {
+	// JwtConfig type definition
+	JwtConfig struct {
 		Secret string
 	}
-	// Config Wrapper for all configurations
-	Config struct {
-		App appConfig
-		Db  dbConfig
-		Jwt jwtConfig
+	// GlobalConfig type definition
+	GlobalConfig struct {
+		App AppConfig
+		DB  DBConfig
+		Jwt JwtConfig
 	}
 )
 
 var (
-	defaultConfig = &Config {
-		App: appConfig {
-			Env:   	"local",
-			Debug: 	true,
-			Addr:  	":8080",
+	once   sync.Once
+	config *GlobalConfig
+	// DefaultConfig contains default values of global config
+	DefaultConfig = GlobalConfig{
+		App: AppConfig{
+			Debug: false,
+			Port:  5000,
+			Addr:  ":5000",
 		},
-		Db: dbConfig {
-			Driver: "mysql",
-			Name:   "db_name",
-			User:   "db_user",
-			Pass:   "db_password",
-			Host:   "app-mysql",
-			Port:   "3306",
+		DB: DBConfig{
+			Driver:      "mysql",
+			Name:        "sherman",
+			User:        "db_user",
+			Pass:        "db_password",
+			Host:        "app-mysql",
+			Port:        "3306",
+			ExposedPort: "5001",
 		},
-		Jwt: jwtConfig {
+		Jwt: JwtConfig{
 			Secret: "jwt_secret",
 		},
 	}
-	config *Config
-	once sync.Once
 )
 
-// Get returns Config instance
-func Get() *Config {
+// Get returns singleton instance of GlobalConfig
+func Get() *GlobalConfig {
+	if env := os.Getenv("ENV"); env == "test" {
+		envMap, err := godotenv.Read(".env.test")
+		if err != nil {
+			log.Error().Msg("config error: couldn't read env.test file, using defaults")
+		}
+		return generateConfig(envMap)
+	}
+
 	once.Do(func() {
 		envMap, err := godotenv.Read(".env")
-
 		if err != nil {
-			log.Fatal().Msg("couldn't read contents of .env file")
+			log.Error().Msg("config error: couldn't read .env file, using defaults")
 		}
-
-		config = &Config {
-			App: appConfig {
-				Env:   getKey(envMap, "APP_ENV", defaultConfig.App.Env),
-				Debug: getKeyAsBool(envMap, "APP_DEBUG", defaultConfig.App.Debug),
-				Addr:  getKey(envMap, "APP_ADDR", defaultConfig.App.Addr),
-			},
-			Db: dbConfig {
-				Driver: getKey(envMap, "DB_DRIVER", defaultConfig.Db.Driver),
-				Name:   getKey(envMap, "DB_NAME", defaultConfig.Db.Name),
-				User:   getKey(envMap, "DB_USER", defaultConfig.Db.User),
-				Pass:   getKey(envMap, "DB_PASS", defaultConfig.Db.Pass),
-				Host:   getKey(envMap, "DB_HOST", defaultConfig.Db.Host),
-				Port:   getKey(envMap, "DB_PORT", defaultConfig.Db.Port),
-			},
-			Jwt: jwtConfig { Secret: getKey(envMap, "JWT_SECRET", defaultConfig.Jwt.Secret) },
-		}
+		config = generateConfig(envMap)
 	})
+
 	return config
 }
 
-func getKey(env map[string]string, key string, defaultValue string) string {
+func generateConfig(envMap map[string]string) *GlobalConfig {
+	return &GlobalConfig{
+		App: AppConfig{
+			Debug: getKeyAsBool(envMap, "APP_DEBUG", DefaultConfig.App.Debug),
+			Port:  getKeyAsInt(envMap, "APP_PORT", DefaultConfig.App.Port),
+			Addr:  getKey(envMap, "APP_ADDR", DefaultConfig.App.Addr),
+		},
+		DB: DBConfig{
+			Driver:      getKey(envMap, "DB_DRIVER", DefaultConfig.DB.Driver),
+			Name:        getKey(envMap, "DB_NAME", DefaultConfig.DB.Name),
+			User:        getKey(envMap, "DB_USER", DefaultConfig.DB.User),
+			Pass:        getKey(envMap, "DB_PASS", DefaultConfig.DB.Pass),
+			Host:        getKey(envMap, "DB_HOST", DefaultConfig.DB.Host),
+			Port:        getKey(envMap, "DB_PORT", DefaultConfig.DB.Port),
+			ExposedPort: getKey(envMap, "DB_EXPOSED_PORT", DefaultConfig.DB.ExposedPort),
+			Path:        getKey(envMap, "DB_PATH", ""),
+		},
+		Jwt: JwtConfig{Secret: getKey(envMap, "JWT_SECRET", DefaultConfig.Jwt.Secret)},
+	}
+}
+
+func getKey(env map[string]string, key, defaultValue string) string {
 	if value, exist := env[key]; exist {
 		return value
 	}
@@ -99,10 +120,10 @@ func getKeyAsBool(env map[string]string, key string, defaultValue bool) bool {
 	return defaultValue
 }
 
-//func getKeyAsInt(env map[string]string, key string, defaultValue int) int {
-//	valueStr := getKey(env, key, "")
-//	if value, err := strconv.Atoi(valueStr); err == nil {
-//		return value
-//	}
-//	return defaultValue
-//}
+func getKeyAsInt(env map[string]string, key string, defaultValue int) int {
+	valueStr := getKey(env, key, "")
+	if value, err := strconv.Atoi(valueStr); err == nil {
+		return value
+	}
+	return defaultValue
+}

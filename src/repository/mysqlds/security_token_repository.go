@@ -2,17 +2,24 @@ package mysqlds
 
 import (
 	"database/sql"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
-	"sherman/src/utils/exception"
 )
 
-// SecurityTokenRepository sql implementation of auth.SecurityTokenRepository
-type SecurityTokenRepository struct {
+// securityTokenRepository sql implementation of auth.SecurityTokenRepository
+type securityTokenRepository struct {
 	DB *sql.DB
 }
 
+// NewSecurityTokenRepository constructor
+func NewSecurityTokenRepository(db *sql.DB) auth.SecurityTokenRepository {
+	return &securityTokenRepository{
+		DB: db,
+	}
+}
+
 // CreateOrUpdateToken persist a auth.SecurityToken in the datastore
-func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken) error {
+func (r *securityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken) error {
 	var err error
 	var query string
 	var existingToken auth.SecurityToken
@@ -64,9 +71,19 @@ func (r *SecurityTokenRepository) CreateOrUpdateToken(token *auth.SecurityToken)
 }
 
 // GetTokenByMetadata finds a auth.SecurityToken in the datastore
-func (r *SecurityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMetadata) (auth.SecurityToken, error) {
+func (r *securityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMetadata) (auth.SecurityToken, error) {
 	var token auth.SecurityToken
-	query := `SELECT * FROM security_tokens WHERE user_id = ? AND type = ? LIMIT 1`
+	query := `
+		SELECT 
+			id, 
+			user_id,
+			token,
+			type,
+			created_at,
+			updated_at
+		FROM security_tokens 
+		WHERE user_id = ? AND type = ? LIMIT 1
+	`
 	row := r.DB.QueryRow(query, tokenMetadata.UserID, tokenMetadata.Type)
 	err := row.Scan(
 		&token.ID,
@@ -77,14 +94,14 @@ func (r *SecurityTokenRepository) GetTokenByMetadata(tokenMetadata *auth.TokenMe
 		&token.UpdatedAt)
 
 	if err != nil {
-		return auth.SecurityToken{}, exception.NewNotFoundError("token not found")
+		return auth.SecurityToken{}, terr.NewNotFoundError("token not found")
 	}
 
 	return token, nil
 }
 
 // RemoveTokenByMetadata removes a token from the datastore
-func (r *SecurityTokenRepository) RemoveTokenByMetadata(tokenMetadata *auth.TokenMetadata) error {
+func (r *securityTokenRepository) RemoveTokenByMetadata(tokenMetadata *auth.TokenMetadata) error {
 	query := `DELETE FROM security_tokens WHERE user_id = ? AND type = ?`
 	_, err := r.DB.Exec(query,
 		tokenMetadata.UserID,

@@ -1,0 +1,71 @@
+linters:
+  disable-all: true
+  enable:
+    - depguard
+    - dupl
+    - lll
+    - gocritic
+    - golint
+    - govet
+    - gofmt
+
+issues:
+  exclude-use-default: false
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - dupl
+        - lll
+  exclude:
+    # should have a package comment, unless it's in another file for this package (golint)
+    - 'in another file for this package'
+
+linters-settings:
+  depguard:
+    list-type: blacklist
+  dupl:
+    threshold: 100
+  lll:
+    line-length: 160
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport # https://github.com/go-critic/go-critic/issues/845
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+  golint:
+    # minimal confidence for issues, default is 0.8
+    min-confidence: 0
+  govet:
+    # report about shadowed variables
+    check-shadowing: true
+
+output:
+  # colored-line-number|line-number|json|tab|checkstyle|code-climate, default is "colored-line-number"
+  format: colored-line-number
+
+  # print lines of code with issue, default is true
+  print-issued-lines: false
+
+  # print linter name in the end of issue text, default is true
+  print-linter-name: true
+
+service:
+  golangci-lint-version: 1.23.x # use the fixed version to not introduce new linters unexpectedly
+  prepare:
+    - echo "here I can run custom commands, but no preparation needed for this repo"
+
+#run:
+#  skip-dirs:
+#    - bin/
+#    - coverage/
+#    - mocks/
+#    - tmp/
+#    - vendor/

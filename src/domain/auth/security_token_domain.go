@@ -14,18 +14,18 @@ const (
 type (
 	// SecurityToken entity struct
 	SecurityToken struct {
-		ID 				string		`json:"id"`
-		UserID 			string		`json:"user_id"`
-		Token 			string		`json:"token"`
-		Type			string		`json:"type"`
-		CreatedAt 		time.Time	`json:"created_at"`
-		UpdatedAt 		time.Time	`json:"updated_at"`
+		ID        string    `json:"id"`
+		UserID    string    `json:"user_id"`
+		Token     string    `json:"token"`
+		Type      string    `json:"type"`
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
 	}
 	// TokenMetadata struct definition
 	TokenMetadata struct {
-		UserID 	string
-		Type 	string
-		Token	string
+		UserID string
+		Type   string
+		Token  string
 	}
 	// SecurityTokenRepository interface
 	SecurityTokenRepository interface {
@@ -41,5 +41,3 @@ type (
 		RemoveRefreshToken(refreshTokenMetadata *TokenMetadata) error
 	}
 )
-
-

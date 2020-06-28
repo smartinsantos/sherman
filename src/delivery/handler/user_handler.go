@@ -3,39 +3,69 @@ package handler
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"sherman/src/delivery/handler/presenter"
-	"sherman/src/delivery/handler/validator"
+	"sherman/src/app/utils/response"
+	"sherman/src/app/utils/terr"
 	"sherman/src/domain/auth"
-	"sherman/src/utils/exception"
-	"sherman/src/utils/response"
-	"sherman/src/utils/security"
+	"sherman/src/service/presenter"
+	"sherman/src/service/security"
+	"sherman/src/service/validator"
 )
 
-// UserHandler handler for /user/[routes]
-type UserHandler struct {
-	UserUseCase auth.UserUseCase
-	SecurityTokenUseCase auth.SecurityTokenUseCase
+type (
+	// UserHandler handler for /user/[routes]
+	UserHandler interface {
+		Register(ctx echo.Context) error
+		Login(ctx echo.Context) error
+		RefreshAccessToken(ctx echo.Context) error
+		GetUser(ctx echo.Context) error
+		Logout(ctx echo.Context) error
+	}
+
+	userHandler struct {
+		userUseCase          auth.UserUseCase
+		securityTokenUseCase auth.SecurityTokenUseCase
+		validator            validator.Validator
+		security             security.Security
+		presenter            presenter.Presenter
+	}
+)
+
+// NewUserHandler constructor
+func NewUserHandler(
+	uuc auth.UserUseCase,
+	stuc auth.SecurityTokenUseCase,
+	vs validator.Validator,
+	ss security.Security,
+	ps presenter.Presenter,
+) UserHandler {
+	return &userHandler{
+		userUseCase:          uuc,
+		securityTokenUseCase: stuc,
+		validator:            vs,
+		security:             ss,
+		presenter:            ps,
+	}
 }
 
 // Register registers the user
-func (h *UserHandler) Register(ctx echo.Context) error {
+func (h *userHandler) Register(ctx echo.Context) error {
 	var user auth.User
 	res := response.NewResponse()
 
 	if err := ctx.Bind(&user); err != nil {
-		res.SetError(http.StatusUnprocessableEntity, err.Error())
+		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	errors := validator.ValidateUserParams(&user, "register")
+	errors := h.validator.ValidateUserParams(&user, "register")
 	if len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	if err := h.UserUseCase.Register(&user); err != nil {
+	if err := h.userUseCase.Register(&user); err != nil {
 		switch err.(type) {
-		case *exception.DuplicateEntryError:
+		case *terr.DuplicateEntryError:
 			res.SetError(http.StatusForbidden, err.Error())
 		default:
 			res.SetInternalServerError()
@@ -48,27 +78,27 @@ func (h *UserHandler) Register(ctx echo.Context) error {
 }
 
 // Login logs the user in
-func (h *UserHandler) Login(ctx echo.Context) error {
+func (h *userHandler) Login(ctx echo.Context) error {
 	var user auth.User
 	res := response.NewResponse()
 
 	if err := ctx.Bind(&user); err != nil {
-		res.SetError(http.StatusUnprocessableEntity, err.Error())
+		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	if errors := validator.ValidateUserParams(&user, "login"); len(errors) > 0 {
+	if errors := h.validator.ValidateUserParams(&user, "login"); len(errors) > 0 {
 		res.SetErrors(http.StatusUnprocessableEntity, errors)
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	verifiedUser, err := h.UserUseCase.VerifyCredentials(&user)
+	verifiedUser, err := h.userUseCase.VerifyCredentials(&user)
 
 	if err != nil {
 		switch err.(type) {
-		case *exception.NotFoundError:
+		case *terr.NotFoundError:
 			res.SetError(http.StatusNotFound, err.Error())
-		case *exception.UnAuthorizedError:
+		case *terr.UnAuthorizedError:
 			res.SetError(http.StatusUnauthorized, err.Error())
 		default:
 			res.SetInternalServerError()
@@ -76,67 +106,66 @@ func (h *UserHandler) Login(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(verifiedUser.ID)
+	accessToken, err := h.securityTokenUseCase.GenAccessToken(verifiedUser.ID)
 	if err != nil {
 		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	refreshToken, err := h.SecurityTokenUseCase.GenRefreshToken(verifiedUser.ID)
+	refreshToken, err := h.securityTokenUseCase.GenRefreshToken(verifiedUser.ID)
 	if err != nil {
 		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, response.D{ "access_token": accessToken.Token })
-	//@TODO: add secure to cookie when tls is ready
+	res.SetData(http.StatusOK, response.D{"access_token": accessToken.Token})
+	// TODO: add secure to cookie when tls is ready
 	ctx.SetCookie(&http.Cookie{
-		Name: "REFRESH_TOKEN",
-		Value: refreshToken.Token,
-		MaxAge: 3600,
-		Path: "/",
-		Domain: ctx.Request().Host,
-		Secure: false,
+		Name:     "REFRESH_TOKEN",
+		Value:    refreshToken.Token,
+		MaxAge:   3600,
+		Path:     "/",
+		Domain:   ctx.Request().Host,
+		Secure:   false,
 		HttpOnly: true,
 	})
 	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // RefreshAccessToken refreshes user access token
-func (h *UserHandler) RefreshAccessToken(ctx echo.Context) error {
+func (h *userHandler) RefreshAccessToken(ctx echo.Context) error {
 	res := response.NewResponse()
 
-	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
+	refreshTokenMetadata, err := h.security.GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, "invalid refresh token")
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	if !h.SecurityTokenUseCase.IsRefreshTokenStored(&refreshTokenMetadata) {
+	if !h.securityTokenUseCase.IsRefreshTokenStored(&refreshTokenMetadata) {
 		res.SetError(http.StatusUnauthorized, "invalid refresh token")
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	accessToken, err := h.SecurityTokenUseCase.GenAccessToken(refreshTokenMetadata.UserID)
+	accessToken, err := h.securityTokenUseCase.GenAccessToken(refreshTokenMetadata.UserID)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, err.Error())
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, response.D{ "access_token": accessToken.Token })
+	res.SetData(http.StatusOK, response.D{"access_token": accessToken.Token})
 	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // GetUser gets the user from access token
-func (h *UserHandler) GetUser(ctx echo.Context) error {
+func (h *userHandler) GetUser(ctx echo.Context) error {
 	res := response.NewResponse()
 	userID := ctx.Param("id")
 
-	user, err := h.UserUseCase.GetUserByID(userID)
-
+	user, err := h.userUseCase.GetUserByID(userID)
 	if err != nil {
 		switch err.(type) {
-		case *exception.NotFoundError:
+		case *terr.NotFoundError:
 			res.SetError(http.StatusNotFound, err.Error())
 		default:
 			res.SetInternalServerError()
@@ -144,34 +173,33 @@ func (h *UserHandler) GetUser(ctx echo.Context) error {
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	res.SetData(http.StatusOK, response.D{ "user": presenter.PresentUser(&user) })
+	res.SetData(http.StatusOK, response.D{"user": h.presenter.PresentUser(&user)})
 	return ctx.JSON(res.GetStatus(), res.GetBody())
 }
 
 // Logout logs out the user
-func (h *UserHandler) Logout(ctx echo.Context) error {
+func (h *userHandler) Logout(ctx echo.Context) error {
 	res := response.NewResponse()
 
-	refreshTokenMetadata, err := security.GetAndValidateRefreshToken(ctx)
+	refreshTokenMetadata, err := h.security.GetAndValidateRefreshToken(ctx)
 	if err != nil {
 		res.SetError(http.StatusUnauthorized, err.Error())
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	err = h.SecurityTokenUseCase.RemoveRefreshToken(&refreshTokenMetadata)
-	if err != nil {
+	if err := h.securityTokenUseCase.RemoveRefreshToken(&refreshTokenMetadata); err != nil {
 		res.SetInternalServerError()
 		return ctx.JSON(res.GetStatus(), res.GetBody())
 	}
 
-	//@TODO: add secure to cookie when tls is ready
+	// TODO: add secure to cookie when tls is ready
 	ctx.SetCookie(&http.Cookie{
-		Name: "REFRESH_TOKEN",
-		Value: "",
-		MaxAge: 0,
-		Path: "/",
-		Domain: ctx.Request().Host,
-		Secure: false,
+		Name:     "REFRESH_TOKEN",
+		Value:    "",
+		MaxAge:   0,
+		Path:     "/",
+		Domain:   ctx.Request().Host,
+		Secure:   false,
 		HttpOnly: true,
 	})
 	res.SetData(http.StatusOK, nil)
