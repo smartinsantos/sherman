@@ -20,8 +20,8 @@ type (
 )
 
 // NewResponse Response constructor defaults to { Status: 500, error: "internal server error" }
-func NewResponse() Response {
-	return Response{
+func NewResponse() *Response {
+	return &Response{
 		Status: http.StatusInternalServerError,
 		Error:  internalServerError,
 	}
