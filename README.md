@@ -86,21 +86,21 @@ main.go [entry point]
 ```
 
 ## Main application dependencies
-- Docker: https://docs.docker.com/get-docker/
-- Go SqlMock: https://github.com/DATA-DOG/go-sqlmock  
-- JWT tokens: https://github.com/dgrijalva/jwt-go
-- MYSQL Driver: https://github.com/go-sql-driver/mysql
-- SQLITE3 Driver: https://github.com/mattn/go-sqlite3 
-- UUIDs: github.com/go-sql-driver/mysql
-- DotEnv: github.com/joho/godotenv
-- Echo web framework: https://echo.labstack.com/guide
-- Logger: https://github.com/rs/zerolog
-- Dependency injection container: https://github.com/sarulabs/di
-- Testify: https://github.com/stretchr/testify
-- Linter: https://github.com/golangci/golangci-lint
-- Watcher: https://github.com/cosmtrek/air
-- Migrations: https://github.com/pressly/goose
-- Mockery: https://github.com/vektra/mockery
+- Docker: [docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
+- JWTs: [github.com/dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go)
+- MYSQL Driver: [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql)
+- SQLITE3 Driver[github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3)
+- Migrations: [github.com/pressly/goose](https://github.com/pressly/goose)
+- UUIDs: [github.com/google/uuid](https://github.com/google/uuid)
+- Loader .env : [github.com/joho/godotenv](https://github.com/joho/godotenv)
+- Echo Web Framework: [echo.labstack.com/guide](https://echo.labstack.com/guide)
+- Logger: [github.com/rs/zerolog](https://github.com/rs/zerolog)
+- Dependency Injection container: [github.com/sarulabs/di](https://github.com/sarulabs/di)
+- Tests: [github.com/stretchr/testify](https://github.com/stretchr/testify)
+- Sql Mocks: [github.com/DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock)
+- Mockery: [github.com/vektra/mockery](https://github.com/vektra/mockery)
+- Linter: [github.com/golangci/golangci-lint](https://github.com/golangci/golangci-lint)
+- Code Change Watcher: [https://github.com/cosmtrek/air](https://github.com/cosmtrek/air)
 
 ## License
 Sherman is licensed under the MIT license. Check the [LICENSE](LICENSE) file for details.
