@@ -1,5 +1,7 @@
 # Sherman Starter Kit
 [![Go Report Card](https://goreportcard.com/badge/github.com/smartinsantos/sherman)](https://goreportcard.com/report/github.com/smartinsantos/sherman)
+[![Maintainability](https://api.codeclimate.com/v1/badges/df184224058c1f4c0b9e/maintainability)](https://codeclimate.com/github/smartinsantos/sherman/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/df184224058c1f4c0b9e/test_coverage)](https://codeclimate.com/github/smartinsantos/sherman/test_coverage)
 
 Sherman is a Golang starter kit to develop API microservices. It is designed to help kickstart a project, avoiding the boilerplate overhead.
 It follows SOLID principles and attempts to follow Robert "Uncle Bob" Clean Architecture. 
