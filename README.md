@@ -1,4 +1,8 @@
 # Sherman Starter Kit
+[![Go Report Card](https://goreportcard.com/badge/github.com/smartinsantos/sherman)](https://goreportcard.com/report/github.com/smartinsantos/sherman)
+[![Maintainability](https://api.codeclimate.com/v1/badges/df184224058c1f4c0b9e/maintainability)](https://codeclimate.com/github/smartinsantos/sherman/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/df184224058c1f4c0b9e/test_coverage)](https://codeclimate.com/github/smartinsantos/sherman/test_coverage)
+
 Sherman is a Golang starter kit to develop API microservices. It is designed to help kickstart a project, avoiding the boilerplate overhead.
 It follows SOLID principles and attempts to follow Robert "Uncle Bob" Clean Architecture. 
 
@@ -33,8 +37,8 @@ It follows SOLID principles and attempts to follow Robert "Uncle Bob" Clean Arch
 - Run ```bin/up```
 
 ### Tests
-- `bin/exec test` will automatically run all test files in the project and generate coverage files under ./coverage
-- `bin/exec test [test_path]` will run tests in the provided path (no coverage will be generated) 
+- `bin/test` will automatically run all test files in the project and generate coverage files under ./coverage
+- `bin/test [test_path]` will run tests in the provided path (no coverage will be generated) 
 - When creating new tests files include the provided testing package ```src/app/testing``` like so ```import _ "[module]/src/app/testing"```. This will change the test working dir to the specified ROOT_DIR.
     
 ### /bin scripts reference
@@ -42,12 +46,12 @@ It follows SOLID principles and attempts to follow Robert "Uncle Bob" Clean Arch
 - ```bin/up```                              : Builds and/or spins up docker containers https://docs.docker.com/compose/reference/up/  
 - ```bin/down```                            : Stops docker containers https://docs.docker.com/compose/reference/down/
 - ```bin/go```                              : Run go commands in the app container (**docker container must be running)
+- ```bin/test```                            : Runs test suites (**docker container must be running)
 - ```bin/mockery```                         : Generates mocks for every interface in the project under ./src/mocks
 - ```bin/lint```                            : Finds lint errors in the application
 - ```bin/exec```                            : Execs the following commands (**docker containers must be running)
     - ```setup```                           : Install all project dependencies
     - ```gofmt```                           : Formats .go files in /src folder
-    - ```test```                            : Runs test suites
     - ```watch```                           : Runs the server on watch mode
     - ```new-migration [migration-name]```  : Creates a migration
     - ```migrate [command]```               : Migrate the DB see cmd list
@@ -86,21 +90,21 @@ main.go [entry point]
 ```
 
 ## Main application dependencies
-- Docker: https://docs.docker.com/get-docker/
-- Go SqlMock: https://github.com/DATA-DOG/go-sqlmock  
-- JWT tokens: https://github.com/dgrijalva/jwt-go
-- MYSQL Driver: https://github.com/go-sql-driver/mysql
-- SQLITE3 Driver: https://github.com/mattn/go-sqlite3 
-- UUIDs: github.com/go-sql-driver/mysql
-- DotEnv: github.com/joho/godotenv
-- Echo web framework: https://echo.labstack.com/guide
-- Logger: https://github.com/rs/zerolog
-- Dependency injection container: https://github.com/sarulabs/di
-- Testify: https://github.com/stretchr/testify
-- Linter: https://github.com/golangci/golangci-lint
-- Watcher: https://github.com/cosmtrek/air
-- Migrations: https://github.com/pressly/goose
-- Mockery: https://github.com/vektra/mockery
+- Docker: [docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
+- JWTs: [github.com/dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go)
+- MYSQL Driver: [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql)
+- SQLITE3 Driver: [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3)
+- Migrations: [github.com/pressly/goose](https://github.com/pressly/goose)
+- UUIDs: [github.com/google/uuid](https://github.com/google/uuid)
+- Loader .env: [github.com/joho/godotenv](https://github.com/joho/godotenv)
+- Echo Web Framework: [echo.labstack.com/guide](https://echo.labstack.com/guide)
+- Logger: [github.com/rs/zerolog](https://github.com/rs/zerolog)
+- Dependency Injection container: [github.com/sarulabs/di](https://github.com/sarulabs/di)
+- Tests: [github.com/stretchr/testify](https://github.com/stretchr/testify)
+- Sql Mocks: [github.com/DATA-DOG/go-sqlmock](https://github.com/DATA-DOG/go-sqlmock)
+- Mockery: [github.com/vektra/mockery](https://github.com/vektra/mockery)
+- Linter: [github.com/golangci/golangci-lint](https://github.com/golangci/golangci-lint)
+- Code Change Watcher: [https://github.com/cosmtrek/air](https://github.com/cosmtrek/air)
 
 ## License
 Sherman is licensed under the MIT license. Check the [LICENSE](LICENSE) file for details.

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# change to the project root
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$DIR"/.. || exit
+
+MOCKS_DIR="./mocks"
+if [ ! -d "$MOCKS_DIR" ]; then
+    echo "=== Creating /mocks directory ===" && mkdir -p "$MOCKS_DIR"
+fi
+
+if [ -z "$(ls -A $MOCKS_DIR)" ]; then
+  echo "=== Generating mocks ===" && bin/mockery
+else
+  echo "INFO: using existing /mocks"
+fi
+
+bin/exec test "$@"
