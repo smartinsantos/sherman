@@ -37,8 +37,8 @@ It follows SOLID principles and attempts to follow Robert "Uncle Bob" Clean Arch
 - Run ```bin/up```
 
 ### Tests
-- `bin/exec test` will automatically run all test files in the project and generate coverage files under ./coverage
-- `bin/exec test [test_path]` will run tests in the provided path (no coverage will be generated) 
+- `bin/test` will automatically run all test files in the project and generate coverage files under ./coverage
+- `bin/test [test_path]` will run tests in the provided path (no coverage will be generated) 
 - When creating new tests files include the provided testing package ```src/app/testing``` like so ```import _ "[module]/src/app/testing"```. This will change the test working dir to the specified ROOT_DIR.
     
 ### /bin scripts reference
@@ -46,12 +46,12 @@ It follows SOLID principles and attempts to follow Robert "Uncle Bob" Clean Arch
 - ```bin/up```                              : Builds and/or spins up docker containers https://docs.docker.com/compose/reference/up/  
 - ```bin/down```                            : Stops docker containers https://docs.docker.com/compose/reference/down/
 - ```bin/go```                              : Run go commands in the app container (**docker container must be running)
+- ```bin/test```                            : Runs test suites (**docker container must be running)
 - ```bin/mockery```                         : Generates mocks for every interface in the project under ./src/mocks
 - ```bin/lint```                            : Finds lint errors in the application
 - ```bin/exec```                            : Execs the following commands (**docker containers must be running)
     - ```setup```                           : Install all project dependencies
     - ```gofmt```                           : Formats .go files in /src folder
-    - ```test```                            : Runs test suites
     - ```watch```                           : Runs the server on watch mode
     - ```new-migration [migration-name]```  : Creates a migration
     - ```migrate [command]```               : Migrate the DB see cmd list

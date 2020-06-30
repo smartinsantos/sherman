@@ -15,4 +15,4 @@ else
   echo "INFO: using existing /mocks"
 fi
 
-bin/exec test
+bin/exec test "$@"
