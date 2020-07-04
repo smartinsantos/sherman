@@ -20,7 +20,7 @@ jobs:
     # APP
     APP_DEBUG: false
     APP_PORT: 5000
-    APP_ADDR=: :5000
+    APP_ADDR: :5000
     # DATABASE
     DB_DRIVER: sqlite3
     DB_PATH: "./src/app/database/testDB.db"
