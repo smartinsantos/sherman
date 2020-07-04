@@ -17,19 +17,17 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env:
-      # APP
-      APP_DEBUG: false
-      APP_PORT: 5000
-      APP_ADDR: :5000
+    # APP
+    APP_DEBUG: false
+    APP_PORT: 5000
+    APP_ADDR=: :5000
 
-      # DATABASE
-      DB_DRIVER: mysql
-      DB_NAME: sherman
-      DB_USER: db_user
-      DB_PASS: db_password
-      DB_HOST: app-mysql
-      DB_PORT: 3306
-      DB_EXPOSED_PORT: 5001
+    # DATABASE
+    DB_DRIVER: sqlite3
+    DB_PATH: "./src/app/database/testDB.db"
+
+    #JWT
+    JWT_SECRET=jwt_secret
 
       #JWT
       JWT_SECRET: jwt_secret
@@ -38,16 +36,19 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - name: setup
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.14' # The Go version to download (if necessary) and use.
+    - name: integration
       run: |
         echo === CI -> Generating mocks ===
         bin/mockery
         echo === CI -> Builing ===
-        export COMPOSE_INTERACTIVE_NO_CLI=1
-        docker-compose build
-        docker-compose up -d
+        go mod vendor
+        go get -u github.com/pressly/goose/cmd/goose@v2.6.0
+        ENV=test go run ./main.go
         echo === CI -> Running Tests ===
-        bin/exec test
+        bin/cmd/test
         echo === CI -> Linting ===
         bin/lint
         echo === CI -> Stopping Containers ===
