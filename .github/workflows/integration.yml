@@ -21,16 +21,11 @@ jobs:
     APP_DEBUG: false
     APP_PORT: 5000
     APP_ADDR=: :5000
-
     # DATABASE
     DB_DRIVER: sqlite3
     DB_PATH: "./src/app/database/testDB.db"
-
     #JWT
-    JWT_SECRET=jwt_secret
-
-      #JWT
-      JWT_SECRET: jwt_secret
+    JWT_SECRET: jwt_secret
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
