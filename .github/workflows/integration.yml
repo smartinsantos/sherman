@@ -1,9 +1,7 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 # Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# events for the master branch
 on:
   push:
     branches: [ master ]
@@ -17,15 +15,15 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env:
-    # APP
-    APP_DEBUG: false
-    APP_PORT: 5000
-    APP_ADDR: :5000
-    # DATABASE
-    DB_DRIVER: sqlite3
-    DB_PATH: "./src/app/database/testDB.db"
-    #JWT
-    JWT_SECRET: jwt_secret
+      # APP
+      APP_DEBUG: false
+      APP_PORT: 5000
+      APP_ADDR: :5000
+      # DATABASE
+      DB_DRIVER: sqlite3
+      DB_PATH: "./src/app/database/testDB.db"
+      #JWT
+      JWT_SECRET: jwt_secret
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -49,5 +47,3 @@ jobs:
         echo === CI -> Stopping Containers ===
         bin/down
         echo === CI -> Tasks Completed ===
-        
-        
