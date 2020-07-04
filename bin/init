@@ -8,6 +8,7 @@ echo "=== Running init ==="
 echo "Cleaning up..."
 rm -rf ./tmp
 rm -rf ./vendor
+rm -rf ./mocks
 echo "Building containers..."
 docker-compose build
 echo "Starting Containers..."
