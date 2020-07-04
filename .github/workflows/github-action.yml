@@ -16,6 +16,13 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      APP_DEBUG: false
+      APP_PORT: 5000
+      APP_ADDR: :5000
+      DB_DRIVER: sqlite3
+      DB_PATH: "./src/app/database/testDB.db"
+      JWT_SECRET: jwt_secret
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -23,7 +30,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: setup
       run: |
-        cp .env.test .env
         docker-compose build
         bin/up -d
         bin/go mod vendor
