@@ -43,8 +43,9 @@ jobs:
         echo === CI -> Generating mocks ===
         bin/mockery
         echo === CI -> Builing ===
-        docker-compose -t build
-        docker-compose -t up -d
+        export COMPOSE_INTERACTIVE_NO_CLI=1
+        docker-compose build
+        docker-compose up -d
         echo === CI -> Running Tests ===
         bin/exec test
         echo === CI -> Linting ===
