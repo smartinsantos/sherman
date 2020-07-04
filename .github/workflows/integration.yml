@@ -32,13 +32,12 @@ jobs:
     - uses: actions/setup-go@v2
       with:
         go-version: '^1.14' # The Go version to download (if necessary) and use.
-    - name: Run build/test/lint
+    - name: Run test/lint
       run: |
         echo === CI -> Generating mocks ===
         bin/mockery
         echo === CI -> Builing ===
         go mod tidy
-        GO111MODULE=on; ENV=test; go run ./main.go
         echo === CI -> Running Tests ===
         bin/cmd/test
         echo === CI -> Linting ===
