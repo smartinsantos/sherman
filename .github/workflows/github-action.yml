@@ -17,11 +17,21 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env:
+      # APP
       APP_DEBUG: false
       APP_PORT: 5000
       APP_ADDR: :5000
-      DB_DRIVER: sqlite3
-      DB_PATH: "./src/app/database/testDB.db"
+
+      # DATABASE
+      DB_DRIVER: mysql
+      DB_NAME: sherman
+      DB_USER: db_user
+      DB_PASS: db_password
+      DB_HOST: app-mysql
+      DB_PORT: 3306
+      DB_EXPOSED_PORT: 5001
+
+      #JWT
       JWT_SECRET: jwt_secret
 
     # Steps represent a sequence of tasks that will be executed as part of the job
