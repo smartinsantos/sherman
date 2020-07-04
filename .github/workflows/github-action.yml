@@ -40,10 +40,16 @@ jobs:
     - uses: actions/checkout@v2
     - name: setup
       run: |
+        echo === Building Container ===
         docker-compose build
+        echo === Running Container ===
         bin/up -d
+        echo === Installing dependencies ===
         bin/go mod vendor
+        echo === Testing ===
         bin/test
+        echo === Stopping Containers ===
         bin/down
+        echo === Tasks Completed ===
         
         
