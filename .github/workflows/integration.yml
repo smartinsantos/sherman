@@ -32,14 +32,16 @@ jobs:
     - uses: actions/setup-go@v2
       with:
         go-version: '^1.14' # The Go version to download (if necessary) and use.
-    - name: integration
+    - name: Run build/test/lint
       run: |
         echo === CI -> Generating mocks ===
         bin/mockery
         echo === CI -> Builing ===
         go mod vendor
         go get -u github.com/pressly/goose/cmd/goose@v2.6.0
-        ENV=test go run ./main.go
+        GO111MODULE=on
+        ENV=test
+        go run ./main.go
         echo === CI -> Running Tests ===
         bin/cmd/test
         echo === CI -> Linting ===
