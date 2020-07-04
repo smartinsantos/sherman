@@ -9,6 +9,8 @@ echo "Cleaning up..."
 rm -rf ./tmp
 rm -rf ./vendor
 rm -rf ./mocks
+echo "Generating mocks..."
+bin/mockery
 echo "Building containers..."
 docker-compose build
 echo "Starting Containers..."

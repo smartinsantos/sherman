@@ -7,7 +7,6 @@ cd "$DIR"/../.. || exit
 echo "=== Running Setup ==="
 rm -rf ./tmp
 rm -rf ./vendor
-rm -rf ./mocks
 go get -u github.com/cosmtrek/air@v1.12.1
 go get -u github.com/pressly/goose/cmd/goose@v2.6.0
 go mod vendor

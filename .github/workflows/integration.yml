@@ -40,6 +40,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: setup
       run: |
+        echo === CI -> Generating mocks ===
+        bin/mockery
         echo === CI -> Builing ===
         docker-compose build
         docker-compose up -d
