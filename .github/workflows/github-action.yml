@@ -40,16 +40,17 @@ jobs:
     - uses: actions/checkout@v2
     - name: setup
       run: |
-        echo === Building Container ===
+        echo === CI -> Creating Mocks ===
+        bin/mockery
+        echo === CI -> Builing ===
         docker-compose build
-        echo === Running Container ===
         bin/up -d
-        echo === Installing dependencies ===
-        bin/go mod vendor
-        echo === Testing ===
-        bin/test
-        echo === Stopping Containers ===
+        echo === CI -> Running Tests ===
+        bin/exec test
+        echo === CI -> Linting ===
+        bin/lint
+        echo === CI -> Stopping Containers ===
         bin/down
-        echo === Tasks Completed ===
+        echo === CI -> Tasks Completed ===
         
         
