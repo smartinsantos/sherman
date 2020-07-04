@@ -37,14 +37,8 @@ jobs:
         echo === CI -> Generating mocks ===
         bin/mockery
         echo === CI -> Builing ===
-        go mod vendor
-        go get -u github.com/pressly/goose/cmd/goose@v2.6.0
-        go env
-        GO111MODULE=on
-        ENV=test
-        go env
-        echo ls -la
-        go run ./main.go
+        go mod tidy
+        GO111MODULE=on; ENV=test; go run ./main.go
         echo === CI -> Running Tests ===
         bin/cmd/test
         echo === CI -> Linting ===
