@@ -25,16 +25,15 @@ jobs:
     - uses: actions/setup-go@v2
       with:
         go-version: '^1.14'
+    - name: CHECK
+        ls -la ${{github.workspace}}
+        ${{ secrets.CC_TEST_REPORTER_ID }}
     - name: Build
       run: |
         bin/mockery
         go mod tidy
         go build main.go
     - name: Test & Publish Coverage
-      run: |
-        echo ===HERE===
-        ls -la ${{github.workspace}}
-        ${{ secrets.CC_TEST_REPORTER_ID }}
       uses: paambaati/codeclimate-action@v2.6.0
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
