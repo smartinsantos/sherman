@@ -31,13 +31,13 @@ jobs:
         go mod tidy
         go build main.go
     - name: Test & Publish Coverage
-      uses: paambaati/codeclimate-action@v2.6.0
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       run: |
         echo ===HERE===
         ls -la ${{github.workspace}}
         ${{ secrets.CC_TEST_REPORTER_ID }}
+      uses: paambaati/codeclimate-action@v2.6.0
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
         coverageCommand: bin/cmd/test
         coverageLocations: ${{github.workspace}}/coverage/coverage.out
