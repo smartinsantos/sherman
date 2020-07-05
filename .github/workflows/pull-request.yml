@@ -8,10 +8,7 @@ on:
 
 jobs:
   build-test-lint:
-    strategy:
-      matrix:
-        platform: [ ubuntu-latest, macOS-latest ]
-    runs-on: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
     env:
       # APP
       APP_DEBUG: false
