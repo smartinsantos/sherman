@@ -1,9 +1,9 @@
 name: push
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
+    branches: [ master ]
+  push:
     branches: [ master ]
 
 jobs:
@@ -37,5 +37,6 @@ jobs:
       with:
         coverageCommand: bin/cmd/test
         coverageLocations: ${{github.workspace}}/coverage/coverage.out:gocov
+        prefix: ${{github.workspace}}
     - name: Lint
       run: bin/lint
