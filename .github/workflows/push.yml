@@ -37,6 +37,6 @@ jobs:
       with:
         coverageCommand: bin/cmd/test
         coverageLocations: ${{github.workspace}}/coverage/coverage.out:gocov
-        prefix: ${{github.workspace}}
+        prefix: ${{github.workspace}}/../
     - name: Lint
       run: bin/lint
