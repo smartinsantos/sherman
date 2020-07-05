@@ -1,13 +1,11 @@
 name: pull-request
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
 jobs:
-  build-test-lint:
+  pull-request:
     runs-on: ubuntu-latest
     env:
       # APP

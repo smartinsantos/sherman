@@ -1,4 +1,4 @@
-name: pull-request
+name: push
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build-test-lint:
+  push:
     runs-on: ubuntu-latest
     env:
       # APP
@@ -34,6 +34,10 @@ jobs:
       uses: paambaati/codeclimate-action@v2.6.0
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      run: |
+        echo ===HERE===
+        ls -la ${{github.workspace}}
+        ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
         coverageCommand: bin/cmd/test
         coverageLocations: ${{github.workspace}}/coverage/coverage.out
