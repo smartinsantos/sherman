@@ -31,12 +31,13 @@ jobs:
         go mod tidy
         go build main.go
     - name: Test & Publish Coverage
-      uses: paambaati/codeclimate-action@v2.6.0
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      with:
-        coverageCommand: bin/cmd/test
-        coverageLocations: ${{github.workspace}}/coverage/coverage.out:gocov
-        prefix: ${{github.workspace}}/src
+      run: |
+        bin/cmd/test
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+        cc-test-reporter format-coverage -t gocov ${{github.workspace}}/coverage/coverage.out
+
     - name: Lint
       run: bin/lint
