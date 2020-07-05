@@ -36,6 +36,6 @@ jobs:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
         coverageCommand: bin/cmd/test
-        coverageLocations: ${{github.workspace}}/coverage/coverage.out:cover
+        coverageLocations: ${{github.workspace}}/coverage/coverage.out:gocov
     - name: Lint
       run: bin/lint
