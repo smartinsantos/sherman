@@ -25,12 +25,6 @@ jobs:
     - uses: actions/setup-go@v2
       with:
         go-version: '^1.14'
-    - name: TEST
-      run: |
-        ls -la
-        echo ${{github.workspace}}
-        pwd
-        VAR=$
     - name: Build
       run: |
         bin/mockery
@@ -41,7 +35,6 @@ jobs:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       run: |
         bin/cmd/test
-        sed -i -e "s/^/\/"${{github.workspace}}"\//" ${{github.workspace}}/coverage/coverage.out
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
         ./cc-test-reporter format-coverage --debug --input-type=gocov --prefix=$(go list -m) ${{github.workspace}}/coverage/coverage.out
