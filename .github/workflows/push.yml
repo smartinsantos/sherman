@@ -29,7 +29,8 @@ jobs:
       run: |
         ls -la
         echo ${{github.workspace}}
-        echo pwd
+        pwd
+        VAR=$
     - name: Build
       run: |
         bin/mockery
@@ -42,6 +43,6 @@ jobs:
         bin/cmd/test
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
-        ./cc-test-reporter format-coverage --debug --input-type=gocov --add-prefix=${{github.workspace}} ${{github.workspace}}/coverage/coverage.out
+        ./cc-test-reporter format-coverage --debug --input-type=gocov --prefix="$(dirname ${{github.workspace}})" ${{github.workspace}}/coverage/coverage.out
     - name: Lint
       run: bin/lint
