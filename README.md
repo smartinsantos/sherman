@@ -50,7 +50,7 @@ It follows SOLID principles and attempts to follow Robert "Uncle Bob" Clean Arch
 - ```bin/mockery```                         : Generates mocks for every interface in the project under ./src/mocks
 - ```bin/lint```                            : Finds lint errors in the application
 - ```bin/exec```                            : Execs the following commands (**docker containers must be running)
-    - ```setup```                           : Install all project dependencies
+    - ```setup```                           : Installs all project dependencies
     - ```gofmt```                           : Formats .go files in /src folder
     - ```watch```                           : Runs the server on watch mode
     - ```new-migration [migration-name]```  : Creates a migration

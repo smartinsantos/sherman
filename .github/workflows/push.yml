@@ -1,0 +1,40 @@
+name: push
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    env:
+      # APP
+      APP_DEBUG: false
+      APP_PORT: 5000
+      APP_ADDR: :5000
+      # DATABASE
+      DB_DRIVER: sqlite3
+      DB_PATH: "./src/app/database/testDB.db"
+      #JWT
+      JWT_SECRET: jwt_secret
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.14'
+    - name: Build
+      run: |
+        bin/mockery
+        go mod tidy
+        go build main.go
+    - name: Test | Publish Coverage
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      run: |
+        bin/cmd/test
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+        ./cc-test-reporter format-coverage --debug --input-type=gocov --prefix=$(go list -m) ${{github.workspace}}/coverage/coverage.out
+    - name: Lint
+      run: bin/lint
