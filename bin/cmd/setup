@@ -4,7 +4,7 @@
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"/../.. || exit
 
-echo "=== Running Setup ==="
+echo "=== Running setup ==="
 rm -rf ./tmp
 rm -rf ./vendor
 go get -u github.com/cosmtrek/air@v1.12.1
